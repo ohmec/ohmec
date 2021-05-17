@@ -35,68 +35,6 @@ function dateInfo(date) {
   };
 }
 
-function colorScale(color1, color2, scale1, scale2, value) {
-  let r1, g1, b1, r2, g2, b2;
-  let re = /#(..)(..)(..)/;
-  let m1 = color1.match(re);
-  if(m1 !== null) {
-    r1 = parseInt(m1[1],16);
-    g1 = parseInt(m1[2],16);
-    b1 = parseInt(m1[3],16);
-  } else {
-    throw "bad color " + color1;
-  }
-  let m2 = color2.match(re);
-  if(m2 !== null) {
-    r2 = parseInt(m2[1],16);
-    g2 = parseInt(m2[2],16);
-    b2 = parseInt(m2[3],16);
-  } else {
-    throw "bad color " + color2;
-  }
-  let rspan = r2-r1;
-  let gspan = g2-g1;
-  let bspan = b2-b1;
-  let ratio = (value-scale1) / (scale2-scale1);
-  let rc = Math.round(rspan*ratio+r1).toString(16);
-  let gc = Math.round(gspan*ratio+g1).toString(16);
-  let bc = Math.round(bspan*ratio+b1).toString(16);
-  if(rc.length == 1) rc = "0" + rc;
-  if(gc.length == 1) gc = "0" + gc;
-  if(bc.length == 1) bc = "0" + bc;
-  return "#" + rc + gc + bc;
-}
-
-// create a coloring function that is attuned to
-// primarily the entity1 name, the entity2 type,
-// and then the start date
-function getColor(properties) {
-  let entity1name = properties.entity1name;
-  let entity2type = properties.entity2type;
-  let startyear = dateInfo(properties.startdate).year;
-  if(entity1name == "England") {    // england is primarily red, but more gray the older it gets
-    if(entity2type == 'grant') {
-      return '#886060';
-    } else if(entity2type == 'colony') {
-      return '#901818';
-    }
-  } else if(entity1name == "USA") { // USA is primarily blue, but more gray the older it gets
-    return colorScale('#707090', '#1828a0', 1776, 1959, startyear);
-  }
-  return '#c0c0c0';
-}
-
-function data_style(feature) {
-  return {
-    weight: 2,
-    opacity: 1,
-    color: 'white',
-    dashArray: '3',
-    fillOpacity: 0.7,
-    fillColor: getColor(feature.properties)
-  };
-}
-
 function within_dates(cd,sd,ed) {
   let cdinfo = dateInfo(cd);
   let sdinfo = dateInfo(sd);
@@ -180,21 +118,7 @@ function onEachFeature(feature, layer) {
   let widthd2 = width/2;
   let height = width * (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest());
   let heightd2 = height/2;
-  let fontchoice = 1;
-  let fontname = 'sans serif';
-  let fontscale = 1;
-  // scale the font based upon the family, since some are wider than others
-  switch(fontchoice) {
-    case 0: fontname = 'Rubik';                fontscale = 81; break;
-    case 1: fontname = 'Cabin Sketch';         fontscale = 87; break;
-    case 2: fontname = 'Corben';               fontscale = 77; break;
-    case 3: fontname = 'New Tegomin';          fontscale = 84; break;
-    case 4: fontname = 'Special Elite';        fontscale = 81; break;
-    case 5: fontname = 'Fredericka the Great'; fontscale = 81; break;
-    case 6: fontname = 'Rye';                  fontscale = 73; break;
-    case 7: fontname = 'Akaya Telivigala';     fontscale = 94; break;
-    case 8: fontname = 'MedievalSharp';        fontscale = 85; break;
-  }
+  let fontinfo = getFeatureFont(feature);
   feature.textLabel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   feature.textLabel.setAttribute('xmlns',   "http://www.w3.org/2000/svg");
   feature.textLabel.setAttribute('width',   width);
@@ -204,15 +128,14 @@ function onEachFeature(feature, layer) {
   feature.textLabelDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
   feature.textLabel.appendChild(feature.textLabelDefs);
 
-  let label = feature.properties.entity2name;
-  let fontsize = fontscale/label.length;
+  let label = getFeatureLabel(feature);
+  let fontsize = fontinfo.scale/label.length;
   if("labelScale" in feature.properties) {
     fontsize *= feature.properties.labelScale;
   }
   let inner = '<text text-anchor="middle" x=' + widthd2 + ' y=' + heightd2;
-  inner += ' font-family="' + fontname + ', Courier, sans-serif"';
+  inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
   inner += ' font-size="' + Math.floor(fontsize) + 'px"';
-  inner += ' font-family="Helvetica""';
   if("labelRotate" in feature.properties || "labelX" in feature.properties || "labelY" in feature.properties) {
     inner += ' transform="';
     if("labelRotate" in feature.properties) {
@@ -277,7 +200,7 @@ function geo_lint(dataset) {
 geo_lint(dataNA);
 
 geojson = L.geoJson(dataNA, {
-  style: data_style,
+  style: featureStyle,
   onEachFeature: onEachFeature
 }).addTo(ohmap);
 
