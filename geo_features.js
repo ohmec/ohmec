@@ -2,38 +2,6 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-function colorScale(color1, color2, scale1, scale2, value) {
-  let r1, g1, b1, r2, g2, b2;
-  let re = /#(..)(..)(..)/;
-  let m1 = color1.match(re);
-  if(m1 !== null) {
-    r1 = parseInt(m1[1],16);
-    g1 = parseInt(m1[2],16);
-    b1 = parseInt(m1[3],16);
-  } else {
-    throw "bad color " + color1;
-  }
-  let m2 = color2.match(re);
-  if(m2 !== null) {
-    r2 = parseInt(m2[1],16);
-    g2 = parseInt(m2[2],16);
-    b2 = parseInt(m2[3],16);
-  } else {
-    throw "bad color " + color2;
-  }
-  let rspan = r2-r1;
-  let gspan = g2-g1;
-  let bspan = b2-b1;
-  let ratio = (value-scale1) / (scale2-scale1);
-  let rc = Math.round(rspan*ratio+r1).toString(16);
-  let gc = Math.round(gspan*ratio+g1).toString(16);
-  let bc = Math.round(bspan*ratio+b1).toString(16);
-  if(rc.length == 1) rc = "0" + rc;
-  if(gc.length == 1) gc = "0" + gc;
-  if(bc.length == 1) bc = "0" + bc;
-  return "#" + rc + gc + bc;
-}
-
 function featureStyle(feature) {
   // default styles
   let strokeOn      = true;
