@@ -80,7 +80,7 @@ def export_entity(idname, entity_name, geometry):
   """export the KML for this entity given a geometry of Polygon or MultiPolygon"""
   if(geometry["type"] == "Polygon"):
     print("    <Placemark>")
-    print("      <name>" + entity_name + "</name>")
+    print("      <name>[" + idname + "] " + entity_name + "</name>")
     print("      <styleUrl>#StyleMap" + idname + "</styleUrl>")
     print("      <Polygon>")
     print("        <outerBoundaryIs>")
@@ -98,7 +98,7 @@ def export_entity(idname, entity_name, geometry):
     pcnt = 0
     for polygon in geometry["coordinates"]:
       print("    <Placemark>")
-      print("      <name>" + entity_name + " Polygon " + str(pcnt) + "</name>")
+      print("      <name>[" + idname + "] " + entity_name + " Polygon " + str(pcnt) + "</name>")
       pcnt+=1
       print("      <styleUrl>#StyleMap" + idname + "</styleUrl>")
       print("      <Polygon>")
