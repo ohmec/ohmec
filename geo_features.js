@@ -26,6 +26,11 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#a05050';
+  } else if(entity1name == 'USA' && entity2type == 'secessionist') {
+    strokeColor  = '#0000a0';
+    strokeWeight = 2.0;
+    strokeDash   = '1';
+    fillColor    = '#900020';
   } else if(entity1name == 'USA') {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;
