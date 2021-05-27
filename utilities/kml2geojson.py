@@ -67,7 +67,7 @@ def parse_kml(filename):
           coordinates.append([float(fm.group(1)), float(fm.group(2))])
         elif(re.search("</coordinates>", line)):
           if(ismulti):
-            multicoords[idname].append(coordinates)
+            multicoords[idname].append([coordinates])
           else:
             coords[idname] = coordinates
       line = fp.readline()
@@ -118,8 +118,8 @@ def export_multi_coords(coords):
         "enddate":"XXXX"},
       "geometry":{
         "type":"MultiPolygon",
-        "coordinates":[
-          ''' + cstr + ']}},')
+        "coordinates":
+          ''' + cstr + '}},')
 
 parse_kml(filename)
 export_coords(coords)
