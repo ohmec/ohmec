@@ -20,7 +20,7 @@ import hashlib
 from hashlib import md5
 
 if(len(sys.argv) < 3):
-  print("usage: geojson2kml.py filename ID0 [ID1 ID2 ...]")
+  sys.stderr.write("usage: geojson2kml.py filename ID0 [ID1 ID2 ...]\n")
   sys.exit(2)
 filename = sys.argv[1]
 ids_to_print = sys.argv[2:]
@@ -114,6 +114,7 @@ def export_entity(idname, entity_name, geometry):
       print("      </Polygon>")
       print("    </Placemark>")
 
+printed = {}
 if("features" in fullstruct):
   export_header(ids_to_print)
   for feature in fullstruct["features"]:
@@ -122,7 +123,17 @@ if("features" in fullstruct):
       properties = feature["properties"]
       entity2name = properties["entity2name"]
       export_entity(thisid, entity2name, feature["geometry"])
+      printed[thisid] = 1
   export_footer()
 else:
-  print("missing features in geojson")
+  sys.stderr.write("missing features in geojson\n")
   sys.exit(2)
+
+failure = 0
+for thisid in ids_to_print:
+  if thisid not in printed:
+    sys.stderr.write("Never found " + thisid + " to convert\n")
+    failure = 1
+
+if failure:
+  sys.exit(1)
