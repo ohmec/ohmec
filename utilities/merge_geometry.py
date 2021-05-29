@@ -23,7 +23,7 @@ import shapely.ops
 import re
 
 if(len(sys.argv) < 3):
-  print("usage: merge_geometry.py filename ID0 ID1 [ID2 ...]")
+  sys.stderr.write("usage: merge_geometry.py filename ID0 ID1 [ID2 ...]\n")
   sys.exit(2)
 filename = sys.argv[1]
 ids_to_merge = sys.argv[2:]
@@ -44,11 +44,11 @@ geoms = {}
 for feature in fullstruct["features"]:
   geoms[feature["id"]] = shapely.geometry.asShape(feature["geometry"])
   if not geoms[feature["id"]].is_valid:
-    print(feature["id"] + " is not valid")
+    sys.stderr.write(feature["id"] + " is not valid\n")
 
 first = 1
 for idname in ids_to_merge:
-  print("merging " + idname)
+  sys.stderr.write("merging " + idname + "\n")
   if first:
     merged_polygon = geoms[idname]
   else:
