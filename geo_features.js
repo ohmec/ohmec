@@ -31,11 +31,21 @@ function featureStyle(feature) {
     strokeWeight = 2.0;
     strokeDash   = '1';
     fillColor    = '#900020';
-  } else if(entity1name == 'USA') {
+  } else if(entity1name == 'USA' && entity2type == 'territory') {
+    strokeColor  = '#0000a0';
+    strokeWeight = 2.0;
+    strokeDash   = '1';
+    fillColor    = '#a0a0ff';
+  } else if(entity1name == 'USA' && entity2type == 'state') {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;
     strokeDash   = '1';
     fillColor    = '#4040a0';
+  } else if(entity1name == 'Spain' && entity2type == 'territory') {
+    strokeColor  = '#900018';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#f0a010';
   }
 
   // returning all style contents even if default, just to have as reference
