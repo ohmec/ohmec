@@ -436,7 +436,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:03:15",
         "startdate":"1787:12:07",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -452,7 +452,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1787:12:12",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -470,7 +470,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:03:15",
         "startdate":"1787:12:18",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -518,7 +518,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -534,7 +534,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:03:15",
         "startdate":"1788:01:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -551,7 +551,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:03:15",
         "startdate":"1788:02:06",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -587,7 +587,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:24",
         "startdate":"1790:07:16",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -641,7 +641,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -660,7 +660,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1788:06:21",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -714,7 +714,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:03:15",
         "startdate":"1788:07:26",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -768,7 +768,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -784,7 +784,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:03:13",
         "startdate":"1790:05:29",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"MultiPolygon",
         "coordinates":[
@@ -819,7 +819,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:24",
         "startdate":"1846:07:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -836,7 +836,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1791:03:04",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -852,7 +852,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1792:06:01",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -951,7 +951,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -967,7 +967,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1803:02:23",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1021,7 +1021,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1038,7 +1038,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1816:12:11",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1086,7 +1086,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1102,7 +1102,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1818:12:03",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1150,7 +1150,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1166,7 +1166,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1820:03:15",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1181,7 +1181,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1821:08:10",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1229,7 +1229,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1246,7 +1246,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1837:01:26",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"MultiPolygon",
         "coordinates":[
@@ -1406,7 +1406,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1457,7 +1457,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1472,7 +1472,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1846:12:28",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1487,7 +1487,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1848:05:29",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1506,7 +1506,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1850:09:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"MultiPolygon",
         "coordinates":[
@@ -1526,7 +1526,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1858:05:11",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1542,7 +1542,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:03:15",
         "startdate":"1859:02:14",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1557,7 +1557,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1861:01:29",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1594,7 +1594,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:05:23",
         "startdate":"1865:05:09",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"MultiPolygon",
         "coordinates":[
@@ -1613,7 +1613,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1863:06:20",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1629,7 +1629,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1864:10:31",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1644,7 +1644,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1867:02:23",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1660,7 +1660,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1876:08:01",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1676,7 +1676,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1889:11:02",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1692,7 +1692,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1889:11:02",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1707,7 +1707,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1889:11:08",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1724,7 +1724,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:03:15",
         "startdate":"1889:11:11",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"MultiPolygon",
         "coordinates":[
@@ -1743,7 +1743,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1890:07:03",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1758,7 +1758,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1890:07:10",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1774,7 +1774,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1896:01:04",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1789,7 +1789,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1898:10:18",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1805,7 +1805,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1907:11:16",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1821,7 +1821,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1912:01:06",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1837,7 +1837,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1912:02:14",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -1855,7 +1855,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1959:01:03",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"MultiPolygon",
         "coordinates":[
@@ -1908,7 +1908,7 @@ dataNA = {
         "fidelity":5,
         "editdate":"2021:02:23",
         "startdate":"1959:08:21",
-        "enddate":"none"},
+        "enddate":"present"},
       "geometry":{
         "type":"MultiPolygon",
         "coordinates":[

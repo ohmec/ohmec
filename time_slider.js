@@ -108,7 +108,7 @@ L.Control.TimeLineSlider = L.Control.extend({
     let labelMargin = (parseFloat(holdThis.options.sliderWidth)/2 - 10) + "px";
     let slider_style = `
       .slider_container { 
-        background-color: rgba(4,112,255,0.2);
+        background-color: rgba(4,112,255,0.7);
         padding: 5px 15px 5px 15px;
         border-radius: 5px;
         border-style: solid;
@@ -136,7 +136,7 @@ L.Control.TimeLineSlider = L.Control.extend({
         margin: 10px -${labelMargin};
         padding: 0;
         list-style: none;
-        color: #333;
+        color: #eee;
       }
       .slider-years li {
         width: ${rangeWidth};
