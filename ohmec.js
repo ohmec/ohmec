@@ -14,6 +14,29 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
   zoomOffset: -1
 }).addTo(ohmap);
 
+// feature info box
+let infobox = L.control();
+let held_prop;
+let infoTmout;
+
+infobox.onAdd = function(map) {
+  this._div = L.DomUtil.create('div', 'infobox');
+  this.update();
+  return this._div;
+};
+
+infobox.update = function(prop) {
+  this._div.innerHTML = 
+    (prop ?
+      ('<b>' + prop.entity1type +  '</b>: ' + prop.entity1name + '<br/>' +
+       '<b>' + prop.entity2type +  '</b>: ' + prop.entity2name + '<br/>' +
+               prop.startdate   + ' - ' + prop.enddate     + '<br/>' +
+       (prop.source ? ('<a href="' + prop.source + '" target="_blank">source</a>') : '')) :
+      '<b>Feature Information</b>');
+};
+
+infobox.addTo(ohmap);
+
 let legend = L.control({position: 'bottomright'});
 let today = new Date();
 let curDate = today.getFullYear() + ":" + (today.getMonth() + 1) + ":" + today.getDate();
@@ -23,7 +46,7 @@ let timelineStart = 1790.415; // randomly chosen as the day just after the 13th 
 
 function dateInfo(date) {
   let contents = date.split(':');
-  if (contents[0] == 'none') {
+  if (contents[0] == 'present') {
     contents[0] = today.getFullYear();
     contents[1] = today.getMonth()+1;
     contents[2] = today.getDate();
@@ -71,7 +94,7 @@ function yearMax(maxYear, newDate) {
 let geojson;
 
 function highlightFeature(e) {
-  var layer = e.target;
+  let layer = e.target;
 
   layer.setStyle({
     weight: 5,
@@ -83,15 +106,25 @@ function highlightFeature(e) {
   if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
     layer.bringToFront();
   }
+
+  infobox.update(layer.feature.properties);
 }
 
 function resetHighlight(e) {
   geojson.resetStyle(e.target);
+  infobox.update(held_prop);
 }
 
+// upon mouse click, hold the information, allowing the
+// user to click on the source link. so as to not linger
+// forever, hold the information about a few seconds.
 function mouseInfo(e) {
-//      here for possible future use
-//      console.log(e.containerPoint + " within " + e.sourceTarget.feature.properties.entity2name);
+  held_prop = e.target.feature.properties;
+  // a little random, but 7 seconds
+  if(infoTmout) {
+    clearTimeout(infoTmout);
+  }
+  infoTmout = setTimeout(() => { held_prop = ''; infobox.update(); }, 7000);
 }
 
 function keyInfo(e) {
@@ -104,7 +137,6 @@ function onEachFeature(feature, layer) {
     mouseover: highlightFeature,
     mouseout:  resetHighlight,
     mousedown: mouseInfo,
-    mousemove: mouseInfo,
     keydown:   keyInfo,
   });
 
@@ -225,7 +257,7 @@ function fixInt(numstr, length) {
 }
 
 legend.onAdd = function () {
-  this._div = L.DomUtil.create('div', 'info curdate');
+  this._div = L.DomUtil.create('div', 'curdate');
   this.update();
   return this._div;
 };

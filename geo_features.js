@@ -10,8 +10,10 @@ function featureStyle(feature) {
   let strokeWeight  = 2.0;
   let strokeDash    = '3';
   let fillOn        = true;
-  let fillOpacity   = 0.5;
   let fillColor     = '#c0c0c0';
+
+  let fidelity      = feature.properties.fidelity;
+  let fillOpacity   = 0.2 + fidelity/10;
 
   // big lookup table for entity types and names, mapping to colors and other info
   let entity1name = feature.properties.entity1name;
