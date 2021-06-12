@@ -22,12 +22,17 @@ function featureStyle(feature) {
     strokeColor  = '#a00000';
     strokeWeight = 1.0;
     strokeDash   = '3';
-    fillColor    = '#a07070';
+    fillColor    = '#a08080';
   } else if(entity1name == 'England' && entity2type == 'colony') {
     strokeColor  = '#a00000';
     strokeWeight = 1.5;
     strokeDash   = '1';
-    fillColor    = '#a05050';
+    fillColor    = '#a04040';
+  } else if(entity1name == 'England' && entity2type == 'territory') {
+    strokeColor  = '#a00000';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#a06060';
   } else if(entity1name == 'USA' && entity2type == 'secessionist') {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;

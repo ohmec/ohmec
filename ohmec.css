@@ -46,15 +46,15 @@ body {
   text-align: center;
   font-family: "Courier";
 }
-a:link {
+.infobox a:link {
   color: #eee;
 }
-a:hover {
+.infobox a:hover {
   color: #88f;
 }
-a:active {
+.infobox a:active {
   color: #eee;
 }
-a:visited {
+.infobox a:visited {
   color: #eee;
 }
