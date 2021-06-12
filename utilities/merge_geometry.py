@@ -55,5 +55,15 @@ for idname in ids_to_merge:
     merged_polygon = merged_polygon.union(geoms[idname])
   first = 0
 
-geojson_out = geojson.Feature(geometry=merged_polygon, properties={})
-json.dump(geojson_out.geometry, sys.stdout, indent=2)
+feature = geojson.Feature(geometry=merged_polygon, properties={})
+feature.id = "merged"
+properties = {}
+properties["entity1type"] = "nation"
+properties["entity1name"] = "unknown"
+properties["entity2type"] = "unknown"
+properties["entity2name"] = "unknown"
+feature["properties"] = properties
+entity = {}
+entity["features"] = []
+entity["features"].append(feature)
+json.dump(entity, sys.stdout, indent=2)
