@@ -124,6 +124,7 @@ if("features" in fullstruct):
       entity2name = properties["entity2name"]
       export_entity(thisid, entity2name, feature["geometry"])
       printed[thisid] = 1
+      sys.stderr.write("exporting " + thisid + "\n")
   export_footer()
 else:
   sys.stderr.write("missing features in geojson\n")
