@@ -16,8 +16,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 
 // feature info box
 let infobox = L.control();
-let held_prop;
-let infoTmout;
+let held_id, held_prop, infoTmout;
 
 infobox.onAdd = function(map) {
   this._div = L.DomUtil.create('div', 'infobox');
@@ -25,13 +24,14 @@ infobox.onAdd = function(map) {
   return this._div;
 };
 
-infobox.update = function(prop) {
+infobox.update = function(id, prop) {
   this._div.innerHTML = 
     (prop ?
-      ('<b>' + prop.entity1type +  '</b>: ' + prop.entity1name + '<br/>' +
-       '<b>' + prop.entity2type +  '</b>: ' + prop.entity2name + '<br/>' +
-               prop.startdate   + ' - ' + prop.enddate     + '<br/>' +
-       (prop.source ? ('<a href="' + prop.source + '" target="_blank">source</a>') : '')) :
+      ('<b>' + prop.entity1type + '</b>: ' + prop.entity1name + '<br/>' +
+       '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>' +
+               prop.startdate   + ' - '    + prop.enddate     + '<br/>' +
+               (prop.source ? ('<a href="' + prop.source + '" target="_blank">source</a><br/>') : '') +
+       '<b>' + 'id: '           + '</b>'   + id) :
       '<b>Feature Information</b>');
 };
 
@@ -107,12 +107,12 @@ function highlightFeature(e) {
     layer.bringToFront();
   }
 
-  infobox.update(layer.feature.properties);
+  infobox.update(layer.feature.id,layer.feature.properties);
 }
 
 function resetHighlight(e) {
   geojson.resetStyle(e.target);
-  infobox.update(held_prop);
+  infobox.update(held_id,held_prop);
 }
 
 // upon mouse click, hold the information, allowing the
@@ -120,11 +120,12 @@ function resetHighlight(e) {
 // forever, hold the information about a few seconds.
 function mouseInfo(e) {
   held_prop = e.target.feature.properties;
+  held_id   = e.target.feature.id;
   // a little random, but 7 seconds
   if(infoTmout) {
     clearTimeout(infoTmout);
   }
-  infoTmout = setTimeout(() => { held_prop = ''; infobox.update(); }, 7000);
+  infoTmout = setTimeout(() => { held_id = ''; held_prop = ''; infobox.update(); }, 7000);
 }
 
 function keyInfo(e) {

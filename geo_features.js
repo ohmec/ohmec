@@ -38,6 +38,11 @@ function featureStyle(feature) {
     strokeWeight = 2.0;
     strokeDash   = '1';
     fillColor    = '#900020';
+  } else if(entity1name == 'CSA' && entity2type == 'territory') {
+    strokeColor  = '#0000a0';
+    strokeWeight = 2.0;
+    strokeDash   = '1';
+    fillColor    = '#ffa0a0';
   } else if(entity1name == 'USA' && entity2type == 'territory') {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;
