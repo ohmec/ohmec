@@ -75,6 +75,7 @@ def parse_kml(filename):
 
 def export_coords(coords):
   for idname in coords:
+    sys.stderr.write("converting " + idname + "\n")
     if(entity2name[idname] != ""):
       ename = entity2name[idname]
     else:
@@ -99,6 +100,7 @@ def export_coords(coords):
 
 def export_multi_coords(coords):
   for idname in coords:
+    sys.stderr.write("converting " + idname + "\n")
     if(entity2name[idname] != ""):
       ename = entity2name[idname]
     else:
