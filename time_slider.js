@@ -7,9 +7,9 @@ let holdThis;
 L.Control.TimeLineSlider = L.Control.extend({
   options: {
     position: 'bottomleft',
-    timelineMin: 0,
-    timelineMax: 2021,
-    timelineStart: 1776,
+    timelineMin: new Date(1,0,1),
+    timelineMax: new Date,
+    timelineStart: new Date(1776,6,4),
     sliderWidth: "750px",
   },
 
@@ -38,16 +38,16 @@ L.Control.TimeLineSlider = L.Control.extend({
     this.sliderDiv = L.DomUtil.create('div', 'range', this.sliderContainer);
     this.sliderDiv.innerHTML =
       '<input id="rangeinputslide" type="range" min="' +
-      this.options.timelineMin + 
+      this.options.timelineMin.getTime() +
       '" max="' +
-      this.options.timelineMax +
+      this.options.timelineMax.getTime() +
       '" step="any" value="' +
-      this.options.timelineMin +
+      this.options.timelineMin.getTime() +
       '"></input>';
     this.rangeObject = L.DomUtil.get(this.sliderDiv).children[0];
 
     this.sliderYears = L.DomUtil.create('ul', 'slider-years', this.sliderContainer);
-    this.sliderYears.innerHTML = "<li>" + this.options.timelineMin + "</li><li>" + this.options.timelineMax + "</li>";
+    this.sliderYears.innerHTML = "<li>" + this.options.timelineMin.getFullYear() + "</li><li>" + this.options.timelineMax.getFullYear() + "</li>";
 
 
     this.advanceDiv = L.DomUtil.create('div', 'advance', this.sliderContainer);
@@ -60,23 +60,22 @@ L.Control.TimeLineSlider = L.Control.extend({
 
     // When time slider gets changed, trigger updateTime function
     L.DomEvent.on(holdThis.rangeObject, "input", function() {
-      holdThis.options.updateTime({value: holdThis.rangeObject.value});
+      holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
     });
 
     // When advance/pause button gets pressed toggle advance/pause,
     // potentially "move time"
 
     holdThis.advanceTime = function() {
-      let incrTime = (parseFloat(holdThis.options.timelineMax) - parseFloat(holdThis.options.timelineMin))/240;
-      let newTime = parseFloat(holdThis.rangeObject.value) + incrTime;
-      console.log("incrTime = " + incrTime + " newTime = " + newTime);
-      if(newTime >= holdThis.options.timelineMax) {
-        newTime = holdThis.options.timelineMax;
+      let incrTime = (holdThis.options.timelineMax.getTime() - holdThis.options.timelineMin.getTime())/240;
+      let newTime = parseFloat(holdThis.rangeObject.value) + parseFloat(incrTime);
+      if(newTime >= holdThis.options.timelineMax.getTime()) {
+        newTime = holdThis.options.timelineMax.getTime();
         clearInterval(holdThis.intervalFunc);
         holdThis.buttonObject.value = "Advance";
       }
       holdThis.rangeObject.value = newTime;
-      holdThis.options.updateTime({value: holdThis.rangeObject.value});
+      holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
     }
 
     L.DomEvent.on(holdThis.buttonObject, "click", function() {
@@ -92,8 +91,8 @@ L.Control.TimeLineSlider = L.Control.extend({
     // Initialize input change at start
     let inputEvent = new Event('input');
     this.rangeObject.dispatchEvent(inputEvent);
-    this.rangeObject.value = parseFloat(holdThis.options.timelineStart);
-    holdThis.options.updateTime({value: holdThis.rangeObject.value});
+    this.rangeObject.value = holdThis.options.timelineStart.getTime();
+    holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
 
     return this.sliderContainer;
   },
@@ -102,12 +101,12 @@ L.Control.TimeLineSlider = L.Control.extend({
     // remove control html element
     L.DomUtil.remove(this.sliderContainer);
   },
-  
+
   setupStartStyles: function() {
     let rangeWidth = (parseFloat(holdThis.options.sliderWidth) - 15) + "px";
     let labelMargin = (parseFloat(holdThis.options.sliderWidth)/2 - 10) + "px";
     let slider_style = `
-      .slider_container { 
+      .slider_container {
         background-color: rgba(4,112,255,0.7);
         padding: 5px 15px 5px 15px;
         border-radius: 5px;

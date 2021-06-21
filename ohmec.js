@@ -18,7 +18,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 let infobox = L.control();
 let held_id, held_prop, infoTmout;
 
-infobox.onAdd = function(map) {
+infobox.onAdd = function() {
   this._div = L.DomUtil.create('div', 'infobox');
   this.update();
   return this._div;
@@ -27,9 +27,9 @@ infobox.onAdd = function(map) {
 infobox.update = function(id, prop) {
   this._div.innerHTML = 
     (prop ?
-      ('<b>' + prop.entity1type + '</b>: ' + prop.entity1name + '<br/>' +
-       '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>' +
-               prop.startdate   + ' - '    + prop.enddate     + '<br/>' +
+      ('<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>' +
+       '<b>' + prop.entity2type  + '</b>: ' + prop.entity2name + '<br/>' +
+               prop.startdatestr + ' - '    + prop.enddatestr  + '<br/>' +
                (prop.source ? ('<a href="' + prop.source + '" target="_blank">source</a><br/>') : '') +
        '<b>' + 'id: '           + '</b>'   + id) :
       '<b>Feature Information</b>');
@@ -39,56 +39,43 @@ infobox.addTo(ohmap);
 
 let legend = L.control({position: 'bottomright'});
 let today = new Date();
-let curDate = today.getFullYear() + ":" + (today.getMonth() + 1) + ":" + today.getDate();
-let timelineMin = today.getFullYear();
-let timelineMax = 0;
-let timelineStart = 1790.415; // randomly chosen as the day just after the 13th colony added
+let curDate = new Date();
+let timelineMin = today;
+let timelineMax = new Date(1,0,1);
+let timelineStart = new Date(1790,5,1); // arbitrarily chosen as the day just after the 13th colony added
+let overrideMin = 1;
+let overrideMax = 1;
 
-function dateInfo(date) {
-  let contents = date.split(':');
-  if (contents[0] == 'present') {
-    contents[0] = today.getFullYear();
-    contents[1] = today.getMonth()+1;
-    contents[2] = today.getDate();
-  }
-  return {
-    day: parseFloat(contents[2]),
-    mon: parseFloat(contents[1]),
-    year: parseFloat(contents[0])
-  };
-}
+// check for URL override
 
-function within_dates(cd,sd,ed) {
-  let cdinfo = dateInfo(cd);
-  let sdinfo = dateInfo(sd);
-  let edinfo = dateInfo(ed);
-  let scompare = (cdinfo.year < sdinfo.year) ? -1 :
-                 (cdinfo.year > sdinfo.year) ?  1 :
-                 (cdinfo.mon  < sdinfo.mon ) ? -1 :
-                 (cdinfo.mon  > sdinfo.mon ) ?  1 :
-                 (cdinfo.day  < sdinfo.day ) ? -1 :
-                 (cdinfo.day  > sdinfo.day ) ?  1 : 0;
-  let ecompare = (cdinfo.year < edinfo.year) ? -1 :
-                 (cdinfo.year > edinfo.year) ?  1 :
-                 (cdinfo.mon  < edinfo.mon ) ? -1 :
-                 (cdinfo.mon  > edinfo.mon ) ?  1 :
-                 (cdinfo.day  < edinfo.day ) ? -1 :
-                 (cdinfo.day  > edinfo.day ) ?  1 : 0;
-  if(scompare >= 0 && ecompare <= 0) {
-    return 1;
-  } else {
-    return 0;
+let parameters = location.search.substring(1).split("&");
+
+for(let param of parameters) {
+  let test = /(startdatestr|enddatestr|curdatestr)=(\d+:\d+:\d+)/;
+  let match = param.match(test);
+  if (match !== null) {
+    let info = match[2].split(':');
+    let dateVal = new Date(info[0],info[1]-1,info[2]);
+    if (match[1] == 'startdatestr') {
+      timelineMin = dateVal;
+      overrideMin = 0;
+    }
+    if (match[1] == 'enddatestr') {
+      timelineMax = dateVal;
+      overrideMax = 0;
+    }
+    if (match[1] == 'curdatestr') {
+      timelineStart = dateVal;
+    }
   }
 }
 
-function yearMin(minYear, newDate) {
-  let newYear = dateInfo(newDate).year;
-  return (minYear < newYear) ? minYear : newYear;
+function dateMin(minDate, newDate) {
+  return (minDate < newDate) ? minDate : newDate;
 }
 
-function yearMax(maxYear, newDate) {
-  let newYear = dateInfo(newDate).year;
-  return (maxYear > newYear) ? maxYear : newYear;
+function dateMax(maxDate, newDate) {
+  return (maxDate > newDate) ? maxDate : newDate;
 }
 
 let geojson;
@@ -203,16 +190,28 @@ function geo_lint(dataset) {
       if("properties" in f) {
         let p = f.properties;
         for(let required of ["entity1type", "entity1name", "entity2type",
-          "entity2name", "fidelity", "startdate", "enddate"]) {
+          "entity2name", "fidelity", "startdatestr", "enddatestr"]) {
           if(!(required in p))
             throw "feature " + f.id + " missing property " + required;
+        }
+        let contents = p.startdatestr.split(':');
+        p.startDate = new Date(contents[0], contents[1]-1, contents[2]);
+        if(p.enddatestr == 'present') {
+          p.endDate = new Date;
+        } else {
+          contents = p.enddatestr.split(':');
+          p.endDate = new Date(contents[0], contents[1]-1, contents[2]);
         }
         let fid = p.fidelity;
         if(fid < 1 || fid > 5) {
           throw "fidelity for " + f.id + " should be between 1 (lowest) and 5 (highest), got " + fid;
         }
-        timelineMin = yearMin(timelineMin, p.startdate);
-        timelineMax = yearMax(timelineMax, p.enddate);
+        if(overrideMin) {
+          timelineMin = dateMin(timelineMin, p.endDate);
+        }
+        if(overrideMax) {
+          timelineMax = dateMax(timelineMax, p.startDate);
+        }
       } else {
         throw "no properties in feature " + f.id;
       }
@@ -241,7 +240,7 @@ geojson.evaluateLayers = function () {
   for(let l in this._layers) {
     let lyr = this._layers[l];
     let prop = lyr.feature.properties;
-    if(within_dates(curDate,prop.startdate,prop.enddate)) {
+    if(curDate >= prop.startDate && curDate <= prop.endDate) {
       lyr.addTo(ohmap);
       lyr.feature.textOverlay.addTo(ohmap);
     } else {
@@ -264,32 +263,16 @@ legend.onAdd = function () {
 };
 
 legend.update = function () {
-  let curInfo = dateInfo(curDate);
   this._div.innerHTML =
     'Current date:<br/><div id="fixeddate">' +
-    fixInt(curInfo.mon, 2) + '&sol;' +
-    fixInt(curInfo.day, 2) + '&sol;' +
-    fixInt(curInfo.year,4) + '</div>';
+    fixInt(curDate.getMonth()+1, 2) + '&sol;' +
+    fixInt(curDate.getDate(),    2) + '&sol;' +
+    fixInt(curDate.getFullYear(),4) + '</div>';
 };
 legend.addTo(ohmap);
 
-let refreshMap = function( {value} ) {
-  let newYear = Math.floor(value);
-  let newDayNum = Math.floor(365*(value - newYear));
-  let newMon, newDay;
-  let monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  let curDay = 0;
-  let curMon = 0;
-  for(let i in monthDays) {
-    if(newDayNum < (curDay + monthDays[i])) { 
-      newMon = curMon;
-      newDay = newDayNum - curDay + 1;
-      break;
-    }
-    curMon += 1;
-    curDay += monthDays[i];
-  }
-  curDate = newYear + ":" + (newMon+1) + ":" + newDay;
+let refreshMap = function( {dateValue} ) {
+  curDate.setTime(dateValue);
   legend.update();
   geojson.evaluateLayers();
 }
