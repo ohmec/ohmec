@@ -8,6 +8,11 @@ html, body {
 }
 body {
   background-image: url("background.png");
+  font-family: "Benne", "Helvetica", serif;
+  font-size: 24px;
+}
+h1 {
+  font-size: 40px;
 }
 #map {
   width: 1200px;
