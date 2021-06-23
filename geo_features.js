@@ -81,7 +81,7 @@ function getFeatureLabel(feature) {
 function getFeatureFont(feature) {
   // leave this useless switch statement here to show the fonts
   // that have been explored
-  let fontchoice = 1;
+  let fontchoice = 9;
   let fontname = 'sans serif';
   let fontscale = 1;
   // scale the font based upon the family, since some are wider than others
@@ -95,6 +95,7 @@ function getFeatureFont(feature) {
     case 6: fontname = 'Rye';                  fontscale = 73; break;
     case 7: fontname = 'Akaya Telivigala';     fontscale = 94; break;
     case 8: fontname = 'MedievalSharp';        fontscale = 85; break;
+    case 9: fontname = 'Benne';                fontscale = 91; break;
   }
   return {
     name:  fontname,
