@@ -42,7 +42,7 @@ let today = new Date();
 let curDate = new Date();
 let timelineMin = today;
 let timelineMax = new Date(1,0,1);
-let timelineStart = new Date(1790,5,1); // arbitrarily chosen as the day just after the 13th colony added
+let timelineStart = new Date(1850,11,13); // oldest date that has all the polygons entered for US region
 let overrideMin = 1;
 let overrideMax = 1;
 
