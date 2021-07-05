@@ -174,6 +174,22 @@ function onEachFeature(feature, layer) {
   feature.textOverlay = L.svgOverlay(feature.textLabel, svgElementBounds);
 }
 
+let datesOfInterest = [];
+
+function uniqueDateSort(inArray) {
+  if (inArray.length === 0) {
+    return inArray;
+  }
+  let sortedArray = inArray.sort(function(a,b) { return a.getTime() - b.getTime(); });
+  let returnArray = [ sortedArray[0] ];
+  for (let i=1;i<sortedArray.length;i++) {
+    if (sortedArray[i-1] !== sortedArray[i]) {
+      returnArray.push(sortedArray[i]);
+    }
+  }
+  return returnArray;
+}
+
 function geo_lint(dataset) {
   let id_set = new Set();
   if(dataset.type !== "FeatureCollection")
@@ -197,7 +213,7 @@ function geo_lint(dataset) {
         let contents = p.startdatestr.split(':');
         p.startDate = new Date(contents[0], contents[1]-1, contents[2]);
         if(p.enddatestr == 'present') {
-          p.endDate = new Date;
+          p.endDate = today;
         } else {
           contents = p.enddatestr.split(':');
           p.endDate = new Date(contents[0], contents[1]-1, contents[2]);
@@ -212,6 +228,7 @@ function geo_lint(dataset) {
         if(overrideMax) {
           timelineMax = dateMax(timelineMax, p.startDate);
         }
+        datesOfInterest.push(p.startDate);
       } else {
         throw "no properties in feature " + f.id;
       }
@@ -230,6 +247,9 @@ function geo_lint(dataset) {
 }
 
 geo_lint(dataNA);
+
+datesOfInterest.push(today);
+let datesOfInterestSorted = uniqueDateSort(datesOfInterest);
 
 geojson = L.geoJson(dataNA, {
   style: featureStyle,

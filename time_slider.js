@@ -34,7 +34,7 @@ L.Control.TimeLineSlider = L.Control.extend({
     // Prevent scroll events propagation to map when cursor on the div
     L.DomEvent.disableScrollPropagation(this.sliderContainer);
 
-    // Create html elements for range input, min/max labels, and advance button
+    // Create html elements for range input, min/max labels, advance button and step buttons
     this.sliderDiv = L.DomUtil.create('div', 'range', this.sliderContainer);
     this.sliderDiv.innerHTML =
       '<input id="rangeinputslide" type="range" min="' +
@@ -52,7 +52,15 @@ L.Control.TimeLineSlider = L.Control.extend({
 
     this.advanceDiv = L.DomUtil.create('div', 'advance', this.sliderContainer);
     this.advanceDiv.innerHTML = '<input type="button" id="advButton" value="Advance"></input>';
-    this.buttonObject = L.DomUtil.get(this.advanceDiv).children[0];
+    this.advButtonObject = L.DomUtil.get(this.advanceDiv).children[0];
+
+    this.stepFDiv = L.DomUtil.create('div', 'stepF', this.sliderContainer);
+    this.stepFDiv.innerHTML = '<input type="button" id="stepFButton" value="Step +"></input>';
+    this.stepFButtonObject = L.DomUtil.get(this.stepFDiv).children[0];
+
+    this.stepRDiv = L.DomUtil.create('div', 'stepR', this.sliderContainer);
+    this.stepRDiv.innerHTML = '<input type="button" id="stepRButton" value="Step -"></input>';
+    this.stepRButtonObject = L.DomUtil.get(this.stepRDiv).children[0];
 
     holdThis = this;
 
@@ -72,19 +80,55 @@ L.Control.TimeLineSlider = L.Control.extend({
       if(newTime >= holdThis.options.timelineMax.getTime()) {
         newTime = holdThis.options.timelineMax.getTime();
         clearInterval(holdThis.intervalFunc);
-        holdThis.buttonObject.value = "Advance";
+        holdThis.advButtonObject.value = "Advance";
       }
       holdThis.rangeObject.value = newTime;
       holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
     }
 
-    L.DomEvent.on(holdThis.buttonObject, "click", function() {
-      if(holdThis.buttonObject.value == "Advance") {
-        holdThis.buttonObject.value = "Stop";
+    L.DomEvent.on(holdThis.advButtonObject, "click", function() {
+      if(holdThis.advButtonObject.value == "Advance") {
+        holdThis.advButtonObject.value = "Stop";
         holdThis.intervalFunc = setInterval(holdThis.advanceTime, 250);
       } else {
-        holdThis.buttonObject.value = "Advance";
+        holdThis.advButtonObject.value = "Advance";
         clearInterval(holdThis.intervalFunc);
+      }
+    });
+
+    L.DomEvent.on(holdThis.stepFButtonObject, "click", function() {
+      // step time forward once in datesOfInterest array
+      let curTime = holdThis.rangeObject.value;
+      for (let i=1;i<datesOfInterestSorted.length;i++) {
+        if (curTime >= datesOfInterestSorted[i-1].getTime() && curTime < datesOfInterestSorted[i].getTime()) {
+          // make sure we haven't stepped beyond the bounds of the slider
+          if (datesOfInterestSorted[i].getTime() > holdThis.options.timelineMax.getTime()) {
+            holdThis.rangeObject.value = holdThis.options.timelineMax.getTime();
+            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+          } else {
+            holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
+            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+          }
+          return;
+        }
+      }
+    });
+
+    L.DomEvent.on(holdThis.stepRButtonObject, "click", function() {
+      // step time backward once in datesOfInterest array
+      let curTime = holdThis.rangeObject.value;
+      for (let i=0;i<datesOfInterestSorted.length-1;i++) {
+        if (curTime > datesOfInterestSorted[i].getTime() && curTime <= datesOfInterestSorted[i+1].getTime()) {
+          // make sure we haven't stepped beyond the bounds of the slider
+          if (datesOfInterestSorted[i].getTime() < holdThis.options.timelineMin.getTime()) {
+            holdThis.rangeObject.value = holdThis.options.timelineMin.getTime();
+            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+          } else {
+            holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
+            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+          }
+          return;
+        }
       }
     });
 
@@ -127,6 +171,18 @@ L.Control.TimeLineSlider = L.Control.extend({
         height: 30px;
         width: ${holdThis.options.sliderWidth};
       }
+      .stepF {
+        position: relative;
+        left: -40px;
+        height: 0px;
+        width: ${holdThis.options.sliderWidth};
+      }
+      .stepR {
+        position: relative;
+        left: -40px;
+        height: 0px;
+        width: ${holdThis.options.sliderWidth};
+      }
       .range input {
         width: 100%;
         position: absolute;
@@ -146,10 +202,8 @@ L.Control.TimeLineSlider = L.Control.extend({
         font-size: 14px;
         font-weight: bold;
       }
-      #advButton {
+      #advButton,#stepFButton,#stepRButton {
         position: relative;
-        top: -10px;
-        left: 50%;
         width: 80px;
         padding: 4px 0px;
         margin: -10px 0px -20px 0px;
@@ -162,10 +216,22 @@ L.Control.TimeLineSlider = L.Control.extend({
         align-items: center;
         border-radius: 6px;
       }
+      #advButton {
+        top: -10px;
+        left: 50%;
+      }
+      #stepFButton {
+        top: -19px;
+        left: 65%;
+      }
+      #stepRButton {
+        top: -19px;
+        left: 35%;
+      }
     `;
     return slider_style;
   },
-})
+});
 
 L.control.timelineSlider = function(options) {
   return new L.Control.TimeLineSlider(options);
