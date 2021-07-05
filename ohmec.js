@@ -2,7 +2,55 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-let ohmap = L.map('map').setView([39, -110], 4);
+// check for URL override
+
+let parameters = location.search.substring(1).split("&");
+
+let today = new Date();
+let timelineMin = today;
+let timelineMax = new Date(1,0,1);
+let timelineStart = new Date(1850,11,13); // oldest date that has all the polygons entered for US region
+let overrideMin = 1;
+let overrideMax = 1;
+let latSetting = 39;
+let lonSetting = -110;
+let zoomSetting = 4;
+
+for(let param of parameters) {
+  let test = /(startdatestr|enddatestr|curdatestr)=(\d+:\d+:\d+)/;
+  let match = param.match(test);
+  if (match !== null) {
+    let info = match[2].split(':');
+    let dateVal = new Date(info[0],info[1]-1,info[2]);
+    if (match[1] == 'startdatestr') {
+      timelineMin = dateVal;
+      overrideMin = 0;
+    }
+    if (match[1] == 'enddatestr') {
+      timelineMax = dateVal;
+      overrideMax = 0;
+    }
+    if (match[1] == 'curdatestr') {
+      timelineStart = dateVal;
+    }
+  }
+  test = /(lat|lon|z)=(\-?\d+)/;
+  match = param.match(test);
+  if (match !== null) {
+    let info = match[2];
+    if (match[1] == 'lat' && info >= -90 && info <= 90) {
+      latSetting = info;
+    }
+    if (match[1] == 'lon' && info >= -180 && info <= 180) {
+      lonSetting = info;
+    }
+    if (match[1] == 'z' && info >= 1 && info <= 18) {
+      zoomSetting = info;
+    }
+  }
+}
+
+let ohmap = L.map('map').setView([latSetting, lonSetting], zoomSetting);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={ohmec_mapbox_token}', {
   maxZoom: 18,
@@ -38,37 +86,7 @@ infobox.update = function(id, prop) {
 infobox.addTo(ohmap);
 
 let legend = L.control({position: 'bottomright'});
-let today = new Date();
-let curDate = new Date();
-let timelineMin = today;
-let timelineMax = new Date(1,0,1);
-let timelineStart = new Date(1850,11,13); // oldest date that has all the polygons entered for US region
-let overrideMin = 1;
-let overrideMax = 1;
-
-// check for URL override
-
-let parameters = location.search.substring(1).split("&");
-
-for(let param of parameters) {
-  let test = /(startdatestr|enddatestr|curdatestr)=(\d+:\d+:\d+)/;
-  let match = param.match(test);
-  if (match !== null) {
-    let info = match[2].split(':');
-    let dateVal = new Date(info[0],info[1]-1,info[2]);
-    if (match[1] == 'startdatestr') {
-      timelineMin = dateVal;
-      overrideMin = 0;
-    }
-    if (match[1] == 'enddatestr') {
-      timelineMax = dateVal;
-      overrideMax = 0;
-    }
-    if (match[1] == 'curdatestr') {
-      timelineStart = dateVal;
-    }
-  }
-}
+let curDate = today;
 
 function dateMin(minDate, newDate) {
   return (minDate < newDate) ? minDate : newDate;

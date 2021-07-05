@@ -63,3 +63,10 @@ h1 {
 .infobox a:visited {
   color: #eee;
 }
+#paramtable {
+  font-family: "Courier";
+  font-size: 13px;
+  border:solid;
+  border-collapse: separate;
+  border-spacing: 15px 0px;
+}
