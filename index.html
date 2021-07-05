@@ -40,6 +40,50 @@
       A rendering of the current state of the project is reflected
       at our <a href="http://ohmec.net">Website</a>.
     </p>
+    <p>
+      Arguments can be passed to the URL to modify timeline parameters
+      and default viewing perspective. These arguments are shown below,
+      and are set as for example
+      <font face="Courier">http://ohmec.net?parameter=value&amp;parameter=value</font>.
+    </p>
+    <table id="paramtable">
+      <tr>
+        <th>parameter</th>
+        <th>argument</th>
+        <th>description</th>
+      </tr>
+      <tr>
+        <td>startdatestr</td>
+        <td>YYYY:MM:DD</td>
+        <td>Sets timeline slider start date to MM/DD/YYYY</td>
+      </tr>
+      <tr>
+        <td>enddatestr</td>
+        <td>YYYY:MM:DD</td>
+        <td>Sets timeline slider end date to MM/DD/YYYY</td>
+      </tr>
+      <tr>
+        <td>curdatestr</td>
+        <td>YYYY:MM:DD</td>
+        <td>Sets timeline slider current date to MM/DD/YYYY</td>
+      </tr>
+      <tr>
+        <td>lat</td>
+        <td>N</td>
+        <td>Sets center latitude to value N (range -90 to 90)</td>
+      </tr>
+      <tr>
+        <td>lon</td>
+        <td>N</td>
+        <td>Sets center longitude to value N (range -180 to 180)</td>
+      </tr>
+      <tr>
+        <td>z</td>
+        <td>N</td>
+        <td>Sets zoom value to N (range 1 to 18)</td>
+      </tr>
+    </table>
+
     <script type="text/javascript" src="ohmec_data_na.js"></script>
     <script type="text/javascript" src="time_slider.js"></script>
     <script type="text/javascript" src="geo_features.js"></script>
