@@ -58,6 +58,11 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#f0a010';
+  } else if(entity1name == 'Texas') {
+    strokeColor  = '#900020';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#b00020';
   }
 
   // returning all style contents even if default, just to have as reference
