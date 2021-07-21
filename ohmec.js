@@ -9,7 +9,7 @@ let parameters = location.search.substring(1).split("&");
 let today = new Date();
 let timelineMin = today;
 let timelineMax = new Date(1,0,1);
-let timelineStart = new Date(1812,7,4); // oldest date that has all the polygons entered for US region
+let timelineStart = new Date(1803,11,20); // oldest date that has all the polygons entered for US region
 let overrideMin = 1;
 let overrideMax = 1;
 let latSetting = 39;
@@ -34,7 +34,7 @@ for(let param of parameters) {
       timelineStart = dateVal;
     }
   }
-  test = /(lat|lon|z)=(\-?\d+)/;
+  test = /(lat|lon|z)=(\-?[\d.]+)/;
   match = param.match(test);
   if (match !== null) {
     let info = match[2];
@@ -208,6 +208,8 @@ function uniqueDateSort(inArray) {
   return returnArray;
 }
 
+let polygonCount = 0;
+
 function geo_lint(dataset) {
   let id_set = new Set();
   if(dataset.type !== "FeatureCollection")
@@ -247,6 +249,7 @@ function geo_lint(dataset) {
           timelineMax = dateMax(timelineMax, p.startDate);
         }
         datesOfInterest.push(p.startDate);
+        polygonCount += 1;
       } else {
         throw "no properties in feature " + f.id;
       }
@@ -326,3 +329,6 @@ L.control.timelineSlider({
   mousedown:     mouseInfoSlider,
   mousemove:     mouseInfoSlider,
   updateTime:    refreshMap}).addTo(ohmap);
+
+let polygonSpan = document.querySelector("span");
+polygonSpan.textContent = polygonCount;
