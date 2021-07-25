@@ -47,7 +47,12 @@ function featureStyle(feature) {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;
     strokeDash   = '1';
-    fillColor    = '#a0a0ff';
+    fillColor    = '#b0b0ff';
+  } else if(entity1name == 'USA' && entity2type == 'colony') {
+    strokeColor  = '#0000a0';
+    strokeWeight = 2.0;
+    strokeDash   = '1';
+    fillColor    = '#7070d0';
   } else if(entity1name == 'USA' && entity2type == 'state') {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;
