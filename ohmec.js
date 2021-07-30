@@ -12,9 +12,9 @@ let timelineMax = new Date(1,0,1);
 let timelineStart = new Date(1776,6,4); // oldest date that has all the polygons entered for US region
 let overrideMin = 1;
 let overrideMax = 1;
-let latSetting = 39;
-let lonSetting = -110;
-let zoomSetting = 4;
+let latSetting = 38.5;
+let lonSetting = -98;
+let zoomSetting = 4.5;
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=(\d+:\d+:\d+)/;
@@ -50,7 +50,38 @@ for(let param of parameters) {
   }
 }
 
-let ohmap = L.map('map').setView([latSetting, lonSetting], zoomSetting);
+let ohmap = L.map('map', {
+  center:        [latSetting, lonSetting],
+  zoom:          zoomSetting,
+  zoomSnap:      0.5,
+  zoomDelta:     0.25,
+  worldCopyJump: false  // true would replicate upon panning far west/east, but has unattractive skips
+});
+
+let linkSpan = document.querySelector('#directlink');
+
+let updateDirectLink = function(ev) {
+  let hrefText = location.href;
+  let splits = hrefText.split('?');
+  let latlon = ohmap.getCenter();
+  let urlText = splits[0] +
+    '?startdatestr=' + fixInt(timelineMin.getFullYear(),4) + ':' +
+                       fixInt(timelineMin.getMonth()+1,2)  + ':' +
+                       fixInt(timelineMin.getDate(),2) +
+    '&enddatestr='   + fixInt(timelineMax.getFullYear(),4) + ':' +
+                       fixInt(timelineMax.getMonth()+1,2)  + ':' +
+                       fixInt(timelineMax.getDate(),2) +
+    '&curdatestr='   + fixInt(curDate.getFullYear(),4) + ':' +
+                       fixInt(curDate.getMonth()+1,2)  + ':' +
+                       fixInt(curDate.getDate(),2) +
+    '&lat='          + parseFloat(latlon.lat).toPrecision(6) +
+    '&lon='          + parseFloat(latlon.lng).toPrecision(6) +
+    '&z='            + parseFloat(ohmap.getZoom()).toPrecision(2);
+  linkSpan.textContent = urlText;
+  linkSpan.href = urlText;
+};
+
+ohmap.on('moveend', updateDirectLink);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={ohmec_mapbox_token}', {
   maxZoom: 18,
@@ -309,6 +340,7 @@ legend.update = function () {
     fixInt(curDate.getMonth()+1, 2) + '&sol;' +
     fixInt(curDate.getDate(),    2) + '&sol;' +
     fixInt(curDate.getFullYear(),4) + '</div>';
+  updateDirectLink();
 };
 legend.addTo(ohmap);
 
@@ -330,5 +362,5 @@ L.control.timelineSlider({
   mousemove:     mouseInfoSlider,
   updateTime:    refreshMap}).addTo(ohmap);
 
-let polygonSpan = document.querySelector("span");
+let polygonSpan = document.querySelector('#polycount');
 polygonSpan.textContent = polygonCount;

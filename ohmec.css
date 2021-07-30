@@ -15,10 +15,12 @@ h1 {
   font-size: 40px;
 }
 #map {
-  width: 1200px;
-  height: 600px;
+  width: 95%;
+  height: 60%;
   border-style: solid;
   border-color: #000040;
+  margin-left: 2.5%;
+  align: center;
   border: solid;
 }
 .curdate, .infobox {
@@ -69,4 +71,8 @@ h1 {
   border:solid;
   border-collapse: separate;
   border-spacing: 15px 0px;
+}
+#directlink {
+  font-family: "Courier";
+  font-size: 11px;
 }
