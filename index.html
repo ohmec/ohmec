@@ -25,7 +25,7 @@
     <div id='map'></div>
     <p>
       The <a href="http://ohmec.net">OHMEC</a> project has a goal
-      to create an open geographical database of a historical
+      to create an open source geographical database of a historical
       representation of political boundaries throughout all recorded
       history.  This early demonstration shows a rendering of data
       in the North American arena using
@@ -40,10 +40,15 @@
       on the management of the project.
     </p>
     <p>
+      Holding the shift key down and creating a bounding box will redefine
+      the current zoom window. Clicking on a polygon will hold the
+      Feature Information for further inspection.
+    </p>
+    <p>
       Arguments can be passed to the URL to modify timeline parameters
       and default viewing perspective. These arguments are shown below,
       and are set as for example
-      <font face="Courier">http://ohmec.net?param1=val1&amp;param2=val2</font>.
+      <font size="4" face="Courier"><b>http://ohmec.net?param1=val1&amp;param2=val2</b></font>.
     </p>
     <table id="paramtable">
       <tr>
@@ -83,7 +88,11 @@
       </tr>
     </table>
     <p>
-      At this time, there are <span>0</span> polygons rendered in the database(s).
+      At this time, there are <span id='polycount'>0</span> polygons rendered in the database(s).
+    </p>
+    <p>
+      To recreate this viewpoint, use the following direct link:<br/>
+        &nbsp;&nbsp;&nbsp;<a id='directlink' href="URL">URL</a>
     </p>
 
     <script type="text/javascript" src="ohmec_data_na.js"></script>
