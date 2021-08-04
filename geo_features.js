@@ -68,6 +68,46 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#b00020';
+  } else if(entity1name == 'Mexico') {
+    strokeColor  = '#b00023';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#0d5036';
+  } else if(entity1name == 'Guatemala') {
+    strokeColor  = '#ffffff';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#0d64b0';
+  } else if(entity1name == 'Belize') {
+    strokeColor  = '#043c70';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#b8000c';
+  } else if(entity1name == 'El Salvador') {
+    strokeColor  = '#ffffff';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#0b00a0';
+  } else if(entity1name == 'Honduras') {
+    strokeColor  = '#000080';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#ffffff';
+  } else if(entity1name == 'Nicaragua') {
+    strokeColor  = '#837a1c';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#1660bc';
+  } else if(entity1name == 'Costa Rica') {
+    strokeColor  = '#103078';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#ba001c';
+  } else if(entity1name == 'Panama') {
+    strokeColor  = '#c80015';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#092088';
   }
 
   // returning all style contents even if default, just to have as reference
@@ -85,7 +125,11 @@ function featureStyle(feature) {
 }
 
 function getFeatureLabel(feature) {
-  return feature.properties.entity2name;
+  if("entity2name" in feature.properties) {
+    return feature.properties.entity2name;
+  } else {
+    return feature.properties.entity1name;
+  }
 }
 
 function getFeatureFont(feature) {
