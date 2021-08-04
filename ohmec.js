@@ -104,10 +104,14 @@ infobox.onAdd = function() {
 };
 
 infobox.update = function(id, prop) {
+  let e2text = '';
+  if(prop && ("entity2type" in prop)) {
+    e2text = '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>';
+  }
   this._div.innerHTML = 
     (prop ?
       ('<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>' +
-       '<b>' + prop.entity2type  + '</b>: ' + prop.entity2name + '<br/>' +
+       e2text +
                prop.startdatestr + ' - '    + prop.enddatestr  + '<br/>' +
                (prop.source ? ('<a href="' + prop.source + '" target="_blank">source</a><br/>') : '') +
        '<b>' + 'id: '           + '</b>'   + id) :
@@ -256,8 +260,8 @@ function geo_lint(dataset) {
       id_set.add(f.id);
       if("properties" in f) {
         let p = f.properties;
-        for(let required of ["entity1type", "entity1name", "entity2type",
-          "entity2name", "fidelity", "startdatestr", "enddatestr"]) {
+        for(let required of ["entity1type", "entity1name", "fidelity",
+            "startdatestr", "enddatestr"]) {
           if(!(required in p))
             throw "feature " + f.id + " missing property " + required;
         }
