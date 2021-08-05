@@ -108,6 +108,11 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#092088';
+  } else if(entity1name == 'Canada') {
+    strokeColor  = '#ffffff';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#da0015';
   }
 
   // returning all style contents even if default, just to have as reference
