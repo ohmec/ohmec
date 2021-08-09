@@ -64,14 +64,15 @@ def parse_kml(filename):
   return coord_array
 
 def find_common_points(array_from, array_to):
+  '''convert to precision 5 in order to account for miniscule differences'''
   exists1 = set()
   for arrayf in array_from:
     for coord in arrayf:
-      comb = str(coord[0]) + ',' + str(coord[1])
+      comb = str(format(coord[0],'.5f')) + ',' + str(format(coord[1],'.5f'))
       exists1.add(comb)
   for arrayt in array_to:
     for coord in arrayt:
-      comb = str(coord[0]) + ',' + str(coord[1])
+      comb = str(format(coord[0],'.5f')) + ',' + str(format(coord[1],'.5f'))
       if comb in exists1:
         print("found common point " + comb)
 
@@ -242,7 +243,7 @@ def find_coord(arraya, lon, lat):
     arrayc = arraya[ac]
     for cc in range(len(arrayc)):
       coord = arrayc[cc]
-      if str(coord[0]) == lon and str(coord[1]) == lat:
+      if str(format(coord[0],'.5f')) == format(float(lon),'.5f') and str(format(coord[1],'.5f')) == format(float(lat),'.5f'):
         return (ac,cc)
   sys.stderr.write("never found lon/lat " + lon + "/" + lat + " in kml\n")
   sys.exit(2)
