@@ -18,6 +18,7 @@ function featureStyle(feature) {
   // big lookup table for entity types and names, mapping to colors and other info
   let entity1name = feature.properties.entity1name;
   let entity2type = feature.properties.entity2type;
+  let entity2name = feature.properties.entity2name;
   if(entity1name == 'England' && entity2type == 'grant') {
     strokeColor  = '#a00000';
     strokeWeight = 1.0;
@@ -113,6 +114,11 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#da0015';
+  } else if(entity1name == 'England' && entity2type == 'dominion' && entity2name == 'Newfoundland') {
+    strokeColor  = '#bb0020';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#031056';
   }
 
   // returning all style contents even if default, just to have as reference
