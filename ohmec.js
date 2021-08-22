@@ -54,7 +54,7 @@ let ohmap = L.map('map', {
   center:        [latSetting, lonSetting],
   zoom:          zoomSetting,
   zoomSnap:      0.5,
-  zoomDelta:     0.25,
+  zoomDelta:     0.5,
   worldCopyJump: false  // true would replicate upon panning far west/east, but has unattractive skips
 });
 
