@@ -6,7 +6,7 @@
    intersections are clean line strings, then continue. If they overlap,
    or (eventually) if they intersection in anthing other than a linestring,
    then indicate the intersection as a possible error. Allow an overlap
-   waiver to be in the properties of the database.
+   or double intersection waiver to be in the properties of the database.
 
    Usage: check_boundaries.py geojsonfile
 """
@@ -27,6 +27,7 @@ import re
 
 geoms = {}
 overlap_waiver = {}
+double_waiver = {}
 already_handled = {}
 
 if(len(sys.argv) < 2):
@@ -65,13 +66,26 @@ def compare_features(idA, idB):
   a seam; or d) overlap (most likely an error, though some are acceptable).'''
   if not geoms[idA].intersects(geoms[idB]):
     return 0
-  print("checking result of intersection with " + idA + " and " + idB)
   intAB = geoms[idA].intersection(geoms[idB])
   if geoms[idA].overlaps(geoms[idB]):
     if not idA in overlap_waiver and not idB in overlap_waiver:
-      print("overlap problem with " + idA + " vs " + idB + " resulting in:")
+      print("ERR:  intersection of " + idA + " with " + idB + " resulted in overlap")
       print("  " + str(intAB))
       return 2
+  else:
+    intABtype = intAB.geom_type
+    if intABtype == 'Point' or intABtype == 'MultiPoint':
+      print("WARN: intersection of " + idA + " with " + idB + " resulted in " + intABtype + ":")
+      print("  " + str(intAB))
+      return 1
+    if intABtype == 'LineString':
+      return 1
+    if intABtype == 'MultiLineString':
+      return 1
+    if not idA in double_waiver and not idB in double_waiver:
+      print("ERR:  intersection of " + idA + " with " + idB + " resulted in " + intABtype + ":")
+      print("  " + str(intAB))
+      return 3
   return 1
 
 def conv_date(datestr):
@@ -92,6 +106,8 @@ for feat1 in fullstruct["features"]:
     geoms[id1] = shapely.geometry.asShape(feat1["geometry"])
     if 'waive_overlap' in props1:
       overlap_waiver[id1] = 1
+    if 'waive_double' in props1:
+      double_waiver[id1] = 1
     if not geoms[id1].is_valid:
       sys.stderr.write(id1 + " is not valid\n")
   start1 = conv_date(props1["startdatestr"])
@@ -108,6 +124,8 @@ for feat1 in fullstruct["features"]:
           geoms[id2] = shapely.geometry.asShape(feat2["geometry"])
           if 'waive_overlap' in props2:
             overlap_waiver[id2] = 1
+          if 'waive_double' in props2:
+            double_waiver[id2] = 1
           if not geoms[id2].is_valid:
             sys.stderr.write(id2 + " is not valid\n")
         start2 = conv_date(props2["startdatestr"])
@@ -118,6 +136,8 @@ for feat1 in fullstruct["features"]:
             boundary_count += 1
           if res == 2:
             overlap_count += 1
+          if res == 3:
+            gap_count += 1
       already_handled[idAB] = 1
 
 print("completed checking " + str(boundary_count) + " boundaries, with " + str(overlap_count) + " overlaps and " + str(gap_count) + " gaps")
