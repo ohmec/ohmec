@@ -28,6 +28,7 @@ import re
 geoms = {}
 overlap_waiver = {}
 double_waiver = {}
+point_waiver = {}
 already_handled = {}
 
 if(len(sys.argv) < 2):
@@ -75,13 +76,26 @@ def compare_features(idA, idB):
   else:
     intABtype = intAB.geom_type
     if intABtype == 'Point' or intABtype == 'MultiPoint':
-      print("WARN: intersection of " + idA + " with " + idB + " resulted in " + intABtype + ":")
-      print("  " + str(intAB))
-      return 1
+      if idA in point_waiver or idB in point_waiver:
+        return 1
+      else:
+        print("ERR: intersection of " + idA + " with " + idB + " resulted in " + intABtype + ":")
+        print("  " + str(intAB))
+        return 4
     if intABtype == 'LineString':
       return 1
     if intABtype == 'MultiLineString':
-      return 1
+      # this coule be harmless, or could be a double-touch. the way to find out
+      # is to get its boundary, and check if length 2 or not
+      bound = intAB.boundary
+      if len(bound) == 2:
+        return 1
+      elif idA in double_waiver or idB in double_waiver:
+        return 1
+      else:
+        print("ERR: intAB for " + idA + " with " + idB + " is a MultiLine String. Here is its boundary")
+        print("  " + str(bound) + " of length " + str(len(bound)))
+        return 3
     if not idA in double_waiver and not idB in double_waiver:
       print("ERR:  intersection of " + idA + " with " + idB + " resulted in " + intABtype + ":")
       print("  " + str(intAB))
@@ -98,6 +112,7 @@ def conv_date(datestr):
 boundary_count = 0
 overlap_count = 0
 gap_count = 0
+point_count = 0
 
 for feat1 in fullstruct["features"]:
   id1 = feat1["id"]
@@ -126,6 +141,8 @@ for feat1 in fullstruct["features"]:
             overlap_waiver[id2] = 1
           if 'waive_double' in props2:
             double_waiver[id2] = 1
+          if 'waive_point' in props2:
+            point_waiver[id2] = 1
           if not geoms[id2].is_valid:
             sys.stderr.write(id2 + " is not valid\n")
         start2 = conv_date(props2["startdatestr"])
@@ -138,6 +155,8 @@ for feat1 in fullstruct["features"]:
             overlap_count += 1
           if res == 3:
             gap_count += 1
+          if res == 4:
+            point_count += 1
       already_handled[idAB] = 1
 
-print("completed checking " + str(boundary_count) + " boundaries, with " + str(overlap_count) + " overlaps and " + str(gap_count) + " gaps")
+print("completed checking " + str(boundary_count) + " boundaries, with " + str(overlap_count) + " overlaps, " + str(gap_count) + " gaps and " + str(point_count) + " points")
