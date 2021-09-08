@@ -109,11 +109,16 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#092088';
-  } else if(entity1name == 'Canada') {
+  } else if(entity1name == 'Canada' && entity2type == 'province') {
     strokeColor  = '#ffffff';
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#da0015';
+  } else if(entity1name == 'Canada') {
+    strokeColor  = '#ffffff';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#ff8095';
   } else if(entity1name == 'England' && entity2type == 'dominion' && entity2name == 'Newfoundland') {
     strokeColor  = '#bb0020';
     strokeWeight = 1.5;
