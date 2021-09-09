@@ -17,21 +17,19 @@ let lonSetting = -98;
 let zoomSetting = 4.5;
 
 for(let param of parameters) {
-  let test = /(startdatestr|enddatestr|curdatestr)=(\d+:\d+:\d+)/;
+  let test = /(startdatestr|enddatestr|curdatestr)=([\d:]+)/;
   let match = param.match(test);
   if (match !== null) {
-    let info = match[2].split(':');
-    let dateVal = new Date(info[0],info[1]-1,info[2]);
     if (match[1] == 'startdatestr') {
-      timelineMin = dateVal;
+      timelineMin = str2date(match[2],false);
       overrideMin = 0;
     }
     if (match[1] == 'enddatestr') {
-      timelineMax = dateVal;
+      timelineMax = str2date(match[2],true);
       overrideMax = 0;
     }
     if (match[1] == 'curdatestr') {
-      timelineStart = dateVal;
+      timelineStart = str2date(match[2],false);
     }
   }
   test = /(lat|lon|z)=(\-?[\d.]+)/;
@@ -245,6 +243,35 @@ function uniqueDateSort(inArray) {
 
 let polygonCount = 0;
 
+function str2date(datestr,roundLate) {
+  let info = datestr.split(':');
+  // if datestr only contains one member (year), consider it 1st or last day of the year
+  // if only contains two (year, month), consider it 1st or last day of month
+  let yr,mo,dy;
+  let subtract = false;
+  if(info.length==3) {
+    yr = info[0];
+    mo = info[1]-1;
+    dy = info[2];
+  } else if(info.length==2) {
+    yr = info[0];
+    mo = roundLate ? info[1] : (info[1]-1);
+    dy = 1;
+    subtract = roundLate;
+  } else if(info.length==1) {
+    yr = info[0];
+    mo = roundLate ? 11 : 0;
+    dy = roundLate ? 31 : 1;
+  } else {
+    throw "bad date format for date: " + datestr;
+  }
+  let newdate = new Date(yr,mo,dy);
+  if(subtract) {
+    newdate.setDate(newdate.getDate()-1);
+  }
+  return newdate;
+}
+
 function geo_lint(dataset) {
   let id_set = new Set();
   if(dataset.type !== "FeatureCollection")
@@ -266,12 +293,11 @@ function geo_lint(dataset) {
             throw "feature " + f.id + " missing property " + required;
         }
         let contents = p.startdatestr.split(':');
-        p.startDate = new Date(contents[0], contents[1]-1, contents[2]);
+        p.startDate = str2date(p.startdatestr,false);
         if(p.enddatestr == 'present') {
           p.endDate = today;
         } else {
-          contents = p.enddatestr.split(':');
-          p.endDate = new Date(contents[0], contents[1]-1, contents[2]);
+          p.endDate = str2date(p.enddatestr,true);
         }
         let fid = p.fidelity;
         if(fid < 1 || fid > 5) {
