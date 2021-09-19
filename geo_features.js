@@ -64,6 +64,11 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#f0a010';
+  } else if(entity1name == 'Netherlands' && entity2type == 'colony') {
+    strokeColor  = '#b00000';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#1088cc';
   } else if(entity1name == 'Texas') {
     strokeColor  = '#900020';
     strokeWeight = 1.5;
