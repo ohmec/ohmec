@@ -19,6 +19,9 @@ function featureStyle(feature) {
   let entity1name = feature.properties.entity1name;
   let entity2type = feature.properties.entity2type;
   let entity2name = feature.properties.entity2name;
+  // declare a new feature 'borderless' that is false for most
+  feature.borderless = false;
+
   if(entity1name == 'England' && entity2type == 'grant') {
     strokeColor  = '#a00000';
     strokeWeight = 1.0;
@@ -34,6 +37,10 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#a06060';
+  } else if(entity1name == 'Indigenous' && entity2type == 'tribe') {
+    strokeOn     = false;  // set to 'false' to hide territory 'boundary' rectangles; set to 'true' to visualize territory 'boundaries'
+    fillOpacity  = 0.0;
+    feature.borderless = true;
   } else if(entity1name == 'USA' && entity2type == 'secessionist') {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;
@@ -154,11 +161,22 @@ function getFeatureLabel(feature) {
 }
 
 function getFeatureFont(feature) {
-  // leave this useless switch statement here to show the fonts
-  // that have been explored
+  // default styles
   let fontchoice = 9;
   let fontname = 'sans serif';
   let fontscale = 1;
+  let fontcolor = "black";
+
+  // lookup table for entity types and names, mapping to font and font color and other info
+  let entity1name = feature.properties.entity1name;
+  let entity2type = feature.properties.entity2type;
+  let entity2name = feature.properties.entity2name;
+
+  if(entity1name == 'Indigenous' && entity2type == 'tribe') {
+      fontchoice   = 3;
+      fontcolor    = "red";
+    };
+
   // scale the font based upon the family, since some are wider than others
   switch(fontchoice) {
     case 0: fontname = 'Rubik';                fontscale = 81; break;
@@ -174,6 +192,7 @@ function getFeatureFont(feature) {
   }
   return {
     name:  fontname,
-    scale: fontscale
+    scale: fontscale,
+    color: fontcolor
   };
 }
