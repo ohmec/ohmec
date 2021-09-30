@@ -42,8 +42,6 @@ function featureStyle(feature) {
     strokeDash   = '1';
     fillColor    = '#a06060';
   } else if(entity1name == 'Indigenous' && entity2type == 'tribe') {
-    strokeOn     = false;
-    fillOpacity  = 0.0;
     // don't override a pre-defined property, but otherwise set to true for indigenous
     if(!("borderless" in feature.properties)) {
       borderless = true;
@@ -148,6 +146,10 @@ function featureStyle(feature) {
   // since we're making borderless a largely hidden property, and
   // using it later, set it indefinitely
   feature.properties.borderless = borderless;
+  if(borderless) {
+    strokeOn     = false;
+    fillOpacity  = 0.0;
+  }
 
   // returning all style contents even if default, just to have as reference
   // (see https://leafletjs.com/reference-1.7.1.html#path-option)
@@ -184,7 +186,7 @@ function getFeatureFont(feature) {
 
   if(entity1name == 'Indigenous' && entity2type == 'tribe') {
     fontchoice = 3;
-    fontcolor  = "red";
+    fontcolor  = "#c00000";
   }
 
   // scale the font based upon the family, since some are wider than others
