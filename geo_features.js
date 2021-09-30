@@ -45,7 +45,7 @@ function featureStyle(feature) {
     strokeDash   = '1';
     fillColor    = '#ffa0a0';
   } else if(entity1name == 'USA' && entity2type == 'territory') {
-    strokeColor  = '#0000a0';
+    strokeColor  = '#0000a1';
     strokeWeight = 2.0;
     strokeDash   = '1';
     fillColor    = '#b0b0ff';
