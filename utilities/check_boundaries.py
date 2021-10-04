@@ -102,10 +102,19 @@ def compare_features(idA, idB):
       return 3
   return 1
 
-def conv_date(datestr):
+def conv_date(datestr,is_start):
   if datestr == 'present':
     return '2100:01:01'
-  return datestr
+  args = datestr.split(':')
+  if len(args) == 2:
+    return datestr
+  if len(args) == 1:
+    if is_start:
+      return datestr + ':01'
+    return datestr + ':31'
+  if is_start:
+    return datestr + ':01:01'
+  return datestr + ':12:31'
 
 # Go through each feature with other features. Only check one vs the other
 # if it shares a common date.
@@ -125,8 +134,8 @@ for feat1 in fullstruct["features"]:
       double_waiver[id1] = 1
     if not geoms[id1].is_valid:
       sys.stderr.write(id1 + " is not valid\n")
-  start1 = conv_date(props1["startdatestr"])
-  end1 = conv_date(props1["enddatestr"])
+  start1 = conv_date(props1["startdatestr"],1)
+  end1 = conv_date(props1["enddatestr"],0)
   for feat2 in fullstruct["features"]:
     id2 = feat2["id"]
     if id1 != id2:
@@ -145,8 +154,8 @@ for feat1 in fullstruct["features"]:
             point_waiver[id2] = 1
           if not geoms[id2].is_valid:
             sys.stderr.write(id2 + " is not valid\n")
-        start2 = conv_date(props2["startdatestr"])
-        end2 = conv_date(props2["enddatestr"])
+        start2 = conv_date(props2["startdatestr"],1)
+        end2 = conv_date(props2["enddatestr"],0)
         if date_overlap(start1,end1,start2,end2):
           res = compare_features(idA,idB)
           if res >= 1:
