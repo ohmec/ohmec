@@ -134,15 +134,18 @@ let geojson;
 function highlightFeature(e) {
   let layer = e.target;
 
-  layer.setStyle({
-    weight: 5,
-    color: '#666',
-    dashArray: '',
-    fillOpacity: 0.7
-  });
+  if (layer.feature.geometry.type !== "Point") {  // default Point style being used at this time
+    let opacity = (layer.feature.borderless) ? 0.0 : 0.7;
+    layer.setStyle({
+      weight: 5,
+      color: '#666',
+      dashArray: '',
+      fillOpacity: opacity // 0.7
+    });
 
-  if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-    layer.bringToFront();
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+      layer.bringToFront();
+    }
   }
 
   infobox.update(layer.feature.id,layer.feature.properties);
@@ -179,50 +182,53 @@ function onEachFeature(feature, layer) {
     keydown:   keyInfo,
   });
 
-  // create SVG for name
-  let bounds = layer.getBounds();
+  if (layer.feature.geometry.type !== "Point") {  // default Point style being used at this time; mouse-over text does show
+    // create SVG for name
+    let bounds = layer.getBounds();
 
-  // Set width to 100, and scale height based upon ratio of bounds.
-  // Not perfect due to lat/long relationships but good enough for now.
-  // 
-  let width = 100;
-  let widthd2 = width/2;
-  let height = width * (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest());
-  let heightd2 = height/2;
-  let fontinfo = getFeatureFont(feature);
-  feature.textLabel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  feature.textLabel.setAttribute('xmlns',   "http://www.w3.org/2000/svg");
-  feature.textLabel.setAttribute('width',   width);
-  feature.textLabel.setAttribute('height',  height);
-  feature.textLabel.setAttribute('viewBox', "0 0 " + width + " " + height);
+    // Set width to 100, and scale height based upon ratio of bounds.
+    // Not perfect due to lat/long relationships but good enough for now.
+    // 
+    let width = 100;
+    let widthd2 = width/2;
+    let height = width * (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest());
+    let heightd2 = height/2;
+    let fontinfo = getFeatureFont(feature);
+    feature.textLabel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    feature.textLabel.setAttribute('xmlns',   "http://www.w3.org/2000/svg");
+    feature.textLabel.setAttribute('width',   width);
+    feature.textLabel.setAttribute('height',  height);
+    feature.textLabel.setAttribute('viewBox', "0 0 " + width + " " + height);
 
-  feature.textLabelDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-  feature.textLabel.appendChild(feature.textLabelDefs);
+    feature.textLabelDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    feature.textLabel.appendChild(feature.textLabelDefs);
 
-  let label = getFeatureLabel(feature);
-  let fontsize = fontinfo.scale/label.length;
-  if("labelScale" in feature.properties) {
-    fontsize *= feature.properties.labelScale;
-  }
-  let inner = '<text text-anchor="middle" x=' + widthd2 + ' y=' + heightd2;
-  inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
-  inner += ' font-size="' + Math.floor(fontsize) + 'px"';
-  if("labelRotate" in feature.properties || "labelX" in feature.properties || "labelY" in feature.properties) {
-    inner += ' transform="';
-    if("labelRotate" in feature.properties) {
-      inner += ' rotate(' + feature.properties.labelRotate + ' ' + widthd2 + ' ' + heightd2 + ')';
+    let label = getFeatureLabel(feature);
+    let fontsize = fontinfo.scale/label.length;
+    if("labelScale" in feature.properties) {
+      fontsize *= feature.properties.labelScale;
     }
-    if("labelX" in feature.properties || "labelY" in feature.properties) {
-      let xoff = ("labelX" in feature.properties) ? feature.properties.labelX : 0;
-      let yoff = ("labelY" in feature.properties) ? feature.properties.labelY : 0;
-      inner += ' translate(' + xoff + ' ' + yoff + ')';
+    let inner = '<text text-anchor="middle" x=' + widthd2 + ' y=' + heightd2;
+    inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
+    inner += ' fill="' + fontinfo.color + '"';  // e.g. "red" or "#c80015"
+    inner += ' font-size="' + Math.floor(fontsize) + 'px"';
+    if("labelRotate" in feature.properties || "labelX" in feature.properties || "labelY" in feature.properties) {
+      inner += ' transform="';
+      if("labelRotate" in feature.properties) {
+        inner += ' rotate(' + feature.properties.labelRotate + ' ' + widthd2 + ' ' + heightd2 + ')';
+      }
+      if("labelX" in feature.properties || "labelY" in feature.properties) {
+        let xoff = ("labelX" in feature.properties) ? feature.properties.labelX : 0;
+        let yoff = ("labelY" in feature.properties) ? feature.properties.labelY : 0;
+        inner += ' translate(' + xoff + ' ' + yoff + ')';
+      }
+      inner += '"';
     }
-    inner += '"';
+    inner += '>' + label + '</text>';
+    feature.textLabel.innerHTML = inner;
+    let svgElementBounds = [ [ bounds.getNorth(), bounds.getWest() ], [ bounds.getSouth(), bounds.getEast() ] ];
+    feature.textOverlay = L.svgOverlay(feature.textLabel, svgElementBounds);
   }
-  inner += '>' + label + '</text>';
-  feature.textLabel.innerHTML = inner;
-  let svgElementBounds = [ [ bounds.getNorth(), bounds.getWest() ], [ bounds.getSouth(), bounds.getEast() ] ];
-  feature.textOverlay = L.svgOverlay(feature.textLabel, svgElementBounds);
 }
 
 let datesOfInterest = [];
@@ -316,8 +322,8 @@ function geo_lint(dataset) {
       }
       if("geometry" in f) {
         let g = f.geometry;
-        if((g.type !== "Polygon") && (g.type !== "MultiPolygon")) {
-          throw "feature " + f.id + " should have geometry of Polygon or MultiPolygon, got " + g.type;
+        if((g.type !== "Polygon") && (g.type !== "MultiPolygon") && (g.type !== "Point")) {
+          throw "feature " + f.id + " should have geometry of Polygon, MultiPolygon or Point, got " + g.type;
         }
       } else {
         throw "no geometry in feature " + f.id;
@@ -344,10 +350,14 @@ geojson.evaluateLayers = function () {
     let prop = lyr.feature.properties;
     if(curDate >= prop.startDate && curDate <= prop.endDate) {
       lyr.addTo(ohmap);
-      lyr.feature.textOverlay.addTo(ohmap);
+      if (lyr.feature.geometry.type !== "Point") {  // default Point style being used at this time; no textOverlay associated w/ Points
+        lyr.feature.textOverlay.addTo(ohmap);
+      }
     } else {
       lyr.removeFrom(ohmap);
-      lyr.feature.textOverlay.removeFrom(ohmap);
+      if (lyr.feature.geometry.type !== "Point") {  // default Point style being used at this time; no textOverlay associated w/ Points
+        lyr.feature.textOverlay.removeFrom(ohmap);
+      }
     }
   }
 }
