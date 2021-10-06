@@ -4,7 +4,7 @@
 
 function featureStyle(feature) {
   // default styles
-  let strokeOn      = true;
+  let strokeOn      = true;       // hides feature boundaries if false
   let strokeOpacity = 1.0;
   let strokeColor   = 'white';
   let strokeWeight  = 2.0;
@@ -19,8 +19,12 @@ function featureStyle(feature) {
   let entity1name = feature.properties.entity1name;
   let entity2type = feature.properties.entity2type;
   let entity2name = feature.properties.entity2name;
-  // declare a new feature 'borderless' that is false for most
-  feature.borderless = false;
+
+  // declare a new property 'borderless' if not already given
+  let borderless  = false;
+  if("borderless" in feature.properties) {
+    borderless = feature.properties.borderless;
+  }
 
   if(entity1name == 'England' && entity2type == 'grant') {
     strokeColor  = '#a00000';
@@ -38,9 +42,12 @@ function featureStyle(feature) {
     strokeDash   = '1';
     fillColor    = '#a06060';
   } else if(entity1name == 'Indigenous' && entity2type == 'tribe') {
-    strokeOn     = false;  // set to 'false' to hide territory 'boundary' rectangles; set to 'true' to visualize territory 'boundaries'
+    strokeOn     = false;
     fillOpacity  = 0.0;
-    feature.borderless = true;
+    // don't override a pre-defined property, but otherwise set to true for indigenous
+    if(!("borderless" in feature.properties)) {
+      borderless = true;
+    }
   } else if(entity1name == 'USA' && entity2type == 'secessionist') {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;
@@ -138,6 +145,10 @@ function featureStyle(feature) {
     fillColor    = '#031056';
   }
 
+  // since we're making borderless a largely hidden property, and
+  // using it later, set it indefinitely
+  feature.properties.borderless = borderless;
+
   // returning all style contents even if default, just to have as reference
   // (see https://leafletjs.com/reference-1.7.1.html#path-option)
   return {
@@ -163,19 +174,18 @@ function getFeatureLabel(feature) {
 function getFeatureFont(feature) {
   // default styles
   let fontchoice = 9;
-  let fontname = 'sans serif';
-  let fontscale = 1;
-  let fontcolor = "black";
+  let fontname   = 'sans serif';
+  let fontscale  = 1;
+  let fontcolor  = "black";
 
   // lookup table for entity types and names, mapping to font and font color and other info
   let entity1name = feature.properties.entity1name;
   let entity2type = feature.properties.entity2type;
-  let entity2name = feature.properties.entity2name;
 
   if(entity1name == 'Indigenous' && entity2type == 'tribe') {
-      fontchoice   = 3;
-      fontcolor    = "red";
-    };
+    fontchoice = 3;
+    fontcolor  = "red";
+  }
 
   // scale the font based upon the family, since some are wider than others
   switch(fontchoice) {
