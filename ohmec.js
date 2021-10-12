@@ -208,7 +208,22 @@ function onEachFeature(feature, layer) {
     if("labelScale" in feature.properties) {
       fontsize *= feature.properties.labelScale;
     }
-    let inner = '<text text-anchor="middle" x=' + widthd2 + ' y=' + heightd2;
+    let inner = '';
+    // if labelArc is defined, we first need to define the circular path that the text will traverse
+    // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
+    // and the text on the top (if arc > 0) or the circle above with the text on the bottom (arc < 0).
+    if("labelArc" in feature.properties) {
+      let arcval = feature.properties.labelArc;
+      let my   = heightd2 + 2*arcval;
+      let ar   = (arcval >= 0) ? arcval : -arcval;
+      let pos  = (arcval >= 0) ?  1 :   0;
+      let ar2n = arcval*2;
+      let ar2p = arcval*-2;
+      inner += '<path id="arcpath' + feature.id + '" stroke="none" fill="none" d="m 50,' + my;
+      inner += ' a ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2p;
+      inner +=   ' ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2n + ' z"/>';
+    }
+    inner += '<text text-anchor="middle"';
     inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
     inner += ' fill="' + fontinfo.color + '"';  // e.g. "red" or "#c80015"
     inner += ' font-size="' + Math.floor(fontsize) + 'px"';
@@ -224,7 +239,15 @@ function onEachFeature(feature, layer) {
       }
       inner += '"';
     }
-    inner += '>' + label + '</text>';
+    if(!("labelArc" in feature.properties)) {
+      inner += ' x=' + widthd2 + ' y=' + heightd2;
+    }
+    inner += '>';
+    if(("labelArc" in feature.properties)) {
+      inner += '<textPath href="#arcpath' + feature.id + '" startOffset="50%">' + label + '</textPath></text>';
+    } else {
+      inner += label + '</text>';
+    }
     feature.textLabel.innerHTML = inner;
     let svgElementBounds = [ [ bounds.getNorth(), bounds.getWest() ], [ bounds.getSouth(), bounds.getEast() ] ];
     feature.textOverlay = L.svgOverlay(feature.textLabel, svgElementBounds);
