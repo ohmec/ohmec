@@ -32,7 +32,7 @@ for(let param of parameters) {
       timelineStart = str2date(match[2],false);
     }
   }
-  test = /(lat|lon|z)=(\-?[\d.]+)/;
+  test = /(lat|lon|z)=(-?[\d.]+)/;
   match = param.match(test);
   if (match !== null) {
     let info = match[2];
@@ -58,7 +58,7 @@ let ohmap = L.map('map', {
 
 let linkSpan = document.querySelector('#directlink');
 
-let updateDirectLink = function(ev) {
+let updateDirectLink = function() {
   let hrefText = location.href;
   let splits = hrefText.split('?');
   let latlon = ohmap.getCenter();
@@ -134,13 +134,14 @@ let geojson;
 function highlightFeature(e) {
   let layer = e.target;
 
-  if (layer.feature.geometry.type !== "Point") {  // default Point style being used at this time
-    let opacity = (layer.feature.borderless) ? 0.0 : 0.7;
+  if (layer.feature.geometry.type !== "Point") {  // Point styles are not being overridden at this time
+    // borderless features shouldn't be highlighted (but still have selectability)
+    let opacity = (layer.feature.properties.borderless) ? 0.0 : 0.7;
     layer.setStyle({
       weight: 5,
       color: '#666',
       dashArray: '',
-      fillOpacity: opacity // 0.7
+      fillOpacity: opacity
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -321,7 +322,6 @@ function geo_lint(dataset) {
           if(!(required in p))
             throw "feature " + f.id + " missing property " + required;
         }
-        let contents = p.startdatestr.split(':');
         p.startDate = str2date(p.startdatestr,false);
         if(p.enddatestr == 'present') {
           p.endDate = today;
