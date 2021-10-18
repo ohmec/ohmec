@@ -64,7 +64,7 @@ def parse_kml(filename):
           coordinates = []
         elif(re.search("^\s*([\d.-]+),([\d.-]+),0", line)):
           fm = re.search("^\s*([\d.-]+),([\d.-]+),0", line)
-          coordinates.append([float(fm.group(1)), float(fm.group(2))])
+          coordinates.append([round(float(fm.group(1)),6), round(float(fm.group(2)),6)])
         elif(re.search("</coordinates>", line)):
           if(ismulti):
             multicoords[idname].append([coordinates])

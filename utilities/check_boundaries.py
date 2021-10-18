@@ -26,6 +26,7 @@ import shapely.ops
 import re
 
 geoms = {}
+borderless = {}
 overlap_waiver = {}
 double_waiver = {}
 point_waiver = {}
@@ -64,7 +65,10 @@ def compare_features(idA, idB):
   '''Check if features A and B have a) no intersection (skip);
   b) has "clean" intersection (defined as a single LineString); c) has
   a double intersection (>= 2 LineStrings), could be OK but most likely
-  a seam; or d) overlap (most likely an error, though some are acceptable).'''
+  a seam; or d) overlap (most likely an error, though some are acceptable).
+  properties.borderless or Indigenous types are skipped'''
+  if idA in borderless or idB in borderless:
+    return 0
   if not geoms[idA].intersects(geoms[idB]):
     return 0
   intAB = geoms[idA].intersection(geoms[idB])
@@ -116,6 +120,20 @@ def conv_date(datestr,is_start):
     return datestr + ':01:01'
   return datestr + ':12:31'
 
+def check_props(feat):
+  idf = feat["id"]
+  propsf = feat["properties"]
+  if 'waive_overlap' in propsf:
+    overlap_waiver[idf] = 1
+  if 'waive_double' in propsf:
+    double_waiver[idf] = 1
+  if 'waive_point' in propsf:
+    point_waiver[idf] = 1
+  if 'borderless' in propsf:
+    borderless[idf] = propsf['borderless']
+  elif propsf['entity1name'] == 'Indigenous' and propsf['entity2type'] == 'tribe':
+    borderless[idf] = 1
+
 # Go through each feature with other features. Only check one vs the other
 # if it shares a common date.
 boundary_count = 0
@@ -128,10 +146,7 @@ for feat1 in fullstruct["features"]:
   props1 = feat1["properties"]
   if id1 not in geoms:
     geoms[id1] = shapely.geometry.asShape(feat1["geometry"])
-    if 'waive_overlap' in props1:
-      overlap_waiver[id1] = 1
-    if 'waive_double' in props1:
-      double_waiver[id1] = 1
+    check_props(feat1)
     if not geoms[id1].is_valid:
       sys.stderr.write(id1 + " is not valid\n")
   start1 = conv_date(props1["startdatestr"],1)
@@ -146,12 +161,7 @@ for feat1 in fullstruct["features"]:
         props2 = feat2["properties"]
         if id2 not in geoms:
           geoms[id2] = shapely.geometry.asShape(feat2["geometry"])
-          if 'waive_overlap' in props2:
-            overlap_waiver[id2] = 1
-          if 'waive_double' in props2:
-            double_waiver[id2] = 1
-          if 'waive_point' in props2:
-            point_waiver[id2] = 1
+          check_props(feat2)
           if not geoms[id2].is_valid:
             sys.stderr.write(id2 + " is not valid\n")
         start2 = conv_date(props2["startdatestr"],1)
