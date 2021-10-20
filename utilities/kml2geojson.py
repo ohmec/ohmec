@@ -31,6 +31,7 @@ filename = sys.argv[1]
 coords = {}
 multicoords = {}
 entity2name = {}
+SIGDIGITS = 5
 
 def parse_kml(filename):
   in_placemark = 0
@@ -64,7 +65,7 @@ def parse_kml(filename):
           coordinates = []
         elif(re.search("^\s*([\d.-]+),([\d.-]+),0", line)):
           fm = re.search("^\s*([\d.-]+),([\d.-]+),0", line)
-          coordinates.append([round(float(fm.group(1)),6), round(float(fm.group(2)),6)])
+          coordinates.append([round(float(fm.group(1)),SIGDIGITS), round(float(fm.group(2)),SIGDIGITS)])
         elif(re.search("</coordinates>", line)):
           if(ismulti):
             multicoords[idname].append([coordinates])
