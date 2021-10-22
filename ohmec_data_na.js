@@ -325,40 +325,6 @@ dataNA = {
         "coordinates":[
           [[-72.31,41.78],[-72.31,41.52],[-71.78,41.52],[-71.79,41.78],[-72.31,41.78]]]}},
     { "type":"Feature",
-      "id":"TRPEQU2",
-      "properties":{
-        "entity1type":"nation",
-        "entity1name":"Indigenous",
-        "entity2type":"tribe",
-        "entity2name":"Pequot",
-        "labelScale":1.25,
-        "fidelity":2,
-        "editdatestr":"2021:10:07",
-        "source":"https://en.wikipedia.org/wiki/Pequots",
-        "startdatestr":"1636",
-        "enddatestr":"1700"},
-      "geometry":{
-        "type":"Polygon",
-        "coordinates":[
-          [[-72.31,41.78],[-72.31,41.57],[-71.78,41.57],[-71.79,41.78],[-72.31,41.78]]]}},
-    { "type":"Feature",
-      "id":"TRMOHE",
-      "properties":{
-        "entity1type":"nation",
-        "entity1name":"Indigenous",
-        "entity2type":"tribe",
-        "entity2name":"Mohegan",
-        "labelScale":1.25,
-        "fidelity":2,
-        "editdatestr":"2021:10:07",
-        "source":"https://en.wikipedia.org/wiki/Mohegan",
-        "startdatestr":"1636",
-        "enddatestr":"1700"},
-      "geometry":{
-        "type":"Polygon",
-        "coordinates":[
-          [[-72.31,41.66],[-72.31,41.52],[-71.78,41.52],[-71.78,41.66],[-72.31,41.66]]]}},
-    { "type":"Feature",
       "id":"TRNIAN",
       "properties":{
         "entity1type":"nation",
@@ -2007,6 +1973,40 @@ dataNA = {
         "type":"Polygon",
         "coordinates":[
           [[-71.39607,41.8177],[-71.38783,41.81809],[-71.38868,41.82308],[-71.3813,41.82678],[-71.37753,41.83318],[-71.38051,41.86982],[-71.43005,41.83318],[-71.40705,41.8232],[-71.39967,41.81476],[-71.39607,41.8177]]]}},
+    { "type":"Feature",
+      "id":"TRPEQU2",
+      "properties":{
+        "entity1type":"nation",
+        "entity1name":"Indigenous",
+        "entity2type":"tribe",
+        "entity2name":"Pequot",
+        "labelScale":1.25,
+        "fidelity":2,
+        "editdatestr":"2021:10:07",
+        "source":"https://en.wikipedia.org/wiki/Pequots",
+        "startdatestr":"1636",
+        "enddatestr":"1700"},
+      "geometry":{
+        "type":"Polygon",
+        "coordinates":[
+          [[-72.31,41.78],[-72.31,41.57],[-71.78,41.57],[-71.79,41.78],[-72.31,41.78]]]}},
+    { "type":"Feature",
+      "id":"TRMOHE",
+      "properties":{
+        "entity1type":"nation",
+        "entity1name":"Indigenous",
+        "entity2type":"tribe",
+        "entity2name":"Mohegan",
+        "labelScale":1.25,
+        "fidelity":2,
+        "editdatestr":"2021:10:07",
+        "source":"https://en.wikipedia.org/wiki/Mohegan",
+        "startdatestr":"1636",
+        "enddatestr":"1700"},
+      "geometry":{
+        "type":"Polygon",
+        "coordinates":[
+          [[-72.31,41.66],[-72.31,41.52],[-71.78,41.52],[-71.78,41.66],[-72.31,41.66]]]}},
     { "type":"Feature",
       "id":"CT1",
       "properties":{

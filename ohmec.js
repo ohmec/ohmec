@@ -185,6 +185,13 @@ function keyInfo(e) {
   console.log("key pressed: " + e);
 }
 
+// this renders the default leaflet Point marker as transparent,
+// while still allowing for selection / hovering. It also moves
+// points high in the z stack for first priority.
+function pointToLayer(point, latlng) {
+  return L.marker(latlng, { opacity: 0.0, zIndexOffset: 1000 });
+}
+
 function onEachFeature(feature, layer) {
   layer.on({
     mouseover: highlightFeature,
@@ -193,76 +200,116 @@ function onEachFeature(feature, layer) {
     keydown:   keyInfo,
   });
 
-  if (layer.feature.geometry.type !== "Point") {  // default Point style being used at this time; mouse-over text does show
-    // create SVG for name
-    let bounds = layer.getBounds();
+  let labelBounds;
+  let label = getFeatureLabel(feature);
 
-    // Set width to 100, and scale height based upon ratio of bounds.
-    // Not perfect due to lat/long relationships but good enough for now.
-    // 
-    let width = 100;
-    let widthd2 = width/2;
-    let height = width * (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest());
-    let heightd2 = height/2;
-    let fontinfo = getFeatureFont(feature);
-    feature.textLabel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    feature.textLabel.setAttribute('xmlns',   "http://www.w3.org/2000/svg");
-    feature.textLabel.setAttribute('width',   width);
-    feature.textLabel.setAttribute('height',  height);
-    feature.textLabel.setAttribute('viewBox', "0 0 " + width + " " + height);
+  if (feature.geometry.type === "Point") {
+    // create icon for Point, and create label bounds
+    let coords = feature.geometry.coordinates;
+    let plon = coords[0];
+    let plat = coords[1];
+    let iconSize = 0.05;  // arbitraty size of icon, 0.05 degrees
+    let bboxSize = 1.0;   // arbitraty size of label bounding box, 1 degree
+    let iconFile = 'poi_poi.svg';
 
-    feature.textLabelDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-    feature.textLabel.appendChild(feature.textLabelDefs);
+    // other available icon images
+    if(feature.properties.entity1type === 'settlement' ||
+       feature.properties.entity1type === 'battle') {
+      iconFile = 'poi_' + feature.properties.entity1type + '.svg';
+    }
 
-    let label = getFeatureLabel(feature);
-    let fontsize = fontinfo.scale/label.length;
-    if("labelScale" in feature.properties) {
-      fontsize *= feature.properties.labelScale;
-    }
-    let inner = '';
-    // if labelArc is defined, we first need to define the circular path that the text will traverse
-    // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
-    // and the text on the top (if arc > 0) or the circle above with the text on the bottom (arc < 0).
-    if("labelArc" in feature.properties) {
-      let arcval = feature.properties.labelArc;
-      let my   = heightd2 + 2*arcval;
-      let ar   = (arcval >= 0) ? arcval : -arcval;
-      let pos  = (arcval >= 0) ?  1 :   0;
-      let ar2n = arcval*2;
-      let ar2p = arcval*-2;
-      inner += '<path id="arcpath' + feature.id + '" stroke="none" fill="none" d="m 50,' + my;
-      inner += ' a ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2p;
-      inner +=   ' ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2n + ' z"/>';
-    }
-    inner += '<text text-anchor="middle"';
-    inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
-    inner += ' fill="' + fontinfo.color + '"';  // e.g. "red" or "#c80015"
-    inner += ' font-size="' + Math.floor(fontsize) + 'px"';
-    if("labelRotate" in feature.properties || "labelX" in feature.properties || "labelY" in feature.properties) {
-      inner += ' transform="';
-      if("labelRotate" in feature.properties) {
-        inner += ' rotate(' + feature.properties.labelRotate + ' ' + widthd2 + ' ' + heightd2 + ')';
-      }
-      if("labelX" in feature.properties || "labelY" in feature.properties) {
-        let xoff = ("labelX" in feature.properties) ? feature.properties.labelX : 0;
-        let yoff = ("labelY" in feature.properties) ? feature.properties.labelY : 0;
-        inner += ' translate(' + xoff + ' ' + yoff + ')';
-      }
-      inner += '"';
-    }
-    if(!("labelArc" in feature.properties)) {
-      inner += ' x=' + widthd2 + ' y=' + heightd2;
-    }
-    inner += '>';
-    if(("labelArc" in feature.properties)) {
-      inner += '<textPath href="#arcpath' + feature.id + '" startOffset="50%">' + label + '</textPath></text>';
-    } else {
-      inner += label + '</text>';
-    }
-    feature.textLabel.innerHTML = inner;
-    let svgElementBounds = [ [ bounds.getNorth(), bounds.getWest() ], [ bounds.getSouth(), bounds.getEast() ] ];
-    feature.textOverlay = L.svgOverlay(feature.textLabel, svgElementBounds);
+    let iconElementBounds = [ [ plat+iconSize/2, plon-iconSize/2 ], [ plat-iconSize/2, plon+iconSize/2 ] ];
+    feature.iconOverlay = L.imageOverlay(iconFile, iconElementBounds, { zIndex: 300 });
+
+    // create bounding box for the label since a point has no bounds.
+    // the bounds are arbitrary for Point since there is no default size.
+    // just creating a "square" 1 degree high and wide centered around Point.
+
+    labelBounds = L.latLngBounds([[plat+bboxSize/2, plon+bboxSize/2], [plat-bboxSize/2, plon-bboxSize/2]]);
+  } else {
+    labelBounds = layer.getBounds();
   }
+
+  // create SVG for label
+
+  // Set width to 100, and scale height based upon ratio of bounds.
+  // Not perfect due to lat/long relationships but good enough for now.
+
+  let width = 100;
+  let widthd2 = width/2;
+  let height = width * (labelBounds.getNorth() - labelBounds.getSouth()) / (labelBounds.getEast() - labelBounds.getWest());
+  let heightd2 = height/2;
+  let fontinfo = getFeatureFont(feature);
+  feature.textLabel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  feature.textLabel.setAttribute('xmlns',   "http://www.w3.org/2000/svg");
+  feature.textLabel.setAttribute('width',   width);
+  feature.textLabel.setAttribute('height',  height);
+  feature.textLabel.setAttribute('viewBox', "0 0 " + width + " " + height);
+
+  feature.textLabelDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  feature.textLabel.appendChild(feature.textLabelDefs);
+
+  let fontsize = (feature.geometry.type === "Point") ? fontinfo.scale*0.04 : fontinfo.scale/label.length;
+  if("labelScale" in feature.properties) {
+    fontsize *= feature.properties.labelScale;
+  }
+
+  let inner = '';
+  // if labelArc is defined, we first need to define the circular path that the text will traverse
+  // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
+  // and the text on the top (if arc > 0) or the circle above with the text on the bottom (arc < 0).
+  if("labelArc" in feature.properties) {
+    let arcval = feature.properties.labelArc;
+    let my   = heightd2 + 2*arcval;
+    let ar   = (arcval >= 0) ? arcval : -arcval;
+    let pos  = (arcval >= 0) ?  1 :   0;
+    let ar2n = arcval*2;
+    let ar2p = arcval*-2;
+    inner += '<path id="arcpath' + feature.id + '" stroke="none" fill="none" d="m 50,' + my;
+    inner += ' a ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2p;
+    inner +=   ' ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2n + ' z"/>';
+  }
+  let justify = (feature.geometry.type === "Point") ? 'left' : 'middle';
+  if("labelJustify" in feature.properties) {
+    justify = feature.properties.labelJustify;
+  }
+  let anchor = 'middle';
+  let tx = width*0.5;
+  let ty = height*0.5;
+  switch(justify) {
+    case 'above': anchor = 'middle'; tx = width*0.50; ty = height*0.48; break;
+    case 'below': anchor = 'middle'; tx = width*0.50; ty = height*0.54; break;
+    case 'right': anchor =    'end'; tx = width*0.48; ty = height*0.51; break;
+    case 'left':  anchor =  'start'; tx = width*0.52; ty = height*0.51; break;
+  }
+  inner += '<text text-anchor="' + anchor + '"';
+  inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
+  inner += ' fill="' + fontinfo.color + '"';  // e.g. "red" or "#c80015"
+  inner += ' font-size="' + Math.floor(fontsize) + 'px"';
+  if("labelRotate" in feature.properties || "labelX" in feature.properties || "labelY" in feature.properties) {
+    inner += ' transform="';
+    if("labelRotate" in feature.properties) {
+      inner += ' rotate(' + feature.properties.labelRotate + ' ' + widthd2 + ' ' + heightd2 + ')';
+    }
+    if("labelX" in feature.properties || "labelY" in feature.properties) {
+      let xoff = ("labelX" in feature.properties) ? feature.properties.labelX : 0;
+      let yoff = ("labelY" in feature.properties) ? feature.properties.labelY : 0;
+      inner += ' translate(' + xoff + ' ' + yoff + ')';
+    }
+    inner += '"';
+  }
+  if(!("labelArc" in feature.properties)) {
+    inner += ' x=' + tx + ' y=' + ty;
+  }
+  inner += '>';
+  if(("labelArc" in feature.properties)) {
+    inner += '<textPath href="#arcpath' + feature.id + '" startOffset="50%">' + label + '</textPath></text>';
+  } else {
+    inner += label + '</text>';
+  }
+  feature.textLabel.innerHTML = inner;
+  let labelElementBounds = [ [ labelBounds.getNorth(), labelBounds.getWest() ], [ labelBounds.getSouth(), labelBounds.getEast() ] ];
+  feature.textOverlay = L.svgOverlay(feature.textLabel, labelElementBounds);
 }
 
 let datesOfInterest = [];
@@ -373,7 +420,8 @@ datesOfInterest.push(today);
 let datesOfInterestSorted = uniqueDateSort(datesOfInterest);
 
 geojson = L.geoJson(dataNA, {
-  style: featureStyle,
+  style:         featureStyle,
+  pointToLayer:  pointToLayer,
   onEachFeature: onEachFeature
 }).addTo(ohmap);
 
@@ -383,14 +431,16 @@ geojson.evaluateLayers = function () {
     let prop = lyr.feature.properties;
     if(curDate >= prop.startDate && curDate <= prop.endDate) {
       lyr.addTo(ohmap);
-      if (lyr.feature.geometry.type !== "Point") {  // default Point style being used at this time; no textOverlay associated w/ Points
-        lyr.feature.textOverlay.addTo(ohmap);
+      if (lyr.feature.geometry.type === "Point") {
+        lyr.feature.iconOverlay.addTo(ohmap);
       }
+      lyr.feature.textOverlay.addTo(ohmap);
     } else {
       lyr.removeFrom(ohmap);
-      if (lyr.feature.geometry.type !== "Point") {  // default Point style being used at this time; no textOverlay associated w/ Points
-        lyr.feature.textOverlay.removeFrom(ohmap);
+      if (lyr.feature.geometry.type === "Point") {
+        lyr.feature.iconOverlay.removeFrom(ohmap);
       }
+      lyr.feature.textOverlay.removeFrom(ohmap);
     }
   }
 }
