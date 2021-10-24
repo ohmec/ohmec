@@ -2,7 +2,12 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-let holdThis;
+function boundsIntersect(bounds1, bounds2) {
+  return (bounds1.getWest()  <= bounds2.getEast()  &&
+          bounds2.getWest()  <= bounds1.getEast()  &&
+          bounds1.getSouth() <= bounds2.getNorth() &&
+          bounds2.getSouth() <= bounds1.getNorth());
+}
 
 L.Control.TimeLineSlider = L.Control.extend({
   options: {
@@ -15,6 +20,12 @@ L.Control.TimeLineSlider = L.Control.extend({
 
   initialize: function (options) {
     L.setOptions(this, options);
+  },
+
+  updateButtons: function(smartstep) {
+    let prefix = smartstep ? "" : "G";
+    document.getElementById("stepFButton").value = prefix + "Step +";
+    document.getElementById("stepRButton").value = prefix + "Step -";
   },
 
   onAdd: function() {
@@ -49,85 +60,124 @@ L.Control.TimeLineSlider = L.Control.extend({
     this.sliderYears = L.DomUtil.create('ul', 'slider-years', this.sliderContainer);
     this.sliderYears.innerHTML = "<li>" + this.options.timelineDateMin.getFullYear() + "</li><li>" + this.options.timelineDateMax.getFullYear() + "</li>";
 
-
     this.advanceDiv = L.DomUtil.create('div', 'advance', this.sliderContainer);
     this.advanceDiv.innerHTML = '<input type="button" id="advButton" value="Advance"></input>';
     this.advButtonObject = L.DomUtil.get(this.advanceDiv).children[0];
 
+    let prefix = smartStepFeature ? "" : "G";
     this.stepFDiv = L.DomUtil.create('div', 'stepF', this.sliderContainer);
-    this.stepFDiv.innerHTML = '<input type="button" id="stepFButton" value="Step +"></input>';
+    this.stepFDiv.innerHTML = '<input type="button" id="stepFButton" value="' + prefix + 'Step +"></input>';
     this.stepFButtonObject = L.DomUtil.get(this.stepFDiv).children[0];
 
     this.stepRDiv = L.DomUtil.create('div', 'stepR', this.sliderContainer);
-    this.stepRDiv.innerHTML = '<input type="button" id="stepRButton" value="Step -"></input>';
+    this.stepRDiv.innerHTML = '<input type="button" id="stepRButton" value="' + prefix + 'Step -"></input>';
     this.stepRButtonObject = L.DomUtil.get(this.stepRDiv).children[0];
 
-    holdThis = this;
+    timelineSlider = this;
 
     this.sheet.textContent = this.setupStartStyles();
 
     // When time slider gets changed, trigger updateTime function
-    L.DomEvent.on(holdThis.rangeObject, "input", function() {
-      holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+    L.DomEvent.on(timelineSlider.rangeObject, "input", function() {
+      timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
     });
 
     // When advance/pause button gets pressed toggle advance/pause,
     // potentially "move time"
 
-    holdThis.advanceTime = function() {
-      let incrTime = (holdThis.options.timelineDateMax.getTime() - holdThis.options.timelineDateMin.getTime())/240;
-      let newTime = parseFloat(holdThis.rangeObject.value) + parseFloat(incrTime);
-      if(newTime >= holdThis.options.timelineDateMax.getTime()) {
-        newTime = holdThis.options.timelineDateMax.getTime();
-        clearInterval(holdThis.intervalFunc);
-        holdThis.advButtonObject.value = "Advance";
+    timelineSlider.advanceTime = function() {
+      let incrTime = (timelineSlider.options.timelineDateMax.getTime() - timelineSlider.options.timelineDateMin.getTime())/240;
+      let newTime = parseFloat(timelineSlider.rangeObject.value) + parseFloat(incrTime);
+      if(newTime >= timelineSlider.options.timelineDateMax.getTime()) {
+        newTime = timelineSlider.options.timelineDateMax.getTime();
+        clearInterval(timelineSlider.intervalFunc);
+        timelineSlider.advButtonObject.value = "Advance";
       }
-      holdThis.rangeObject.value = newTime;
-      holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+      timelineSlider.rangeObject.value = newTime;
+      timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
     }
 
-    L.DomEvent.on(holdThis.advButtonObject, "click", function() {
-      if(holdThis.advButtonObject.value == "Advance") {
-        holdThis.advButtonObject.value = "Stop";
-        holdThis.intervalFunc = setInterval(holdThis.advanceTime, 250);
+    L.DomEvent.on(timelineSlider.advButtonObject, "click", function() {
+      if(timelineSlider.advButtonObject.value == "Advance") {
+        timelineSlider.advButtonObject.value = "Stop";
+        timelineSlider.intervalFunc = setInterval(timelineSlider.advanceTime, 250);
       } else {
-        holdThis.advButtonObject.value = "Advance";
-        clearInterval(holdThis.intervalFunc);
+        timelineSlider.advButtonObject.value = "Advance";
+        clearInterval(timelineSlider.intervalFunc);
       }
     });
 
-    L.DomEvent.on(holdThis.stepFButtonObject, "click", function() {
+    L.DomEvent.on(timelineSlider.stepFButtonObject, "click", function() {
       // step time forward once in datesOfInterest array
-      let curTime = holdThis.rangeObject.value;
+      // if "smartStep" feature is turned on, only step forward
+      // if something in the field of view has changed for that step,
+      // else skip to the next one
+      let curTime = timelineSlider.rangeObject.value;
       for (let i=1;i<datesOfInterestSorted.length;i++) {
-        if (curTime >= datesOfInterestSorted[i-1].getTime() && curTime < datesOfInterestSorted[i].getTime()) {
-          // make sure we haven't stepped beyond the bounds of the slider
-          if (datesOfInterestSorted[i].getTime() > holdThis.options.timelineDateMax.getTime()) {
-            holdThis.rangeObject.value = holdThis.options.timelineDateMax.getTime();
-            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
-          } else {
-            holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
-            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+        if (curTime < datesOfInterestSorted[i].getTime()) {
+          let useStep = true;
+          if(smartStepFeature) {
+            useStep = false;
+            for(let id of idAddsPerDOI[i]) {
+              if(boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+                useStep = true;
+              }
+            }
+            for(let id of idSubsPerDOI[i]) {
+              if(boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+                useStep = true;
+              }
+            }
           }
-          return;
+          if(useStep || !smartStepFeature) {
+            // make sure we haven't stepped beyond the bounds of the slider
+            if (datesOfInterestSorted[i].getTime() > timelineSlider.options.timelineDateMax.getTime()) {
+              timelineSlider.rangeObject.value = timelineSlider.options.timelineDateMax.getTime();
+              timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+            } else {
+              timelineSlider.rangeObject.value = datesOfInterestSorted[i].getTime();
+              timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+            }
+            return;
+          }
         }
       }
     });
 
-    L.DomEvent.on(holdThis.stepRButtonObject, "click", function() {
-      // step time backward once in datesOfInterest array
-      let curTime = holdThis.rangeObject.value;
-      for (let i=0;i<datesOfInterestSorted.length-1;i++) {
-        if (curTime > datesOfInterestSorted[i].getTime() && curTime <= datesOfInterestSorted[i+1].getTime()) {
-          // make sure we haven't stepped beyond the bounds of the slider
-          if (datesOfInterestSorted[i].getTime() < holdThis.options.timelineDateMin.getTime()) {
-            holdThis.rangeObject.value = holdThis.options.timelineDateMin.getTime();
-            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
-          } else {
-            holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
-            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+    L.DomEvent.on(timelineSlider.stepRButtonObject, "click", function() {
+      // step time backward once in datesOfInterest array.
+      // if "smartStep" feature is turned on, only step backward
+      // if something in the field of view has changed for the next step
+      // (indicating that something will be removed in this one) else skip
+      // to the previous one
+      let curTime = timelineSlider.rangeObject.value;
+      for (let i=datesOfInterestSorted.length-2;i>=0;i--) {
+        if (curTime > datesOfInterestSorted[i].getTime()) {
+          let useStep = true;
+          if(smartStepFeature) {
+            useStep = false;
+            for(let id of idAddsPerDOI[i+1]) {
+              if(boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+                useStep = true;
+              }
+            }
+            for(let id of idSubsPerDOI[i+1]) {
+              if(boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+                useStep = true;
+              }
+            }
           }
-          return;
+          if(useStep || !smartStepFeature) {
+            // make sure we haven't stepped beyond the bounds of the slider
+            if (datesOfInterestSorted[i].getTime() < timelineSlider.options.timelineDateMin.getTime()) {
+              timelineSlider.rangeObject.value = timelineSlider.options.timelineDateMin.getTime();
+              timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+            } else {
+              timelineSlider.rangeObject.value = datesOfInterestSorted[i].getTime();
+              timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+            }
+            return;
+          }
         }
       }
     });
@@ -135,8 +185,8 @@ L.Control.TimeLineSlider = L.Control.extend({
     // Initialize input change at start
     let inputEvent = new Event('input');
     this.rangeObject.dispatchEvent(inputEvent);
-    this.rangeObject.value = holdThis.options.timelineDateStart.getTime();
-    holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+    this.rangeObject.value = timelineSlider.options.timelineDateStart.getTime();
+    timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
 
     return this.sliderContainer;
   },
@@ -147,8 +197,8 @@ L.Control.TimeLineSlider = L.Control.extend({
   },
 
   setupStartStyles: function() {
-    let rangeWidth = (parseFloat(holdThis.options.sliderWidth) - 15) + "px";
-    let labelMargin = (parseFloat(holdThis.options.sliderWidth)/2 - 10) + "px";
+    let rangeWidth = (parseFloat(timelineSlider.options.sliderWidth) - 15) + "px";
+    let labelMargin = (parseFloat(timelineSlider.options.sliderWidth)/2 - 10) + "px";
     let slider_style = `
       .slider_container {
         background-color: rgba(4,112,255,0.7);
@@ -163,25 +213,25 @@ L.Control.TimeLineSlider = L.Control.extend({
         position: relative;
         left: -6px;
         height: 5px;
-        width: ${holdThis.options.sliderWidth};
+        width: ${timelineSlider.options.sliderWidth};
       }
       .advance {
         position: relative;
         left: -40px;
         height: 30px;
-        width: ${holdThis.options.sliderWidth};
+        width: ${timelineSlider.options.sliderWidth};
       }
       .stepF {
         position: relative;
         left: -40px;
         height: 0px;
-        width: ${holdThis.options.sliderWidth};
+        width: ${timelineSlider.options.sliderWidth};
       }
       .stepR {
         position: relative;
         left: -40px;
         height: 0px;
-        width: ${holdThis.options.sliderWidth};
+        width: ${timelineSlider.options.sliderWidth};
       }
       .range input {
         width: 100%;

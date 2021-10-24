@@ -7,14 +7,17 @@
 let parameters = location.search.substring(1).split("&");
 
 let today = new Date();
-let timelineDateStart = new Date(1776,6,4); // "interesting" start date, but arbitraty
+let timelineDateDefault = new Date(1776,6,4); // "interesting" start date, but arbitraty
+let timelineDateStart = timelineDateDefault;
 let timelineDateMin = today;                // these will be overridden as features come in
 let timelineDateMax = new Date(1,0,1);
 let overrideDateMin = 1;                    // these allow the database to change timeline range
 let overrideDateMax = 1;                    // unless provided in the URL override parameters
 
-let latSettingStart = 38.5;                 // centering around USA region for this Phase
-let lonSettingStart = -98.0;
+let latSettingDefault = 38.5;                 // centering around USA region for this Phase
+let lonSettingDefault = -98.0;
+let latSettingStart = latSettingDefault;
+let lonSettingStart = lonSettingDefault;
 let latSettingMin = -90.0;
 let latSettingMax = 90.0;
 let lonSettingMin = -180.0;
@@ -23,6 +26,12 @@ let lonSettingMax = 180.0;
 let zoomSettingMin = 2.5;
 let zoomSettingMax = 15.0;
 let zoomSettingStart = 4.5;
+
+let boundsHash = {};
+let smartStepDefault = 1;
+let smartStepFeature = smartStepDefault;
+
+let timelineSlider;
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([\d:]+)/;
@@ -53,6 +62,11 @@ for(let param of parameters) {
     if (match[1] == 'z' && info >= zoomSettingMin && info <= zoomSettingMax) {
       zoomSettingStart = info;
     }
+  }
+  test = /smartstep=(on|off)/;
+  match = param.match(test);
+  if (match !== null) {
+    smartStepFeature = (match[1]==='on') ? 1 : 0;
   }
 }
 
@@ -85,19 +99,32 @@ let updateDirectLink = function() {
   let hrefText = location.href;
   let splits = hrefText.split('?');
   let latlon = ohmap.getCenter();
-  let urlText = splits[0] +
-    '?startdatestr=' + fixInt(timelineDateMin.getFullYear(),4) + ':' +
-                       fixInt(timelineDateMin.getMonth()+1,2)  + ':' +
-                       fixInt(timelineDateMin.getDate(),2) +
-    '&enddatestr='   + fixInt(timelineDateMax.getFullYear(),4) + ':' +
-                       fixInt(timelineDateMax.getMonth()+1,2)  + ':' +
-                       fixInt(timelineDateMax.getDate(),2) +
-    '&curdatestr='   + fixInt(curDate.getFullYear(),4) + ':' +
+  let conjoin = '?';
+  let urlText = splits[0];
+  if(!overrideDateMin) {
+    urlText += conjoin +
+      'startdatestr='  + fixInt(timelineDateMin.getFullYear(),4) + ':' +
+                         fixInt(timelineDateMin.getMonth()+1,2)  + ':' +
+                         fixInt(timelineDateMin.getDate(),2);
+    conjoin = '&';
+  }
+  if(!overrideDateMax) {
+    urlText += conjoin +
+       'enddatestr='   + fixInt(timelineDateMax.getFullYear(),4) + ':' +
+                         fixInt(timelineDateMax.getMonth()+1,2)  + ':' +
+                         fixInt(timelineDateMax.getDate(),2);
+    conjoin = '&';
+  }
+  urlText += conjoin +
+    'curdatestr='    + fixInt(curDate.getFullYear(),4) + ':' +
                        fixInt(curDate.getMonth()+1,2)  + ':' +
                        fixInt(curDate.getDate(),2) +
     '&lat='          + parseFloat(latlon.lat).toFixed(2) +
     '&lon='          + parseFloat(latlon.lng).toFixed(2) +
     '&z='            + parseFloat(ohmap.getZoom()).toFixed(1);
+  if(smartStepFeature != smartStepDefault) {
+    urlText += '&smartstep=' + (smartStepFeature ? 'on' : 'off');
+  }
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
 };
@@ -242,6 +269,7 @@ function onEachFeature(feature, layer) {
   } else {
     labelBounds = layer.getBounds();
   }
+  boundsHash[feature.id] = labelBounds;
 
   // create SVG for label
 
@@ -350,7 +378,7 @@ function uniqueDateSort(inArray) {
   let sortedArray = inArray.sort(function(a,b) { return a.getTime() - b.getTime(); });
   let returnArray = [ sortedArray[0] ];
   for (let i=1;i<sortedArray.length;i++) {
-    if (sortedArray[i-1] !== sortedArray[i]) {
+    if (sortedArray[i-1].toDateString() !== sortedArray[i].toDateString()) {
       returnArray.push(sortedArray[i]);
     }
   }
@@ -448,6 +476,63 @@ geo_lint(dataNA);
 datesOfInterest.push(today);
 let datesOfInterestSorted = uniqueDateSort(datesOfInterest);
 
+// Figure out what changes from one "date of interest" to
+// the next. start with figuring out which IDs are valid in
+// each date
+
+// go through each feature and add it to an array of valid
+// IDs per DOI
+let idsPerDOI = [];
+for(let f of dataNA.features) {
+  let sd = str2date(f.properties.startdatestr,false);
+  let ed = str2date(f.properties.enddatestr,  true);
+  for (let i=0;i<datesOfInterestSorted.length;i++) {
+    let doi = datesOfInterestSorted[i].getTime();
+    if (doi > ed) {
+      break;
+    }
+    if(sd <= doi) {
+      if(idsPerDOI[i] === undefined) {
+        idsPerDOI[i] = [];
+      }
+      idsPerDOI[i].push(f.id);
+    }
+  }
+}
+
+// now sort the IDs and compare them against the last version
+// to find the differences.
+let idsPerDOISorted = [];
+let idAddsPerDOI = [];
+let idSubsPerDOI = [];
+for (let doi=0;doi<idsPerDOI.length;doi++) {
+  idsPerDOISorted.push(idsPerDOI[doi].sort());
+  if (doi>=1) {
+    idAddsPerDOI[doi] = [];
+    idSubsPerDOI[doi] = [];
+    let im = 0;
+    let ip = 0;
+    while(im < idsPerDOISorted[doi-1].length || ip < idsPerDOISorted[doi].length) {
+      if(im === idsPerDOISorted[doi-1].length) {
+        idAddsPerDOI[doi].push(idsPerDOISorted[doi][ip]);
+        ip++;
+      } else if(ip === idsPerDOISorted[doi].length) {
+        idSubsPerDOI[doi].push(idsPerDOISorted[doi-1][im]);
+        im++;
+      } else if (idsPerDOISorted[doi-1][im] === idsPerDOISorted[doi][ip]) {
+        im++;
+        ip++;
+      } else if(idsPerDOISorted[doi][ip] < idsPerDOISorted[doi-1][im]) {
+        idAddsPerDOI[doi].push(idsPerDOISorted[doi][ip]);
+        ip++;
+      } else {
+        idSubsPerDOI[doi].push(idsPerDOISorted[doi-1][im]);
+        im++;
+      }
+    }
+  }
+}
+
 geojson = L.geoJson(dataNA, {
   style:         featureStyle,
   pointToLayer:  pointToLayer,
@@ -516,3 +601,14 @@ L.control.timelineSlider({
 
 let polygonSpan = document.querySelector('#polycount');
 polygonSpan.textContent = polygonCount;
+
+// upon 's' keypress, toggle "smartStep" feature
+function checkKeypress(e) {
+  if (e.originalEvent.key === 's') {
+    smartStepFeature = 1 - smartStepFeature;
+    timelineSlider.updateButtons(smartStepFeature);
+    updateDirectLink();
+  }
+}
+
+ohmap.on('keypress', checkKeypress);

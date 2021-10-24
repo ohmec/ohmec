@@ -49,6 +49,17 @@
       Feature Information for further inspection.
     </p>
     <p>
+      Keyboard inputs can modify the display behavior. At this time only
+      one key press modifies the result.  Pressing the <code><b>s</b></code>
+      toggles the "smart step" button feature. When enabled (default true),
+      the step + and step - buttons move the timeline slider forward or
+      backward to the next time where a change in the database is visible
+      in the current viewpoint. When false, the step buttons simply move
+      to the next or previous change in the database.  NOTE the user must
+      click on the map once to indicate focus on it (vs other browser items)
+      before any keyboard event.
+    </p>
+    <p>
       Arguments can be passed to the URL to modify timeline parameters
       and default viewing perspective. These arguments are shown below,
       and are set as for example
@@ -89,6 +100,11 @@
         <td>z</td>
         <td>N</td>
         <td>Sets zoom value to N (range 1 to 18)</td>
+      </tr>
+      <tr>
+        <td>smartstep</td>
+        <td>on|off</td>
+        <td>Enables or disables the smart step feature.</td>
       </tr>
     </table>
     <p>
