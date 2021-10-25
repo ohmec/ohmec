@@ -23,7 +23,7 @@ h1 {
   align: center;
   border: solid;
 }
-.curdate, .infobox {
+.curdate, .infobox, .stepbox {
   padding: 6px 8px;
   font: 14px/16px Helvetica, sans-serif;
   background: white;

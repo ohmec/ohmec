@@ -3,6 +3,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 let holdThis;
+let useSmartStep = 0;
+let stepTmout = 0;
+
+function boundsIntersect(bounds1, bounds2) {
+  return (bounds1.getWest()  <= bounds2.getEast()  &&
+          bounds2.getWest()  <= bounds1.getEast()  &&
+          bounds1.getSouth() <= bounds2.getNorth() &&
+          bounds2.getSouth() <= bounds1.getNorth());
+}
 
 L.Control.TimeLineSlider = L.Control.extend({
   options: {
@@ -98,36 +107,121 @@ L.Control.TimeLineSlider = L.Control.extend({
 
     L.DomEvent.on(holdThis.stepFButtonObject, "click", function() {
       // step time forward once in datesOfInterest array
+      // if "useSmartStep" is turned on, only step forward
+      // if something in the field of view has changed for that step,
+      // else skip to the next one
       let curTime = holdThis.rangeObject.value;
       for (let i=1;i<datesOfInterestSorted.length;i++) {
-        if (curTime >= datesOfInterestSorted[i-1].getTime() && curTime < datesOfInterestSorted[i].getTime()) {
-          // make sure we haven't stepped beyond the bounds of the slider
-          if (datesOfInterestSorted[i].getTime() > holdThis.options.timelineMax.getTime()) {
-            holdThis.rangeObject.value = holdThis.options.timelineMax.getTime();
-            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
-          } else {
-            holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
-            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+        if (curTime < datesOfInterestSorted[i].getTime()) {
+          let useStep = false;
+          let addSet = new Set();
+          let removeSet = new Set();
+          let modifySet = new Set();
+          for(let id of idAddsPerDOI[i]) {
+            if(!useSmartStep || boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+              addSet.add(enameHash[id]);
+              useStep = true;
+            }
           }
-          return;
+          for(let id of idSubsPerDOI[i]) {
+            if(!useSmartStep || boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+              if(addSet.has(enameHash[id])) {
+                modifySet.add(enameHash[id]);
+                addSet.delete(enameHash[id]);
+              } else {
+                removeSet.add(enameHash[id]);
+              }
+              useStep = true;
+            }
+          }
+          let stepText = '';
+          for(let ename of removeSet) {
+            stepText += "  removed " + ename + "<br/>";
+          }
+          for(let ename of modifySet) {
+            stepText += "  modified " + ename + "<br/>";
+          }
+          for(let ename of addSet) {
+            stepText += "  added " + ename + "<br/>";
+          }
+          if(useStep) {
+            stepbox.update(stepText);
+            // a little random, but clear after 4 seconds
+            if(stepTmout) {
+              clearTimeout(stepTmout);
+            }
+            stepTmout = setTimeout(() => { stepbox.update(''); }, 4000);
+            // make sure we haven't stepped beyond the bounds of the slider
+            if (datesOfInterestSorted[i].getTime() > holdThis.options.timelineMax.getTime()) {
+              holdThis.rangeObject.value = holdThis.options.timelineMax.getTime();
+              holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+            } else {
+              holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
+              holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+            }
+            return;
+          }
         }
       }
     });
 
     L.DomEvent.on(holdThis.stepRButtonObject, "click", function() {
       // step time backward once in datesOfInterest array
+      // if "useSmartStep" is turned on, only step backward
+      // if something in the field of view has changed for that step,
+      // else skip to the previous one
       let curTime = holdThis.rangeObject.value;
-      for (let i=0;i<datesOfInterestSorted.length-1;i++) {
-        if (curTime > datesOfInterestSorted[i].getTime() && curTime <= datesOfInterestSorted[i+1].getTime()) {
-          // make sure we haven't stepped beyond the bounds of the slider
-          if (datesOfInterestSorted[i].getTime() < holdThis.options.timelineMin.getTime()) {
-            holdThis.rangeObject.value = holdThis.options.timelineMin.getTime();
-            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
-          } else {
-            holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
-            holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+      for (let i=datesOfInterestSorted.length-2;i>=0;i--) {
+        if (curTime > datesOfInterestSorted[i].getTime()) {
+          let useStep = false;
+          let addSet = new Set();
+          let removeSet = new Set();
+          let modifySet = new Set();
+          for(let id of idAddsPerDOI[i+1]) {
+            if(!useSmartStep || boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+              removeSet.add(enameHash[id]);
+              useStep = true;
+              console.log("setting useStep true for " + i);
+            }
           }
-          return;
+          for(let id of idSubsPerDOI[i+1]) {
+            if(!useSmartStep || boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+              if(removeSet.has(enameHash[id])) {
+                modifySet.add(enameHash[id]);
+                removeSet.delete(enameHash[id]);
+              } else {
+                addSet.add(enameHash[id]);
+              }
+              useStep = true;
+            }
+          }
+          let stepText = '';
+          for(let ename of removeSet) {
+            stepText += "  removed " + ename + "<br/>";
+          }
+          for(let ename of modifySet) {
+            stepText += "  modified " + ename + "<br/>";
+          }
+          for(let ename of addSet) {
+            stepText += "  added " + ename + "<br/>";
+          }
+          if(useStep) {
+            stepbox.update(stepText);
+            // a little random, but clear after 4 seconds
+            if(stepTmout) {
+              clearTimeout(stepTmout);
+            }
+            stepTmout = setTimeout(() => { stepbox.update(''); }, 4000);
+            // make sure we haven't stepped beyond the bounds of the slider
+            if (datesOfInterestSorted[i].getTime() < holdThis.options.timelineMin.getTime()) {
+              holdThis.rangeObject.value = holdThis.options.timelineMin.getTime();
+              holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+            } else {
+              holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
+              holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
+            }
+            return;
+          }
         }
       }
     });

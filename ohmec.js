@@ -6,6 +6,8 @@
 
 let parameters = location.search.substring(1).split("&");
 
+let useStepBox = true;
+
 let today = new Date();
 let timelineMin = today;
 let timelineMax = new Date(1,0,1);
@@ -118,6 +120,24 @@ infobox.update = function(id, prop) {
 
 infobox.addTo(ohmap);
 
+// step box
+let stepbox = L.control();
+
+stepbox.onAdd = function() {
+  this._div = L.DomUtil.create('div', 'stepbox');
+  this.update();
+  return this._div;
+}
+
+stepbox.update = function(str) {
+  this._div.innerHTML = '<b>Step Changes</b>';
+  if(str) {
+    this._div.innerHTML += '<br/>' + str;
+  }
+};
+
+stepbox.addTo(ohmap);
+
 let legend = L.control({position: 'bottomright'});
 let curDate = today;
 
@@ -182,6 +202,9 @@ function onEachFeature(feature, layer) {
     mousedown: mouseInfo,
     keydown:   keyInfo,
   });
+
+  boundsHash[feature.id] = layer.getBounds();
+  enameHash[feature.id] = ("entity2name" in feature.properties) ? feature.properties.entity2name : feature.properties.entity1name;
 
   if (layer.feature.geometry.type !== "Point") {  // default Point style being used at this time; mouse-over text does show
     // create SVG for name
@@ -264,7 +287,7 @@ function uniqueDateSort(inArray) {
   let sortedArray = inArray.sort(function(a,b) { return a.getTime() - b.getTime(); });
   let returnArray = [ sortedArray[0] ];
   for (let i=1;i<sortedArray.length;i++) {
-    if (sortedArray[i-1] !== sortedArray[i]) {
+    if (sortedArray[i-1].toDateString() !== sortedArray[i].toDateString()) {
       returnArray.push(sortedArray[i]);
     }
   }
@@ -301,6 +324,9 @@ function str2date(datestr,roundLate) {
   }
   return newdate;
 }
+
+let boundsHash = {};
+let enameHash = {};
 
 function geo_lint(dataset) {
   let id_set = new Set();
@@ -361,6 +387,63 @@ geo_lint(dataNA);
 
 datesOfInterest.push(today);
 let datesOfInterestSorted = uniqueDateSort(datesOfInterest);
+
+// Figure out what changes from one "date of interest" to
+// the next. start with figuring out which IDs are valid in
+// each date
+
+// go through each feature and add it to an array of valid
+// IDs per DOI
+let idsPerDOI = [];
+for(let f of dataNA.features) {
+  let sd = str2date(f.properties.startdatestr,false);
+  let ed = str2date(f.properties.enddatestr,  true);
+  for (let i=0;i<datesOfInterestSorted.length;i++) {
+    let doi = datesOfInterestSorted[i].getTime();
+    if (doi > ed) {
+      break;
+    }
+    if(sd <= doi) {
+      if(idsPerDOI[i] == undefined) {
+        idsPerDOI[i] = [];
+      }
+      idsPerDOI[i].push(f.id);
+    }
+  }
+}
+
+// now sort the IDs and compare them against the last version
+// to find the differences.
+let idsPerDOISorted = [];
+let idAddsPerDOI = [];
+let idSubsPerDOI = [];
+for (let doi=0;doi<idsPerDOI.length;doi++) {
+  idsPerDOISorted.push(idsPerDOI[doi].sort());
+  if (doi>=1) {
+    idAddsPerDOI[doi] = [];
+    idSubsPerDOI[doi] = [];
+    let im = 0;
+    let ip = 0;
+    while(im < idsPerDOISorted[doi-1].length || ip < idsPerDOISorted[doi].length) {
+      if(im === idsPerDOISorted[doi-1].length) {
+        idAddsPerDOI[doi].push(idsPerDOISorted[doi][ip]);
+        ip++;
+      } else if(ip === idsPerDOISorted[doi].length) {
+        idSubsPerDOI[doi].push(idsPerDOISorted[doi-1][im]);
+        im++;
+      } else if (idsPerDOISorted[doi-1][im] === idsPerDOISorted[doi][ip]) {
+        im++;
+        ip++;
+      } else if(idsPerDOISorted[doi][ip] < idsPerDOISorted[doi-1][im]) {
+        idAddsPerDOI[doi].push(idsPerDOISorted[doi][ip]);
+        ip++;
+      } else {
+        idSubsPerDOI[doi].push(idsPerDOISorted[doi-1][im]);
+        im++;
+      }
+    }
+  }
+}
 
 geojson = L.geoJson(dataNA, {
   style: featureStyle,
