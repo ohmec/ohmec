@@ -38,7 +38,7 @@ function featureStyle(feature) {
     strokeDash   = '1';
     fillColor    = '#a06060';
   } else if(entity1name == 'Indigenous' && entity2type == 'tribe') {
-    strokeOn     = true;  // set to 'false' to hide territory 'boundary' rectangles; set to 'true' to visualize territory 'boundaries'
+    strokeOn     = false;  // set to 'false' to hide territory 'boundary' rectangles; set to 'true' to visualize territory 'boundaries'
     fillOpacity  = 0.0;
     feature.borderless = true;
   } else if(entity1name == 'USA' && entity2type == 'secessionist') {
