@@ -101,6 +101,9 @@ L.Control.TimeLineSlider = L.Control.extend({
       }
       timelineSlider.rangeObject.value = newTime;
       timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+      infobox._div.style.background = infoboxNormalBackground;
+      infoPinned = false;
+      infobox.update();
     }
 
     timelineSlider.affectAdvance = function() {
@@ -147,6 +150,9 @@ L.Control.TimeLineSlider = L.Control.extend({
               timelineSlider.rangeObject.value = datesOfInterestSorted[i].getTime();
               timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
             }
+            infobox._div.style.background = infoboxNormalBackground;
+            infoPinned = false;
+            infobox.update();
             return;
           }
         }
@@ -186,6 +192,9 @@ L.Control.TimeLineSlider = L.Control.extend({
               timelineSlider.rangeObject.value = datesOfInterestSorted[i].getTime();
               timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
             }
+            infobox._div.style.background = infoboxNormalBackground;
+            infoPinned = false;
+            infobox.update();
             return;
           }
         }

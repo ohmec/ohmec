@@ -38,6 +38,12 @@ let backgroundLayers = {};
 let maxZoomPerBackground = {};
 let lastBackgroundLayer;
 let lastLayer;
+let lastFeature = null;
+
+let infoboxNormalBackground = "rgba(4,112,255,0.7)";
+let infoboxPinnedBackground = "rgba(4, 64,160,0.7)";
+
+let infoPinned = false;
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([-?\d:BC]+)/;
@@ -155,7 +161,18 @@ let updateLayerInfo = function(e) {
   updateDirectLink();
 };
 
-ohmap.on('moveend', updateDirectLink);
+function completeMapMove() {
+  infoPinned = false;
+  infobox._div.style.background = infoboxNormalBackground;
+  if (lastFeature) {
+    infobox.update(lastFeature.id,lastFeature.properties);
+  } else {
+    infobox.update();
+  }
+  updateDirectLink();
+}
+
+ohmap.on('moveend', completeMapMove);
 
 let numBackgrounds = 0;
 
@@ -225,13 +242,13 @@ lastBackgroundLayer = backgroundLayers[backgroundLayerSetting];
 lastBackgroundLayer.addTo(ohmap);
 ohmap.setMaxZoom(maxZoomPerBackground[backgroundLayerSetting]);
 
-L.control.layers(backgroundLayers).addTo(ohmap);
+L.control.layers(backgroundLayers, undefined, {position: 'topleft'}).addTo(ohmap);
 
 ohmap.on('baselayerchange', updateLayerInfo);
 
 // feature info box
 let infobox = L.control();
-let held_id, held_prop, infoTmout;
+let infoPinnedId, infoPinnedProperties, infoTmout;
 
 infobox.onAdd = function() {
   this._div = L.DomUtil.create('div', 'infobox');
@@ -269,7 +286,7 @@ function dateMax(maxDate, newDate) {
 
 let geojson;
 
-function highlightFeature(e) {
+function infoboxFeatureOn(e) {
   let layer = e.target;
 
   if (layer.feature.geometry.type !== "Point") {  // Point styles are not being overridden at this time
@@ -285,29 +302,34 @@ function highlightFeature(e) {
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       layer.bringToFront();
     }
+    lastFeature = layer.feature;
   }
   lastLayer = layer;
 
+  if (infoPinned && (infoPinnedId == layer.feature.id)) {
+    infobox._div.style.background = infoboxPinnedBackground;
+  } else {
+    infobox._div.style.background = infoboxNormalBackground;
+  }
   infobox.update(layer.feature.id,layer.feature.properties);
 }
 
-function resetHighlight(e) {
+function infoboxFeatureOff(e) {
   geojson.resetStyle(e.target);
-  infobox.update(held_id,held_prop);
-  lastLayer = undefined;
+  if(infoPinned) {
+    infobox._div.style.background = infoboxPinnedBackground;
+    infobox.update(infoPinnedId,infoPinnedProperties);
+  } else {
+    infobox._div.style.background = infoboxNormalBackground;
+    infobox.update();
+  }
+  lastFeature = null;
 }
 
-// upon mouse click, hold the information, allowing the
-// user to click on the source link. so as to not linger
-// forever, hold the information about a few seconds.
-function mouseInfo(e) {
-  held_prop = e.target.feature.properties;
-  held_id   = e.target.feature.id;
-  // a little random, but 7 seconds
-  if(infoTmout) {
-    clearTimeout(infoTmout);
-  }
-  infoTmout = setTimeout(() => { held_id = ''; held_prop = ''; infobox.update(); }, 7000);
+// upon mouse click, lower this feature to lowest in the
+// click stack so next time it hovers on something else
+function lowerZ(e) {
+  e.target.bringToBack();
 }
 
 // this renders the default leaflet Point marker as transparent,
@@ -319,9 +341,9 @@ function pointToLayer(point, latlng) {
 
 function onEachFeature(feature, layer) {
   layer.on({
-    mouseover: highlightFeature,
-    mouseout:  resetHighlight,
-    mousedown: mouseInfo
+    mouseover: infoboxFeatureOn,
+    mouseout:  infoboxFeatureOff,
+    mousedown: lowerZ
   });
 
   let labelBounds;
@@ -700,6 +722,38 @@ updateHTML('backdef',   backgroundLayerDefault);
 updateHTML('polycount', polygonCount);
 spanPtr = document.querySelector('#startdef');
 
+// if key `i` is pressed, potentially modify the infobox,
+// using this algorithm
+//
+// o  if nothing is currently pinned, and mouse is over a feature,
+//    pin that feature
+// o  if a feature is currently pinned, and mouse is over that
+//    same feature, or no feature, unpin that feature
+// o  if a feature is currently pinned, and mouse is over a new
+//    feature, pin that feature.
+
+function handleIPress() {
+  if (infoPinned && (!lastFeature || (lastFeature.id == infoPinnedId))) {
+    infoPinned = false;
+    infobox._div.style.background = infoboxNormalBackground;
+    if (lastFeature) {
+      infobox.update(lastFeature.id,lastFeature.properties);
+    } else {
+      infobox.update();
+    }
+  } else if (lastFeature) {
+    infoPinned = true;
+    infoPinnedProperties = lastFeature.properties;
+    infoPinnedId = lastFeature.id;
+    infobox._div.style.background = infoboxPinnedBackground;
+    infobox.update(lastFeature.id,lastFeature.properties);
+  } else {
+    infoPinnedProperties = undefined;
+    infoPinnedId = undefined;
+    infobox.update();
+  }
+}
+
 // check keypress value to determine function.
 function checkKeypress(e) {
   let backgroundUpdated = false;
@@ -714,12 +768,14 @@ function checkKeypress(e) {
     case 'a':
       timelineSlider.affectAdvance();
       break;
+    case 'i': handleIPress(); break;
     case 'r':
       ohmap.setView([latSettingStart, lonSettingStart],zoomSettingStart);
       break;
     case 's':
       smartStepFeature = 1 - smartStepFeature;
       timelineSlider.updateButtons(smartStepFeature);
+      updateDirectLink();
       break;
     case 'z':
       if(lastLayer) {
