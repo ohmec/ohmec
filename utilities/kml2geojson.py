@@ -92,8 +92,8 @@ def export_coords(coords):
         "fidelity":"XXXX",
         "editdate":"XXXX",
         "source":"XXXX",
-        "startdate":"XXXX",
-        "enddate":"XXXX"},
+        "startdatestr":"XXXX",
+        "enddatestr":"XXXX"},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
@@ -115,10 +115,10 @@ def export_multi_coords(coords):
         "entity2type":"XXXX",
         "entity2name":"''' + ename + '''",
         "fidelity":"XXXX",
-        "editdate":"XXXX",
+        "editdatestr":"XXXX",
         "source":"XXXX",
-        "startdate":"XXXX",
-        "enddate":"XXXX"},
+        "startdatestr":"XXXX",
+        "enddatestr":"XXXX"},
       "geometry":{
         "type":"MultiPolygon",
         "coordinates":
