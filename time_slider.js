@@ -7,9 +7,9 @@ let holdThis;
 L.Control.TimeLineSlider = L.Control.extend({
   options: {
     position: 'bottomleft',
-    timelineMin: new Date(1,0,1),
-    timelineMax: new Date,
-    timelineStart: new Date(1776,6,4),
+    timelineDateMin: new Date(1,0,1),
+    timelineDateMax: new Date,
+    timelineDateStart: new Date(1776,6,4),
     sliderWidth: "750px",
   },
 
@@ -38,16 +38,16 @@ L.Control.TimeLineSlider = L.Control.extend({
     this.sliderDiv = L.DomUtil.create('div', 'range', this.sliderContainer);
     this.sliderDiv.innerHTML =
       '<input id="rangeinputslide" type="range" min="' +
-      this.options.timelineMin.getTime() +
+      this.options.timelineDateMin.getTime() +
       '" max="' +
-      this.options.timelineMax.getTime() +
+      this.options.timelineDateMax.getTime() +
       '" step="any" value="' +
-      this.options.timelineMin.getTime() +
+      this.options.timelineDateMin.getTime() +
       '"></input>';
     this.rangeObject = L.DomUtil.get(this.sliderDiv).children[0];
 
     this.sliderYears = L.DomUtil.create('ul', 'slider-years', this.sliderContainer);
-    this.sliderYears.innerHTML = "<li>" + this.options.timelineMin.getFullYear() + "</li><li>" + this.options.timelineMax.getFullYear() + "</li>";
+    this.sliderYears.innerHTML = "<li>" + this.options.timelineDateMin.getFullYear() + "</li><li>" + this.options.timelineDateMax.getFullYear() + "</li>";
 
 
     this.advanceDiv = L.DomUtil.create('div', 'advance', this.sliderContainer);
@@ -75,10 +75,10 @@ L.Control.TimeLineSlider = L.Control.extend({
     // potentially "move time"
 
     holdThis.advanceTime = function() {
-      let incrTime = (holdThis.options.timelineMax.getTime() - holdThis.options.timelineMin.getTime())/240;
+      let incrTime = (holdThis.options.timelineDateMax.getTime() - holdThis.options.timelineDateMin.getTime())/240;
       let newTime = parseFloat(holdThis.rangeObject.value) + parseFloat(incrTime);
-      if(newTime >= holdThis.options.timelineMax.getTime()) {
-        newTime = holdThis.options.timelineMax.getTime();
+      if(newTime >= holdThis.options.timelineDateMax.getTime()) {
+        newTime = holdThis.options.timelineDateMax.getTime();
         clearInterval(holdThis.intervalFunc);
         holdThis.advButtonObject.value = "Advance";
       }
@@ -102,8 +102,8 @@ L.Control.TimeLineSlider = L.Control.extend({
       for (let i=1;i<datesOfInterestSorted.length;i++) {
         if (curTime >= datesOfInterestSorted[i-1].getTime() && curTime < datesOfInterestSorted[i].getTime()) {
           // make sure we haven't stepped beyond the bounds of the slider
-          if (datesOfInterestSorted[i].getTime() > holdThis.options.timelineMax.getTime()) {
-            holdThis.rangeObject.value = holdThis.options.timelineMax.getTime();
+          if (datesOfInterestSorted[i].getTime() > holdThis.options.timelineDateMax.getTime()) {
+            holdThis.rangeObject.value = holdThis.options.timelineDateMax.getTime();
             holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
           } else {
             holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
@@ -120,8 +120,8 @@ L.Control.TimeLineSlider = L.Control.extend({
       for (let i=0;i<datesOfInterestSorted.length-1;i++) {
         if (curTime > datesOfInterestSorted[i].getTime() && curTime <= datesOfInterestSorted[i+1].getTime()) {
           // make sure we haven't stepped beyond the bounds of the slider
-          if (datesOfInterestSorted[i].getTime() < holdThis.options.timelineMin.getTime()) {
-            holdThis.rangeObject.value = holdThis.options.timelineMin.getTime();
+          if (datesOfInterestSorted[i].getTime() < holdThis.options.timelineDateMin.getTime()) {
+            holdThis.rangeObject.value = holdThis.options.timelineDateMin.getTime();
             holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
           } else {
             holdThis.rangeObject.value = datesOfInterestSorted[i].getTime();
@@ -135,7 +135,7 @@ L.Control.TimeLineSlider = L.Control.extend({
     // Initialize input change at start
     let inputEvent = new Event('input');
     this.rangeObject.dispatchEvent(inputEvent);
-    this.rangeObject.value = holdThis.options.timelineStart.getTime();
+    this.rangeObject.value = holdThis.options.timelineDateStart.getTime();
     holdThis.options.updateTime({dateValue: holdThis.rangeObject.value});
 
     return this.sliderContainer;
