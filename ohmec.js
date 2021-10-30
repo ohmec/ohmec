@@ -7,52 +7,62 @@
 let parameters = location.search.substring(1).split("&");
 
 let today = new Date();
-let timelineMin = today;
-let timelineMax = new Date(1,0,1);
-let timelineStart = new Date(1776,6,4); // oldest date that has all the polygons entered for US region
-let overrideMin = 1;
-let overrideMax = 1;
-let latSetting = 38.5;
-let lonSetting = -98;
-let zoomSetting = 4.5;
+let timelineDateStart = new Date(1776,6,4); // "interesting" start date, but arbitraty
+let timelineDateMin = today;                // these will be overridden as features come in
+let timelineDateMax = new Date(1,0,1);
+let overrideDateMin = 1;                    // these allow the database to change timeline range
+let overrideDateMax = 1;                    // unless provided in the URL override parameters
+
+let latSettingStart = 38.5;                 // centering around USA region for this Phase
+let lonSettingStart = -98.0;
+let latSettingMin = -90.0;
+let latSettingMax = 90.0;
+let lonSettingMin = -180.0;
+let lonSettingMax = 180.0;
+
+let zoomSettingMin = 2.5;
+let zoomSettingMax = 15.0;
+let zoomSettingStart = 4.5;
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([\d:]+)/;
   let match = param.match(test);
   if (match !== null) {
     if (match[1] == 'startdatestr') {
-      timelineMin = str2date(match[2],false);
-      overrideMin = 0;
+      timelineDateMin = str2date(match[2],false);
+      overrideDateMin = 0;
     }
     if (match[1] == 'enddatestr') {
-      timelineMax = str2date(match[2],true);
-      overrideMax = 0;
+      timelineDateMax = str2date(match[2],true);
+      overrideDateMax = 0;
     }
     if (match[1] == 'curdatestr') {
-      timelineStart = str2date(match[2],false);
+      timelineDateStart = str2date(match[2],false);
     }
   }
   test = /(lat|lon|z)=(-?[\d.]+)/;
   match = param.match(test);
   if (match !== null) {
     let info = match[2];
-    if (match[1] == 'lat' && info >= -90 && info <= 90) {
-      latSetting = info;
+    if (match[1] == 'lat' && info >= latSettingMin && info <= latSettingMax) {
+      latSettingStart = info;
     }
-    if (match[1] == 'lon' && info >= -180 && info <= 180) {
-      lonSetting = info;
+    if (match[1] == 'lon' && info >= lonSettingMin && info <= lonSettingMax) {
+      lonSettingStart = info;
     }
-    if (match[1] == 'z' && info >= 1 && info <= 18) {
-      zoomSetting = info;
+    if (match[1] == 'z' && info >= zoomSettingMin && info <= zoomSettingMax) {
+      zoomSettingStart = info;
     }
   }
 }
 
 let ohmap = L.map('map', {
-  center:        [latSetting, lonSetting],
-  zoom:          zoomSetting,
+  center:        [latSettingStart, lonSettingStart],
+  zoom:          zoomSettingStart,
   zoomSnap:      0.5,
   zoomDelta:     0.5,
+  minZoom:       zoomSettingMin,
+  maxZoom:       zoomSettingMax,
   worldCopyJump: false  // true would replicate upon panning far west/east, but has unattractive skips
 });
 
@@ -63,18 +73,18 @@ let updateDirectLink = function() {
   let splits = hrefText.split('?');
   let latlon = ohmap.getCenter();
   let urlText = splits[0] +
-    '?startdatestr=' + fixInt(timelineMin.getFullYear(),4) + ':' +
-                       fixInt(timelineMin.getMonth()+1,2)  + ':' +
-                       fixInt(timelineMin.getDate(),2) +
-    '&enddatestr='   + fixInt(timelineMax.getFullYear(),4) + ':' +
-                       fixInt(timelineMax.getMonth()+1,2)  + ':' +
-                       fixInt(timelineMax.getDate(),2) +
+    '?startdatestr=' + fixInt(timelineDateMin.getFullYear(),4) + ':' +
+                       fixInt(timelineDateMin.getMonth()+1,2)  + ':' +
+                       fixInt(timelineDateMin.getDate(),2) +
+    '&enddatestr='   + fixInt(timelineDateMax.getFullYear(),4) + ':' +
+                       fixInt(timelineDateMax.getMonth()+1,2)  + ':' +
+                       fixInt(timelineDateMax.getDate(),2) +
     '&curdatestr='   + fixInt(curDate.getFullYear(),4) + ':' +
                        fixInt(curDate.getMonth()+1,2)  + ':' +
                        fixInt(curDate.getDate(),2) +
-    '&lat='          + parseFloat(latlon.lat).toPrecision(6) +
-    '&lon='          + parseFloat(latlon.lng).toPrecision(6) +
-    '&z='            + parseFloat(ohmap.getZoom()).toPrecision(2);
+    '&lat='          + parseFloat(latlon.lat).toFixed(2) +
+    '&lon='          + parseFloat(latlon.lng).toFixed(2) +
+    '&z='            + parseFloat(ohmap.getZoom()).toFixed(1);
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
 };
@@ -106,7 +116,7 @@ infobox.update = function(id, prop) {
   if(prop && ("entity2type" in prop)) {
     e2text = '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>';
   }
-  this._div.innerHTML = 
+  this._div.innerHTML =
     (prop ?
       ('<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>' +
        e2text +
@@ -332,11 +342,11 @@ function geo_lint(dataset) {
         if(fid < 1 || fid > 5) {
           throw "fidelity for " + f.id + " should be between 1 (lowest) and 5 (highest), got " + fid;
         }
-        if(overrideMin) {
-          timelineMin = dateMin(timelineMin, p.endDate);
+        if(overrideDateMin) {
+          timelineDateMin = dateMin(timelineDateMin, p.endDate);
         }
-        if(overrideMax) {
-          timelineMax = dateMax(timelineMax, p.startDate);
+        if(overrideDateMax) {
+          timelineDateMax = dateMax(timelineDateMax, p.startDate);
         }
         datesOfInterest.push(p.startDate);
         polygonCount += 1;
@@ -418,12 +428,12 @@ function mouseInfoSlider(e) {
 }
 
 L.control.timelineSlider({
-  timelineMin:   timelineMin,
-  timelineMax:   timelineMax,
-  timelineStart: timelineStart,
-  mousedown:     mouseInfoSlider,
-  mousemove:     mouseInfoSlider,
-  updateTime:    refreshMap}).addTo(ohmap);
+  timelineDateMin:   timelineDateMin,
+  timelineDateMax:   timelineDateMax,
+  timelineDateStart: timelineDateStart,
+  mousedown:         mouseInfoSlider,
+  mousemove:         mouseInfoSlider,
+  updateTime:        refreshMap}).addTo(ohmap);
 
 let polygonSpan = document.querySelector('#polycount');
 polygonSpan.textContent = polygonCount;
