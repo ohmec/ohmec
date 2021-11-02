@@ -16,6 +16,7 @@ function featureStyle(feature) {
   let fillOpacity   = 0.2 + fidelity/10;
 
   // big lookup table for entity types and names, mapping to colors and other info
+  let entity1type = feature.properties.entity1type;
   let entity1name = feature.properties.entity1name;
   let entity2type = feature.properties.entity2type;
   let entity2name = feature.properties.entity2name;
@@ -142,6 +143,32 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#031056';
+  } else if(entity1name == 'Roman Empire') {
+    strokeColor  = '#802804';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#f85008';
+  } else if(entity1name == 'Magdalenian Culture') {
+    strokeColor  = '#401014';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#802028';
+  } else if(entity1name == 'Ahrensburg Culture') {
+    strokeColor  = '#905005';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#f08008';
+  } else if(entity1name == 'Maglemosian Culture') {
+    strokeColor  = '#80b070';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#c8e8b0';
+  } else if(entity1type == 'geography' && entity1name == 'icecap') {
+    strokeColor  = '#e0e0ff';
+    strokeWeight = 1.0;
+    strokeDash   = '1';
+    fillColor    = '#f4f4ff';
+    fillOpacity  = 0.9;
   }
 
   // since we're making borderless a largely hidden property, and
@@ -169,6 +196,8 @@ function featureStyle(feature) {
 function getFeatureLabel(feature) {
   if("entity2name" in feature.properties) {
     return feature.properties.entity2name;
+  } else if(feature.properties.entity1type === 'geography' && feature.properties.entity1name === 'icecap') {
+    return ' '
   } else {
     return feature.properties.entity1name;
   }
