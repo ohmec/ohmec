@@ -189,6 +189,11 @@ function getFeatureFont(feature) {
     fontcolor  = "#c00000";
   }
 
+  if(feature.geometry.type === "Point") {
+    fontchoice = 7;
+    fontcolor  = "#0000c0";
+  }
+
   // scale the font based upon the family, since some are wider than others
   switch(fontchoice) {
     case 0: fontname = 'Rubik';                fontscale = 81; break;
