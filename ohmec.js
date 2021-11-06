@@ -32,6 +32,11 @@ let smartStepDefault = 1;
 let smartStepFeature = smartStepDefault;
 
 let timelineSlider;
+let backgroundLayerDefault = 'relief';
+let backgroundLayerSetting = backgroundLayerDefault;
+let backgroundLayers = {};
+let maxZoomPerBackground = {};
+let lastBackgroundLayer;
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([\d:]+)/;
@@ -68,6 +73,11 @@ for(let param of parameters) {
   if (match !== null) {
     smartStepFeature = (match[1]==='on') ? 1 : 0;
   }
+  test = /background=(relief|stamen|paint|streets|physical|world|white)/;
+  match = param.match(test);
+  if (match !== null) {
+    backgroundLayerSetting = match[1];
+  }
 }
 
 // Declare the bounds of which the user can pan the viewing portal.
@@ -79,6 +89,7 @@ for(let param of parameters) {
 // since a) there isn't interesting geo-political content below
 // 70S and above 85N anyway; b) they don't render very well in a
 // Mercator projection.
+
 let panBounds = new L.LatLngBounds(new L.LatLng(-70, -200), new L.LatLng(85, 220));
 
 let ohmap = L.map('map', {
@@ -125,21 +136,96 @@ let updateDirectLink = function() {
   if(smartStepFeature != smartStepDefault) {
     urlText += '&smartstep=' + (smartStepFeature ? 'on' : 'off');
   }
+  if(backgroundLayerSetting !== backgroundLayerDefault) {
+    urlText += '&background=' + backgroundLayerSetting;
+  }
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
 };
 
+let updateLayerInfo = function(e) {
+  // change backgroundLayerSetting and also the URL link
+  if(e !== undefined && e.type === 'baselayerchange') {
+    backgroundLayerSetting = e.name;
+    lastBackgroundLayer = backgroundLayers[backgroundLayerSetting];
+    ohmap.setMaxZoom(maxZoomPerBackground[backgroundLayerSetting]);
+  }
+  updateDirectLink();
+};
+
 ohmap.on('moveend', updateDirectLink);
 
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={ohmec_mapbox_token}', {
-  maxZoom: 18,
-  attribution: 'Historical data OHMEC contributors | ' +
-    'Tile imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>',
-  id: 'mapbox/light-v9',
-  tileSize: 512,
-  ohmec_mapbox_token: 'pk.eyJ1Ijoic2pjdXBlcnRpbm8iLCJhIjoiY2trM2M2c3V4MTVqbjJwcWRtbG5xYzBuNCJ9.U9HinfthlYYG9oznaMUK3A',
-  zoomOffset: -1
-}).addTo(ohmap);
+let numBackgrounds = 0;
+
+function addBackgroundLayer(name, access, maxZoom, attribution) {
+  let maxZoomSetting = (maxZoom > zoomSettingMax) ? zoomSettingMax : maxZoom;
+  backgroundLayers[name] = L.tileLayer(access, {
+    maxZoom:     maxZoomSetting,
+    attribution: attribution,
+    tileSize:    512,
+    zoomOffset:  -1
+  });
+  maxZoomPerBackground[name] = maxZoomSetting;
+}
+
+let ohmec_mapbox_token = 'pk.eyJ1Ijoic2pjdXBlcnRpbm8iLCJhIjoiY2trM2M2c3V4MTVqbjJwcWRtbG5xYzBuNCJ9.U9HinfthlYYG9oznaMUK3A';
+
+addBackgroundLayer(
+  'relief',
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
+	13,
+  'Historical data OHMEC contributors | Tiles &copy; Esri &mdash; Source: Esri'
+);
+
+addBackgroundLayer(
+  'world',
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+	16,
+  'Historical data OHMEC contributors | Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+);
+
+addBackgroundLayer(
+  'physical',
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
+	9,
+  'Historical data OHMEC contributors | Tiles &copy; Esri &mdash; Source: US National Park Service'
+);
+
+addBackgroundLayer(
+  'white',
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
+	13,
+  'Historical data OHMEC contributors | Tiles &copy; Esri &mdash; Source: Esri'
+);
+
+addBackgroundLayer(
+  'stamen',
+  'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.png',
+	18,
+  'Historical data OHMEC contributors | Tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>',
+);
+
+addBackgroundLayer(
+  'streets',
+  'https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/{z}/{x}/{y}?access_token=' + ohmec_mapbox_token,
+  18,
+  'Historical data OHMEC contributors | Tile imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
+);
+
+addBackgroundLayer(
+  'paint',
+  'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg',
+  16,
+  'Historical data OHMEC contributors | Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>'
+);
+
+lastBackgroundLayer = backgroundLayers[backgroundLayerSetting];
+lastBackgroundLayer.addTo(ohmap);
+ohmap.setMaxZoom(maxZoomPerBackground[backgroundLayerSetting]);
+
+L.control.layers(backgroundLayers).addTo(ohmap);
+
+ohmap.on('baselayerchange', updateLayerInfo);
 
 // feature info box
 let infobox = L.control();
@@ -220,11 +306,6 @@ function mouseInfo(e) {
   infoTmout = setTimeout(() => { held_id = ''; held_prop = ''; infobox.update(); }, 7000);
 }
 
-function keyInfo(e) {
-//      this doesn't appear to work, need to figure out why later, not important now
-  console.log("key pressed: " + e);
-}
-
 // this renders the default leaflet Point marker as transparent,
 // while still allowing for selection / hovering. It also moves
 // points high in the z stack for first priority.
@@ -236,8 +317,7 @@ function onEachFeature(feature, layer) {
   layer.on({
     mouseover: highlightFeature,
     mouseout:  resetHighlight,
-    mousedown: mouseInfo,
-    keydown:   keyInfo,
+    mousedown: mouseInfo
   });
 
   let labelBounds;
@@ -602,13 +682,50 @@ L.control.timelineSlider({
 let polygonSpan = document.querySelector('#polycount');
 polygonSpan.textContent = polygonCount;
 
-// upon 's' keypress, toggle "smartStep" feature
+// upon keypress, if on a feature, hold its information, allowing the
+// user to click on the source link. so as to not linger forever,
+// hold the information about a few seconds.
 function checkKeypress(e) {
+  let backgroundUpdated = false;
+  if (e.originalEvent.key === '0') {
+    backgroundLayerSetting = 'relief';
+    backgroundUpdated = true;
+  }
+  if (e.originalEvent.key === '1') {
+    backgroundLayerSetting = 'world';
+    backgroundUpdated = true;
+  }
+  if (e.originalEvent.key === '2') {
+    backgroundLayerSetting = 'physical';
+    backgroundUpdated = true;
+  }
+  if (e.originalEvent.key === '3') {
+    backgroundLayerSetting = 'white';
+    backgroundUpdated = true;
+  }
+  if (e.originalEvent.key === '4') {
+    backgroundLayerSetting = 'stamen';
+    backgroundUpdated = true;
+  }
+  if (e.originalEvent.key === '5') {
+    backgroundLayerSetting = 'streets';
+    backgroundUpdated = true;
+  }
+  if (e.originalEvent.key === '6') {
+    backgroundLayerSetting = 'paint';
+    backgroundUpdated = true;
+  }
   if (e.originalEvent.key === 's') {
     smartStepFeature = 1 - smartStepFeature;
     timelineSlider.updateButtons(smartStepFeature);
+  }
+  if (backgroundUpdated) {
+    lastBackgroundLayer.remove();
+    lastBackgroundLayer = backgroundLayers[backgroundLayerSetting];
+    lastBackgroundLayer.addTo(ohmap);
+    ohmap.setMaxZoom(maxZoomPerBackground[backgroundLayerSetting]);
     updateDirectLink();
   }
 }
 
-ohmap.on('keypress', checkKeypress);
+ohmap.on('keydown', checkKeypress);
