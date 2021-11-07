@@ -56,6 +56,17 @@ for(let param of parameters) {
   }
 }
 
+// Declare the bounds of which the user can pan the viewing portal.
+// This is limited to the starting point viewpoint, but also just
+// a bit off the "edge" to give context on those geographies near
+// the international date line. Note that the map overlays won't
+// show "across the edge" with the exception of geometries that
+// straddle, eg Alaska. Note this also trims some of the poles
+// since a) there isn't interesting geo-political content below
+// 70S and above 85N anyway; b) they don't render very well in a
+// Mercator projection.
+let panBounds = new L.LatLngBounds(new L.LatLng(-70, -200), new L.LatLng(85, 220));
+
 let ohmap = L.map('map', {
   center:        [latSettingStart, lonSettingStart],
   zoom:          zoomSettingStart,
@@ -63,6 +74,8 @@ let ohmap = L.map('map', {
   zoomDelta:     0.5,
   minZoom:       zoomSettingMin,
   maxZoom:       zoomSettingMax,
+  maxBounds:     panBounds,
+  maxBoundsViscosity: 0.75, // gives a little "bounce"
   worldCopyJump: false  // true would replicate upon panning far west/east, but has unattractive skips
 });
 
