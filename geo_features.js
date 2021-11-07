@@ -28,9 +28,10 @@ function featureStyle(feature) {
 
   if(entity1name == 'England' && entity2type == 'grant') {
     strokeColor  = '#a00000';
-    strokeWeight = 1.0;
-    strokeDash   = '3';
+    strokeWeight = 0.1;
+    strokeDash   = '5';
     fillColor    = '#a08080';
+    fillOpacity  = 0.0;
   } else if(entity1name == 'England' && entity2type == 'colony') {
     strokeColor  = '#a00000';
     strokeWeight = 1.5;

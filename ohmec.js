@@ -262,63 +262,79 @@ function onEachFeature(feature, layer) {
   feature.textLabelDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
   feature.textLabel.appendChild(feature.textLabelDefs);
 
-  let fontsize = (feature.geometry.type === "Point") ? fontinfo.scale*0.04 : fontinfo.scale/label.length;
+  let segments = label.split('\n');
+  let labelLength = label.length;
+  if(segments.length > 1) {
+    labelLength = segments[0].length;
+    for(let i=1; i<segments.length; i++) {
+      if(segments[i].length > labelLength) {
+        labelLength = segments[i].length;
+      }
+    }
+  }
+
+  let fontsize = (feature.geometry.type === "Point") ? fontinfo.scale/25 : fontinfo.scale/labelLength;
   if("labelScale" in feature.properties) {
     fontsize *= feature.properties.labelScale;
   }
 
   let inner = '';
-  // if labelArc is defined, we first need to define the circular path that the text will traverse
-  // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
-  // and the text on the top (if arc > 0) or the circle above with the text on the bottom (arc < 0).
-  if("labelArc" in feature.properties) {
-    let arcval = feature.properties.labelArc;
-    let my   = heightd2 + 2*arcval;
-    let ar   = (arcval >= 0) ? arcval : -arcval;
-    let pos  = (arcval >= 0) ?  1 :   0;
-    let ar2n = arcval*2;
-    let ar2p = arcval*-2;
-    inner += '<path id="arcpath' + feature.id + '" stroke="none" fill="none" d="m 50,' + my;
-    inner += ' a ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2p;
-    inner +=   ' ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2n + ' z"/>';
-  }
-  let justify = (feature.geometry.type === "Point") ? 'left' : 'middle';
-  if("labelJustify" in feature.properties) {
-    justify = feature.properties.labelJustify;
-  }
-  let anchor = 'middle';
-  let tx = width*0.5;
-  let ty = height*0.5;
-  switch(justify) {
-    case 'above': anchor = 'middle'; tx = width*0.50; ty = height*0.48; break;
-    case 'below': anchor = 'middle'; tx = width*0.50; ty = height*0.54; break;
-    case 'right': anchor =    'end'; tx = width*0.48; ty = height*0.51; break;
-    case 'left':  anchor =  'start'; tx = width*0.52; ty = height*0.51; break;
-  }
-  inner += '<text text-anchor="' + anchor + '"';
-  inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
-  inner += ' fill="' + fontinfo.color + '"';  // e.g. "red" or "#c80015"
-  inner += ' font-size="' + Math.floor(fontsize) + 'px"';
-  if("labelRotate" in feature.properties || "labelX" in feature.properties || "labelY" in feature.properties) {
-    inner += ' transform="';
-    if("labelRotate" in feature.properties) {
-      inner += ' rotate(' + feature.properties.labelRotate + ' ' + widthd2 + ' ' + heightd2 + ')';
+  for(let i=0; i<segments.length; i++) {
+    let segmentLabel = segments[i];
+    let thisFontsize = fontsize*(1 - 0.2*i);  // font shrinks a bit on each line
+    // if labelArc is defined, we first need to define the circular path that the text will traverse
+    // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
+    // and the text on the top (if arc > 0) or the circle above with the text on the bottom (arc < 0).
+    if("labelArc" in feature.properties) {
+      let arcval = feature.properties.labelArc;
+      let my   = heightd2 + 2*arcval + i*thisFontsize;
+      let ar   = (arcval >= 0) ? arcval : -arcval;
+      let pos  = (arcval >= 0) ?  1 :   0;
+      let ar2n = arcval*2;
+      let ar2p = arcval*-2;
+      inner += '<path id="arcpath' + i + feature.id + '" stroke="none" fill="none" d="m 50,' + my;
+      inner += ' a ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2p;
+      inner +=   ' ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2n + ' z"/>';
     }
-    if("labelX" in feature.properties || "labelY" in feature.properties) {
-      let xoff = ("labelX" in feature.properties) ? feature.properties.labelX : 0;
-      let yoff = ("labelY" in feature.properties) ? feature.properties.labelY : 0;
-      inner += ' translate(' + xoff + ' ' + yoff + ')';
+    let justify = (feature.geometry.type === "Point") ? 'left' : 'middle';
+    if("labelJustify" in feature.properties) {
+      justify = feature.properties.labelJustify;
     }
-    inner += '"';
-  }
-  if(!("labelArc" in feature.properties)) {
-    inner += ' x=' + tx + ' y=' + ty;
-  }
-  inner += '>';
-  if(("labelArc" in feature.properties)) {
-    inner += '<textPath href="#arcpath' + feature.id + '" startOffset="50%">' + label + '</textPath></text>';
-  } else {
-    inner += label + '</text>';
+    let anchor = 'middle';
+    let tx = width*0.5;
+    let ty = height*0.5;
+    switch(justify) {
+      case 'above': anchor = 'middle'; tx = width*0.50; ty = height*0.48; break;
+      case 'below': anchor = 'middle'; tx = width*0.50; ty = height*0.54; break;
+      case 'right': anchor =    'end'; tx = width*0.48; ty = height*0.51; break;
+      case 'left':  anchor =  'start'; tx = width*0.52; ty = height*0.51; break;
+    }
+    inner += '<text text-anchor="' + anchor + '"';
+    inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
+    inner += ' fill="' + fontinfo.color + '"';  // e.g. "red" or "#c80015"
+    inner += ' font-size="' + fontsize.toFixed(2) + 'px"';
+    if("labelRotate" in feature.properties || "labelX" in feature.properties || "labelY" in feature.properties) {
+      inner += ' transform="';
+      if("labelRotate" in feature.properties) {
+        inner += ' rotate(' + feature.properties.labelRotate + ' ' + widthd2 + ' ' + heightd2 + ')';
+      }
+      if("labelX" in feature.properties || "labelY" in feature.properties) {
+        let xoff = ("labelX" in feature.properties) ? feature.properties.labelX : 0;
+        let yoff = ("labelY" in feature.properties) ? feature.properties.labelY : 0;
+        inner += ' translate(' + xoff + ' ' + yoff + ')';
+      }
+      inner += '"';
+    }
+    if(!("labelArc" in feature.properties)) {
+      let ny = ty + i*thisFontsize
+      inner += ' x=' + tx + ' y=' + ny;
+    }
+    inner += '>';
+    if(("labelArc" in feature.properties)) {
+      inner += '<textPath href="#arcpath' + i + feature.id + '" startOffset="50%">' + segmentLabel + '</textPath></text>';
+    } else {
+      inner += segmentLabel + '</text>';
+    }
   }
   feature.textLabel.innerHTML = inner;
   let labelElementBounds = [ [ labelBounds.getNorth(), labelBounds.getWest() ], [ labelBounds.getSouth(), labelBounds.getEast() ] ];
