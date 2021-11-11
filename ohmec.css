@@ -66,6 +66,7 @@ h1 {
 #paramtable,#keytable {
   font-family: "Courier";
   font-size: 13px;
+  width: 750px;
   border:solid;
   border-collapse: separate;
   border-spacing: 15px 0px;
