@@ -26,8 +26,6 @@ h1 {
 .curdate, .infobox {
   padding: 6px 8px;
   font: 14px/16px Helvetica, sans-serif;
-  background: white;
-  background: rgba(4,112,255,0.7);
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
   border-radius: 5px;
   background-color: rgba(4,112,255,0.7);
@@ -65,7 +63,7 @@ h1 {
 .infobox a:visited {
   color: #eee;
 }
-#paramtable {
+#paramtable,#keytable {
   font-family: "Courier";
   font-size: 13px;
   border:solid;
@@ -75,4 +73,20 @@ h1 {
 #directlink {
   font-family: "Courier";
   font-size: 11px;
+}
+.leaflet-control-layers-toggle {
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  background-color: rgba(4,112,255,0.7);
+  border-style: solid;
+  border-color: #0470ff;
+  border-width: 1px;
+}
+.leaflet-control-layers {
+  font: 14px/16px Helvetica, sans-serif;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  background-color: rgba(4,112,255,0.7);
+  border-style: solid;
+  border-color: #0470ff;
+  border-width: 1px;
+  color: #eee
 }
