@@ -58,7 +58,13 @@ L.Control.TimeLineSlider = L.Control.extend({
     this.rangeObject = L.DomUtil.get(this.sliderDiv).children[0];
 
     this.sliderYears = L.DomUtil.create('ul', 'slider-years', this.sliderContainer);
-    this.sliderYears.innerHTML = "<li>" + this.options.timelineDateMin.getFullYear() + "</li><li>" + this.options.timelineDateMax.getFullYear() + "</li>";
+    let minYear = this.options.timelineDateMin.getFullYear();
+    let maxYear = this.options.timelineDateMax.getFullYear();
+    let absMinYear = minYear < 0 ? -1*minYear : minYear;
+    let absMaxYear = maxYear < 0 ? -1*maxYear : maxYear;
+    let minYearStr = absMinYear + ((minYear < 0) ? 'BC' : '');
+    let maxYearStr = absMaxYear + ((maxYear < 0) ? 'BC' : '');
+    this.sliderYears.innerHTML = "<li>" + minYearStr + "</li><li>" + maxYearStr + "</li>";
 
     this.advanceDiv = L.DomUtil.create('div', 'advance', this.sliderContainer);
     this.advanceDiv.innerHTML = '<input type="button" id="advButton" value="Advance"></input>';
