@@ -37,6 +37,7 @@ let backgroundLayerSetting = backgroundLayerDefault;
 let backgroundLayers = {};
 let maxZoomPerBackground = {};
 let lastBackgroundLayer;
+let lastLayer;
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([-?\d:BC]+)/;
@@ -285,6 +286,7 @@ function highlightFeature(e) {
       layer.bringToFront();
     }
   }
+  lastLayer = layer;
 
   infobox.update(layer.feature.id,layer.feature.properties);
 }
@@ -292,6 +294,7 @@ function highlightFeature(e) {
 function resetHighlight(e) {
   geojson.resetStyle(e.target);
   infobox.update(held_id,held_prop);
+  lastLayer = undefined;
 }
 
 // upon mouse click, hold the information, allowing the
@@ -697,42 +700,40 @@ updateHTML('backdef',   backgroundLayerDefault);
 updateHTML('polycount', polygonCount);
 spanPtr = document.querySelector('#startdef');
 
-// upon keypress, if on a feature, hold its information, allowing the
-// user to click on the source link. so as to not linger forever,
-// hold the information about a few seconds.
+// check keypress value to determine function.
 function checkKeypress(e) {
   let backgroundUpdated = false;
-  if (e.originalEvent.key === '0') {
-    backgroundLayerSetting = 'relief';
-    backgroundUpdated = true;
-  }
-  if (e.originalEvent.key === '1') {
-    backgroundLayerSetting = 'world';
-    backgroundUpdated = true;
-  }
-  if (e.originalEvent.key === '2') {
-    backgroundLayerSetting = 'physical';
-    backgroundUpdated = true;
-  }
-  if (e.originalEvent.key === '3') {
-    backgroundLayerSetting = 'white';
-    backgroundUpdated = true;
-  }
-  if (e.originalEvent.key === '4') {
-    backgroundLayerSetting = 'stamen';
-    backgroundUpdated = true;
-  }
-  if (e.originalEvent.key === '5') {
-    backgroundLayerSetting = 'streets';
-    backgroundUpdated = true;
-  }
-  if (e.originalEvent.key === '6') {
-    backgroundLayerSetting = 'paint';
-    backgroundUpdated = true;
-  }
-  if (e.originalEvent.key === 's') {
-    smartStepFeature = 1 - smartStepFeature;
-    timelineSlider.updateButtons(smartStepFeature);
+  switch(e.originalEvent.key) {
+    case '0': backgroundLayerSetting = 'relief';   backgroundUpdated = true; break;
+    case '1': backgroundLayerSetting = 'world';    backgroundUpdated = true; break;
+    case '2': backgroundLayerSetting = 'physical'; backgroundUpdated = true; break;
+    case '3': backgroundLayerSetting = 'white';    backgroundUpdated = true; break;
+    case '4': backgroundLayerSetting = 'stamen';   backgroundUpdated = true; break;
+    case '5': backgroundLayerSetting = 'streets' ; backgroundUpdated = true; break;
+    case '6': backgroundLayerSetting = 'paint';    backgroundUpdated = true; break;
+    case 'a':
+      timelineSlider.affectAdvance();
+      break;
+    case 'r':
+      ohmap.setView([latSettingStart, lonSettingStart],zoomSettingStart);
+      break;
+    case 's':
+      smartStepFeature = 1 - smartStepFeature;
+      timelineSlider.updateButtons(smartStepFeature);
+      break;
+    case 'z':
+      if(lastLayer) {
+        ohmap.fitBounds(lastLayer.getBounds());
+      }
+      break;
+    case '>':
+    case '.':
+      timelineSlider.affectStepF();
+      break;
+    case '<':
+    case ',':
+      timelineSlider.affectStepR();
+      break;
   }
   if (backgroundUpdated) {
     lastBackgroundLayer.remove();

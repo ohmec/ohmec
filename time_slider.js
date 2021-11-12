@@ -103,7 +103,7 @@ L.Control.TimeLineSlider = L.Control.extend({
       timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
     }
 
-    L.DomEvent.on(timelineSlider.advButtonObject, "click", function() {
+    timelineSlider.affectAdvance = function() {
       if(timelineSlider.advButtonObject.value == "Advance") {
         timelineSlider.advButtonObject.value = "Stop";
         timelineSlider.intervalFunc = setInterval(timelineSlider.advanceTime, 250);
@@ -111,13 +111,16 @@ L.Control.TimeLineSlider = L.Control.extend({
         timelineSlider.advButtonObject.value = "Advance";
         clearInterval(timelineSlider.intervalFunc);
       }
-    });
+    }
 
-    L.DomEvent.on(timelineSlider.stepFButtonObject, "click", function() {
-      // step time forward once in datesOfInterest array
-      // if "smartStep" feature is turned on, only step forward
-      // if something in the field of view has changed for that step,
-      // else skip to the next one
+    L.DomEvent.on(timelineSlider.advButtonObject, "click", timelineSlider.affectAdvance);
+
+    // step time forward once in datesOfInterest array
+    // if "smartStep" feature is turned on, only step forward
+    // if something in the field of view has changed for that step,
+    // else skip to the next one
+
+    timelineSlider.affectStepF = function() {
       let curTime = timelineSlider.rangeObject.value;
       for (let i=1;i<datesOfInterestSorted.length;i++) {
         if (curTime < datesOfInterestSorted[i].getTime()) {
@@ -148,14 +151,15 @@ L.Control.TimeLineSlider = L.Control.extend({
           }
         }
       }
-    });
+    }
 
-    L.DomEvent.on(timelineSlider.stepRButtonObject, "click", function() {
-      // step time backward once in datesOfInterest array.
-      // if "smartStep" feature is turned on, only step backward
-      // if something in the field of view has changed for the next step
-      // (indicating that something will be removed in this one) else skip
-      // to the previous one
+    // step time backward once in datesOfInterest array.
+    // if "smartStep" feature is turned on, only step backward
+    // if something in the field of view has changed for the next step
+    // (indicating that something will be removed in this one) else skip
+    // to the previous one
+
+    timelineSlider.affectStepR = function() {
       let curTime = timelineSlider.rangeObject.value;
       for (let i=datesOfInterestSorted.length-2;i>=0;i--) {
         if (curTime > datesOfInterestSorted[i].getTime()) {
@@ -186,7 +190,10 @@ L.Control.TimeLineSlider = L.Control.extend({
           }
         }
       }
-    });
+    }
+
+    L.DomEvent.on(timelineSlider.stepFButtonObject, "click", timelineSlider.affectStepF);
+    L.DomEvent.on(timelineSlider.stepRButtonObject, "click", timelineSlider.affectStepR);
 
     // Initialize input change at start
     let inputEvent = new Event('input');
