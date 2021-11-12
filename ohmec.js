@@ -7,14 +7,14 @@
 let parameters = location.search.substring(1).split("&");
 
 let today = new Date();
-let timelineDateDefault = new Date(1776,6,4); // "interesting" start date, but arbitraty
-let timelineDateStart = timelineDateDefault;
-let timelineDateMin = today;                // these will be overridden as features come in
-let timelineDateMax = new Date(1,0,1);
-let overrideDateMin = 1;                    // these allow the database to change timeline range
-let overrideDateMax = 1;                    // unless provided in the URL override parameters
+let timelineDateStartDefault = new Date(1776,6,4);  // "interesting" start date, but arbitrary
+let timelineDateStart = timelineDateStartDefault;
+let timelineDateMinDefault = today;                 // these are the calculated min/max times of interest
+let timelineDateMaxDefault = new Date(1,0,1);
+let timelineDateMinOverride;                        // these allow the database to change timeline range
+let timelineDateMaxOverride;                        // unless provided in the URL override parameters
 
-let latSettingDefault = 38.5;                 // centering around USA region for this Phase
+let latSettingDefault = 38.5;                       // centering around USA region for this Phase
 let lonSettingDefault = -98.0;
 let latSettingStart = latSettingDefault;
 let lonSettingStart = lonSettingDefault;
@@ -39,16 +39,14 @@ let maxZoomPerBackground = {};
 let lastBackgroundLayer;
 
 for(let param of parameters) {
-  let test = /(startdatestr|enddatestr|curdatestr)=([\d:]+)/;
+  let test = /(startdatestr|enddatestr|curdatestr)=([-?\d:BC]+)/;
   let match = param.match(test);
   if (match !== null) {
     if (match[1] == 'startdatestr') {
-      timelineDateMin = str2date(match[2],false);
-      overrideDateMin = 0;
+      timelineDateMinOverride = str2date(match[2],false);
     }
     if (match[1] == 'enddatestr') {
-      timelineDateMax = str2date(match[2],true);
-      overrideDateMax = 0;
+      timelineDateMaxOverride = str2date(match[2],true);
     }
     if (match[1] == 'curdatestr') {
       timelineDateStart = str2date(match[2],false);
@@ -106,30 +104,33 @@ let ohmap = L.map('map', {
 
 let linkSpan = document.querySelector('#directlink');
 
+function dateStr(dateInput,slash) {
+  let year = dateInput.getFullYear();
+  let absYear = (year < 0) ? -1*year : year;
+  return fixInt(absYear,4) + slash +
+         fixInt(dateInput.getMonth()+1,2) + slash +
+         fixInt(dateInput.getDate(),2) +
+         ((year < 0) ? 'BC' : '');
+}
+
 let updateDirectLink = function() {
   let hrefText = location.href;
   let splits = hrefText.split('?');
   let latlon = ohmap.getCenter();
   let conjoin = '?';
   let urlText = splits[0];
-  if(!overrideDateMin) {
+  if(timelineDateMinOverride) {
     urlText += conjoin +
-      'startdatestr='  + fixInt(timelineDateMin.getFullYear(),4) + ':' +
-                         fixInt(timelineDateMin.getMonth()+1,2)  + ':' +
-                         fixInt(timelineDateMin.getDate(),2);
+      'startdatestr='  + dateStr(timelineDateMinOverride,':');
     conjoin = '&';
   }
-  if(!overrideDateMax) {
+  if(timelineDateMaxOverride) {
     urlText += conjoin +
-       'enddatestr='   + fixInt(timelineDateMax.getFullYear(),4) + ':' +
-                         fixInt(timelineDateMax.getMonth()+1,2)  + ':' +
-                         fixInt(timelineDateMax.getDate(),2);
+       'enddatestr='   + dateStr(timelineDateMaxOverride,':');
     conjoin = '&';
   }
   urlText += conjoin +
-    'curdatestr='    + fixInt(curDate.getFullYear(),4) + ':' +
-                       fixInt(curDate.getMonth()+1,2)  + ':' +
-                       fixInt(curDate.getDate(),2) +
+    'curdatestr='    + dateStr(curDate,':') +
     '&lat='          + parseFloat(latlon.lat).toFixed(2) +
     '&lon='          + parseFloat(latlon.lng).toFixed(2) +
     '&z='            + parseFloat(ohmap.getZoom()).toFixed(1);
@@ -328,8 +329,8 @@ function onEachFeature(feature, layer) {
     let coords = feature.geometry.coordinates;
     let plon = coords[0];
     let plat = coords[1];
-    let iconSize = 0.05;  // arbitraty size of icon, 0.05 degrees
-    let bboxSize = 1.0;   // arbitraty size of label bounding box, 1 degree
+    let iconSize = 0.05;  // arbitrary size of icon, 0.05 degrees
+    let bboxSize = 1.0;   // arbitrary size of label bounding box, 1 degree
     let iconFile = 'poi_poi.svg';
 
     // other available icon images
@@ -468,22 +469,24 @@ function uniqueDateSort(inArray) {
 let polygonCount = 0;
 
 function str2date(datestr,roundLate) {
-  let info = datestr.split(':');
-  // if datestr only contains one member (year), consider it 1st or last day of the year
-  // if only contains two (year, month), consider it 1st or last day of month
   let yr,mo,dy;
   let subtract = false;
+  let stripBC = datestr.replace("BC",'');
+  let isBC = (datestr === stripBC) ? false : true;
+  let info = stripBC.split(':');
+  // if datestr only contained one member (year), consider it 1st or last day of the year
+  // if only contains two (year, month), consider it 1st or last day of month
   if(info.length==3) {
-    yr = info[0];
+    yr = info[0] * (isBC ? -1 : 1);
     mo = info[1]-1;
     dy = info[2];
   } else if(info.length==2) {
-    yr = info[0];
+    yr = info[0] * (isBC ? -1 : 1);
     mo = roundLate ? info[1] : (info[1]-1);
     dy = 1;
     subtract = roundLate;
   } else if(info.length==1) {
-    yr = info[0];
+    yr = info[0] * (isBC ? -1 : 1);
     mo = roundLate ? 11 : 0;
     dy = roundLate ? 31 : 1;
   } else {
@@ -526,12 +529,8 @@ function geo_lint(dataset) {
         if(fid < 1 || fid > 5) {
           throw "fidelity for " + f.id + " should be between 1 (lowest) and 5 (highest), got " + fid;
         }
-        if(overrideDateMin) {
-          timelineDateMin = dateMin(timelineDateMin, p.endDate);
-        }
-        if(overrideDateMax) {
-          timelineDateMax = dateMax(timelineDateMax, p.startDate);
-        }
+        timelineDateMinDefault = dateMin(timelineDateMinDefault, p.endDate);
+        timelineDateMaxDefault = dateMax(timelineDateMaxDefault, p.startDate);
         datesOfInterest.push(p.startDate);
         polygonCount += 1;
       } else {
@@ -654,9 +653,8 @@ legend.onAdd = function () {
 legend.update = function () {
   this._div.innerHTML =
     'Current date:<br/><div id="fixeddate">' +
-    fixInt(curDate.getMonth()+1, 2) + '&sol;' +
-    fixInt(curDate.getDate(),    2) + '&sol;' +
-    fixInt(curDate.getFullYear(),4) + '</div>';
+    dateStr(curDate,'&sol;') +
+    '</div>';
   updateDirectLink();
 };
 legend.addTo(ohmap);
@@ -671,6 +669,9 @@ function mouseInfoSlider(e) {
   console.log(e);
 }
 
+let timelineDateMin = timelineDateMinOverride ? timelineDateMinOverride : timelineDateMinDefault;
+let timelineDateMax = timelineDateMaxOverride ? timelineDateMaxOverride : timelineDateMaxDefault;
+
 L.control.timelineSlider({
   timelineDateMin:   timelineDateMin,
   timelineDateMax:   timelineDateMax,
@@ -679,8 +680,22 @@ L.control.timelineSlider({
   mousemove:         mouseInfoSlider,
   updateTime:        refreshMap}).addTo(ohmap);
 
-let polygonSpan = document.querySelector('#polycount');
-polygonSpan.textContent = polygonCount;
+// update HTML data
+function updateHTML(spanName, value) {
+  let spanHandle = document.querySelector('#' + spanName);
+  spanHandle.textContent = value;
+}
+  
+updateHTML('startdef',  dateStr(timelineDateMinDefault,':'));
+updateHTML('enddef',    dateStr(timelineDateMaxDefault,':'));
+updateHTML('curdef',    dateStr(timelineDateStartDefault,':'));
+updateHTML('latdef',    latSettingDefault);
+updateHTML('londef',    lonSettingDefault);
+updateHTML('zdef',      zoomSettingStart);
+updateHTML('stepdef',   smartStepDefault ? 'on' : 'off');
+updateHTML('backdef',   backgroundLayerDefault);
+updateHTML('polycount', polygonCount);
+spanPtr = document.querySelector('#startdef');
 
 // upon keypress, if on a feature, hold its information, allowing the
 // user to click on the source link. so as to not linger forever,

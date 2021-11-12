@@ -90,7 +90,7 @@
         <td>s</td>
         <td>
           Toggles the "smart step" button feature. When enabled (default true),
-          the step + and step - buttons move the timeline slider forward or
+          the (Step +) and (Step -) buttons move the timeline slider forward or
           backward to the next time where a change in the database is visible
           in the current viewpoint. When false, the step buttons simply move
           to the next or previous change in the database.  NOTE the user must
@@ -114,37 +114,42 @@
       <tr>
         <td>startdatestr</td>
         <td>YYYY:MM:DD</td>
-        <td>Sets timeline slider start date to MM/DD/YYYY</td>
+        <td>Sets timeline slider start date to MM/DD/YYYY. Default is <span id='startdef'>zzz</span>.</td>
       </tr>
       <tr>
         <td>enddatestr</td>
         <td>YYYY:MM:DD</td>
-        <td>Sets timeline slider end date to MM/DD/YYYY</td>
+        <td>Sets timeline slider end date to MM/DD/YYYY. Default is <span id='enddef'>zzz</span>.</td>
       </tr>
       <tr>
         <td>curdatestr</td>
         <td>YYYY:MM:DD</td>
-        <td>Sets timeline slider current date to MM/DD/YYYY</td>
+        <td>Sets timeline slider current date to MM/DD/YYYY. Default is <span id='curdef'>zzz</span>.</td>
       </tr>
       <tr>
         <td>lat</td>
         <td>N</td>
-        <td>Sets center latitude to value N (range -90 to 90)</td>
+        <td>Sets center latitude to value N (range -90 to 90). Default is <span id='latdef'>zzz</span>.</td>
       </tr>
       <tr>
         <td>lon</td>
         <td>N</td>
-        <td>Sets center longitude to value N (range -180 to 180)</td>
+        <td>Sets center longitude to value N (range -180 to 180). Default is <span id='londef'>zzz</span>.</td>
       </tr>
       <tr>
         <td>z</td>
         <td>N</td>
-        <td>Sets zoom value to N (range 1 to 18)</td>
+        <td>Sets zoom value to N (range 2.5 to 15). Default is <span id='zdef'>zzz</span>.</td>
       </tr>
       <tr>
         <td>smartstep</td>
         <td>on|off</td>
-        <td>Enables or disables the smart step feature.</td>
+        <td>Enables or disables the smart step feature. Default is <span id='stepdef'>zzz</span>.</td>
+      </tr>
+      <tr>
+        <td>background</td>
+        <td>relief|world|<br/>physical|white|<br/>stamen|streets|paint</td>
+        <td>Sets the background map to the given option. Default is "<span id='backdef'>zzz</span>".</td>
       </tr>
     </table>
     <p>
