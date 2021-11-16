@@ -44,9 +44,11 @@ let infoboxNormalBackground = "rgba(4,112,255,0.7)";
 let infoboxPinnedBackground = "rgba(4, 64,160,0.7)";
 
 let infoPinned = false;
+let animationHash = {};
+let fHash = {};
 
 for(let param of parameters) {
-  let test = /(startdatestr|enddatestr|curdatestr)=([-?\d:BC]+)/;
+  let test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
   let match = param.match(test);
   if (match !== null) {
     if (match[1] == 'startdatestr') {
@@ -92,10 +94,10 @@ for(let param of parameters) {
 // show "across the edge" with the exception of geometries that
 // straddle, eg Alaska. Note this also trims some of the poles
 // since a) there isn't interesting geo-political content below
-// 70S and above 85N anyway; b) they don't render very well in a
+// 70S and above 75N anyway; b) they don't render very well in a
 // Mercator projection.
 
-let panBounds = new L.LatLngBounds(new L.LatLng(-70, -200), new L.LatLng(85, 220));
+let panBounds = new L.LatLngBounds(new L.LatLng(-70, -200), new L.LatLng(75, 200));
 
 let ohmap = L.map('map', {
   center:        [latSettingStart, lonSettingStart],
@@ -339,6 +341,149 @@ function pointToLayer(point, latlng) {
   return L.marker(latlng, { opacity: 0.0, zIndexOffset: 1000 });
 }
 
+function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altProperties, ratio) {
+  // Set width to 100, and scale height based upon ratio of bounds.
+  // Not perfect due to lat/long relationships but good enough for now.
+
+  let width = 100;
+  let widthd2 = width/2;
+  let height = width * (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest());
+  let heightd2 = height/2;
+  let textLabel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+  textLabel.setAttribute('xmlns',   "http://www.w3.org/2000/svg");
+  textLabel.setAttribute('width',   width);
+  textLabel.setAttribute('height',  height);
+  textLabel.setAttribute('viewBox', "0 0 " + width + " " + height);
+
+  let textLabelDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  textLabel.appendChild(textLabelDefs);
+
+  let labelScale = ("labelScale" in properties) ? properties.labelScale : 1.0;
+  let rotateAdj = 0;
+  let arcValue = 0;
+  let xAdj = 0;
+  let yAdj = 0;
+  let useArc = "labelArc" in properties;
+
+  // check for animation requirements
+  if(altProperties) {
+    if("labelScale" in properties || "labelScale" in altProperties) {
+      let scaleA = ("labelScale" in    properties) ?    properties.labelScale : 1.0;
+      let scaleB = ("labelScale" in altProperties) ? altProperties.labelScale : 1.0;
+      labelScale = scaleA+((scaleB-scaleA)*ratio);
+    }
+    if("labelRotate" in properties || "labelRotate" in altProperties) {
+      let rotateA = ("labelRotate" in    properties) ?    properties.labelRotate : 0;
+      let rotateB = ("labelRotate" in altProperties) ? altProperties.labelRotate : 0;
+      rotateAdj = (rotateB-rotateA)*ratio;
+    }
+    if("labelX" in properties || "labelX" in altProperties) {
+      let xA = ("labelX" in    properties) ?    properties.labelX : 0;
+      let xB = ("labelX" in altProperties) ? altProperties.labelX : 0;
+      xAdj = (xB-xA)*ratio;
+    }
+    if("labelY" in properties || "labelY" in altProperties) {
+      let yA = ("labelY" in    properties) ?    properties.labelY : 0;
+      let yB = ("labelY" in altProperties) ? altProperties.labelY : 0;
+      yAdj = (yB-yA)*ratio;
+    }
+    if("labelArc" in properties || "labelArc" in altProperties) {
+      // arc is weird in that you want to move to either +INF or -INF, depending
+      // upon where you start. so if one is negative, then other needs to default
+      // to -INF, else +INF. Since averaging towards INF would make it flatten out
+      // instantaneously, use 500 as about flat enough
+      let arcA = 0;
+      let arcB = 0;
+      useArc = true;
+      if(("labelArc" in properties) && ("labelArc" in altProperties)) {
+        arcA =    properties.labelArc;
+        arcB = altProperties.labelArc;
+      } else if("labelArc" in properties) {
+        arcA =    properties.labelArc;
+        arcB = (arcA < 0) ? -500 : 500;
+      } else if("labelArc" in altProperties) {
+        arcB = altProperties.labelArc;
+        arcA = (arcB < 0) ? -500 : 500;
+      }
+      arcValue = arcA+(arcB-arcA)*ratio;
+    }
+  } else if(useArc) {
+    arcValue = properties.labelArc;
+  }
+
+  let segments = label.split('\n');
+  let labelLength = label.length;
+  if(segments.length > 1) {
+    labelLength = segments[0].length;
+    for(let i=1; i<segments.length; i++) {
+      if(segments[i].length > labelLength) {
+        labelLength = segments[i].length;
+      }
+    }
+  }
+
+  let fontsize = isPoint ? fontinfo.scale/25 : fontinfo.scale/labelLength;
+  fontsize *= labelScale;
+
+  let inner = '';
+  for(let i=0; i<segments.length; i++) {
+    let segmentLabel = segments[i];
+    let thisFontsize = fontsize*(1 - 0.2*i);  // font shrinks a bit on each line
+    // if labelArc is used, we first need to define the circular path that the text will traverse
+    // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
+    // and the text on the top (if arc > 0) or the circle above with the text on the bottom (arc < 0).
+    if(useArc) {
+      let my   = heightd2 + 2*arcValue + i*thisFontsize;
+      let ar   = (arcValue >= 0) ? arcValue : -arcValue;
+      let pos  = (arcValue >= 0) ? 1 : 0;
+      let ar2n = arcValue*2;
+      let ar2p = arcValue*-2;
+      inner += '<path id="arcpath' + i + id + '" stroke="none" fill="none" d="m 50,' + my;
+      inner += ' a ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2p;
+      inner +=   ' ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2n + ' z"/>';
+    }
+    let justify = isPoint ? 'left' : 'middle';
+    if("labelJustify" in properties) {
+      justify = properties.labelJustify;
+    }
+    let anchor = 'middle';
+    let tx = width*0.5;
+    let ty = height*0.5;
+    switch(justify) {
+      case 'above': anchor = 'middle'; tx = width*0.50; ty = height*0.48; break;
+      case 'below': anchor = 'middle'; tx = width*0.50; ty = height*0.54; break;
+      case 'right': anchor =    'end'; tx = width*0.48; ty = height*0.51; break;
+      case 'left':  anchor =  'start'; tx = width*0.52; ty = height*0.51; break;
+    }
+    inner += '<text text-anchor="' + anchor + '"';
+    inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
+    inner += ' fill="' + fontinfo.color + '"';
+    inner += ' font-size="' + fontsize.toFixed(2) + 'px"';
+    if("labelRotate" in properties || "labelX" in properties || "labelY" in properties) {
+      inner += ' transform="';
+      if("labelRotate" in properties) {
+        inner += ' rotate(' + (properties.labelRotate + rotateAdj) + ' ' + widthd2 + ' ' + heightd2 + ')';
+      }
+      let xoff = ("labelX" in properties) ? (properties.labelX + xAdj) : xAdj;
+      let yoff = ("labelY" in properties) ? (properties.labelY + yAdj) : yAdj;
+      inner += ' translate(' + xoff + ' ' + yoff + ')"';
+    }
+    if(!useArc) {
+      let ny = ty + i*thisFontsize
+      inner += ' x=' + tx + ' y=' + ny;
+    }
+    inner += '>';
+    if(useArc) {
+      inner += '<textPath href="#arcpath' + i + id + '" startOffset="50%">' + segmentLabel + '</textPath></text>';
+    } else {
+      inner += segmentLabel + '</text>';
+    }
+  }
+  textLabel.innerHTML = inner;
+  return textLabel;
+}
+
 function onEachFeature(feature, layer) {
   layer.on({
     mouseover: infoboxFeatureOn,
@@ -348,18 +493,20 @@ function onEachFeature(feature, layer) {
 
   let labelBounds;
   let label = getFeatureLabel(feature);
+  let isPoint = feature.geometry.type === "Point";
 
-  if (feature.geometry.type === "Point") {
+  if (isPoint) {
     // create icon for Point, and create label bounds
     let coords = feature.geometry.coordinates;
     let plon = coords[0];
     let plat = coords[1];
-    let iconSize = 0.05;  // arbitrary size of icon, 0.05 degrees
-    let bboxSize = 1.0;   // arbitrary size of label bounding box, 1 degree
+    let iconSize = 0.05;  // arbitraty size of icon, 0.05 degrees
+    let bboxSize = 1.0;   // arbitraty size of label bounding box, 1 degree
     let iconFile = 'poi_poi.svg';
 
     // other available icon images
-    if(feature.properties.entity1type === 'settlement' ||
+    if(feature.properties.entity1type === 'settlement'  ||
+       feature.properties.entity1type === 'archaeology' ||
        feature.properties.entity1type === 'battle') {
       iconFile = 'poi_' + feature.properties.entity1type + '.svg';
     }
@@ -375,104 +522,37 @@ function onEachFeature(feature, layer) {
   } else {
     labelBounds = layer.getBounds();
   }
+
   boundsHash[feature.id] = labelBounds;
 
   // create SVG for label
+  feature.origBounds = labelBounds;
+  feature.textLabel = getTextLabel(
+    labelBounds,
+    feature.id, 
+    getFeatureLabel(feature),
+    isPoint,
+    feature.properties,
+    getFeatureFont(feature));
 
-  // Set width to 100, and scale height based upon ratio of bounds.
-  // Not perfect due to lat/long relationships but good enough for now.
-
-  let width = 100;
-  let widthd2 = width/2;
-  let height = width * (labelBounds.getNorth() - labelBounds.getSouth()) / (labelBounds.getEast() - labelBounds.getWest());
-  let heightd2 = height/2;
-  let fontinfo = getFeatureFont(feature);
-  feature.textLabel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  feature.textLabel.setAttribute('xmlns',   "http://www.w3.org/2000/svg");
-  feature.textLabel.setAttribute('width',   width);
-  feature.textLabel.setAttribute('height',  height);
-  feature.textLabel.setAttribute('viewBox', "0 0 " + width + " " + height);
-
-  feature.textLabelDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-  feature.textLabel.appendChild(feature.textLabelDefs);
-
-  let segments = label.split('\n');
-  let labelLength = label.length;
-  if(segments.length > 1) {
-    labelLength = segments[0].length;
-    for(let i=1; i<segments.length; i++) {
-      if(segments[i].length > labelLength) {
-        labelLength = segments[i].length;
-      }
-    }
-  }
-
-  let fontsize = (feature.geometry.type === "Point") ? fontinfo.scale/25 : fontinfo.scale/labelLength;
-  if("labelScale" in feature.properties) {
-    fontsize *= feature.properties.labelScale;
-  }
-
-  let inner = '';
-  for(let i=0; i<segments.length; i++) {
-    let segmentLabel = segments[i];
-    let thisFontsize = fontsize*(1 - 0.2*i);  // font shrinks a bit on each line
-    // if labelArc is defined, we first need to define the circular path that the text will traverse
-    // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
-    // and the text on the top (if arc > 0) or the circle above with the text on the bottom (arc < 0).
-    if("labelArc" in feature.properties) {
-      let arcval = feature.properties.labelArc;
-      let my   = heightd2 + 2*arcval + i*thisFontsize;
-      let ar   = (arcval >= 0) ? arcval : -arcval;
-      let pos  = (arcval >= 0) ?  1 :   0;
-      let ar2n = arcval*2;
-      let ar2p = arcval*-2;
-      inner += '<path id="arcpath' + i + feature.id + '" stroke="none" fill="none" d="m 50,' + my;
-      inner += ' a ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2p;
-      inner +=   ' ' + ar + ',' + ar + ' 0 0 ' + pos + ' 0,' + ar2n + ' z"/>';
-    }
-    let justify = (feature.geometry.type === "Point") ? 'left' : 'middle';
-    if("labelJustify" in feature.properties) {
-      justify = feature.properties.labelJustify;
-    }
-    let anchor = 'middle';
-    let tx = width*0.5;
-    let ty = height*0.5;
-    switch(justify) {
-      case 'above': anchor = 'middle'; tx = width*0.50; ty = height*0.48; break;
-      case 'below': anchor = 'middle'; tx = width*0.50; ty = height*0.54; break;
-      case 'right': anchor =    'end'; tx = width*0.48; ty = height*0.51; break;
-      case 'left':  anchor =  'start'; tx = width*0.52; ty = height*0.51; break;
-    }
-    inner += '<text text-anchor="' + anchor + '"';
-    inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
-    inner += ' fill="' + fontinfo.color + '"';  // e.g. "red" or "#c80015"
-    inner += ' font-size="' + fontsize.toFixed(2) + 'px"';
-    if("labelRotate" in feature.properties || "labelX" in feature.properties || "labelY" in feature.properties) {
-      inner += ' transform="';
-      if("labelRotate" in feature.properties) {
-        inner += ' rotate(' + feature.properties.labelRotate + ' ' + widthd2 + ' ' + heightd2 + ')';
-      }
-      if("labelX" in feature.properties || "labelY" in feature.properties) {
-        let xoff = ("labelX" in feature.properties) ? feature.properties.labelX : 0;
-        let yoff = ("labelY" in feature.properties) ? feature.properties.labelY : 0;
-        inner += ' translate(' + xoff + ' ' + yoff + ')';
-      }
-      inner += '"';
-    }
-    if(!("labelArc" in feature.properties)) {
-      let ny = ty + i*thisFontsize
-      inner += ' x=' + tx + ' y=' + ny;
-    }
-    inner += '>';
-    if(("labelArc" in feature.properties)) {
-      inner += '<textPath href="#arcpath' + i + feature.id + '" startOffset="50%">' + segmentLabel + '</textPath></text>';
-    } else {
-      inner += segmentLabel + '</text>';
-    }
-  }
-  feature.textLabel.innerHTML = inner;
   let labelElementBounds = [ [ labelBounds.getNorth(), labelBounds.getWest() ], [ labelBounds.getSouth(), labelBounds.getEast() ] ];
   feature.textOverlay = L.svgOverlay(feature.textLabel, labelElementBounds);
+}
+
+function updateTextOverlay(feature, bounds, altProperties, ratio) {
+  // create SVG for label
+  let textLabel = getTextLabel(
+    bounds,
+    feature.id, 
+    getFeatureLabel(feature),
+    false,
+    feature.properties,
+    getFeatureFont(feature),
+    altProperties,
+    ratio);
+
+  let svgElementBounds = [ [ bounds.getNorth(), bounds.getWest() ], [ bounds.getSouth(), bounds.getEast() ] ];
+  return L.svgOverlay(textLabel, svgElementBounds);
 }
 
 let datesOfInterest = [];
@@ -518,6 +598,7 @@ function str2date(datestr,roundLate) {
     throw "bad date format for date: " + datestr;
   }
   let newdate = new Date(yr,mo,dy);
+  newdate.setFullYear(yr);  // fixes "feature" for dates from 1-99
   if(subtract) {
     newdate.setDate(newdate.getDate()-1);
   }
@@ -537,6 +618,7 @@ function geo_lint(dataset) {
         throw "got duplicate dataset ID " + f.id;
       }
       id_set.add(f.id);
+      fHash[f.id] = f;
       if("properties" in f) {
         let p = f.properties;
         for(let required of ["entity1type", "entity1name", "fidelity",
@@ -558,6 +640,9 @@ function geo_lint(dataset) {
         timelineDateMaxDefault = dateMax(timelineDateMaxDefault, p.startDate);
         datesOfInterest.push(p.startDate);
         polygonCount += 1;
+        if("animateTo" in p) {
+          animationHash[f.id] = p.animateTo;
+        }
       } else {
         throw "no properties in feature " + f.id;
       }
@@ -575,7 +660,50 @@ function geo_lint(dataset) {
   }
 }
 
+// prepare animations by keeping track of which coordinates change
+// to reduce compute time
+
+function prepare_animations() {
+  for(let id_from in animationHash) {
+    let fromF = fHash[id_from];
+    // find the list of differing coordinates
+    let destF = fHash[animationHash[id_from]];
+    if(fromF.geometry.type === 'MultiPolygon') {
+      let fromLen = fromF.geometry.coordinates.length;
+      let destLen = destF.geometry.coordinates.length;
+      let maxPoly = fromLen < destLen ? fromLen : destLen;
+      fromF.pairDiffs = [];
+      for(let outer=0;outer<maxPoly;outer++) {
+        let fromC = fromF.geometry.coordinates[outer][0];
+        let destC = destF.geometry.coordinates[outer][0];
+        if (fromC.length != destC.length) {
+          throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since coordinate lengths differ (" + fromC.length + " vs " + destC.length + ") for polygon " + outer;
+        }
+        fromF.pairDiffs[outer] = [];
+        for(let i in fromC) {
+          if(fromC[i][0] !== destC[i][0] || fromC[i][1] !== destC[i][1]) {
+            fromF.pairDiffs[outer].push(i);
+          }
+        }
+      }
+    } else {
+      let fromC = fromF.geometry.coordinates[0];
+      let destC = destF.geometry.coordinates[0];
+      if (fromC.length != destC.length) {
+        throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since coordinate lengths differ (" + fromC.length + " vs " + destC.length + ")";
+      }
+      fromF.pairDiffs = [];
+      for(let i in fromC) {
+        if(fromC[i][0] !== destC[i][0] || fromC[i][1] !== destC[i][1]) {
+          fromF.pairDiffs.push(i);
+        }
+      }
+    }
+  }
+}
+
 geo_lint(dataNA);
+prepare_animations();
 
 datesOfInterest.push(today);
 let datesOfInterestSorted = uniqueDateSort(datesOfInterest);
@@ -647,10 +775,41 @@ geojson.evaluateLayers = function () {
   for(let l in this._layers) {
     let lyr = this._layers[l];
     let prop = lyr.feature.properties;
+    let bounds = L.latLngBounds(lyr.feature.origBounds.getNorthEast(), lyr.feature.origBounds.getSouthWest());
+    let ratio;
     if(curDate >= prop.startDate && curDate <= prop.endDate) {
+      if("animateTo" in prop) {
+        lyr.removeFrom(ohmap);
+        let fromC = lyr.feature.geometry.coordinates;
+        let destC = fHash[prop.animateTo].geometry.coordinates;
+        let timeDiv = (fHash[prop.animateTo].properties.startDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
+        let timeNum = (curDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
+        ratio = timeNum/timeDiv;
+        if(lyr.feature.geometry.type === 'MultiPolygon') {
+          for(let o in lyr.feature.pairDiffs) {
+            for(let i of lyr.feature.pairDiffs[o]) {
+              let newlat = ((destC[o][0][i][1]-fromC[o][0][i][1])*ratio) + fromC[o][0][i][1];
+              let newlon = ((destC[o][0][i][0]-fromC[o][0][i][0])*ratio) + fromC[o][0][i][0];
+              lyr._latlngs[o][0][i] = L.latLng(newlat,newlon);
+              bounds.extend(lyr._latlngs[o][0][i]);
+            }
+          }
+        } else {
+          for(let i of lyr.feature.pairDiffs) {
+            let newlat = ((destC[0][i][1]-fromC[0][i][1])*ratio) + fromC[0][i][1];
+            let newlon = ((destC[0][i][0]-fromC[0][i][0])*ratio) + fromC[0][i][0];
+            lyr._latlngs[0][i] = L.latLng(newlat,newlon);
+            bounds.extend(lyr._latlngs[0][i]);
+          }
+        }
+      }
       lyr.addTo(ohmap);
       if (lyr.feature.geometry.type === "Point") {
         lyr.feature.iconOverlay.addTo(ohmap);
+      }
+      if("animateTo" in prop) {
+        lyr.feature.textOverlay.removeFrom(ohmap);
+        lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, fHash[prop.animateTo].properties,ratio);
       }
       lyr.feature.textOverlay.addTo(ohmap);
     } else {
@@ -676,6 +835,8 @@ legend.onAdd = function () {
 };
 
 legend.update = function () {
+  let year = (curDate.getFullYear() < 0) ? fixInt(-curDate.getFullYear(),4) : fixInt(curDate.getFullYear(),4);
+  let bc = (curDate.getFullYear() < 0) ? "BC" : "";
   this._div.innerHTML =
     'Current date:<br/><div id="fixeddate">' +
     dateStr(curDate,'&sol;') +
