@@ -45,8 +45,9 @@
     </p>
     <p>
       Holding the shift key down and creating a bounding box will redefine
-      the current zoom window. Clicking on a polygon will hold the
-      Feature Information for further inspection.
+      the current zoom window. Clicking on a polygon will deprioritize
+      it in the "click stack" when there are multiple overlapping features,
+      allowing the user to hover over the lower ones to see their information.
     </p>
     <p>
       Visualization and control can be modified by key press events.
@@ -95,11 +96,18 @@
         </td>
       </tr>
       <tr>
+        <td>i</td>
+        <td>Toggles enable/disable of "pinning" the feature information
+            for the currently selected feature. Press once to pin, a
+            second time to unpin. Panning, zooming, or changing the date
+            also releases the pin.
+        </td>
+      </tr>
+      <tr>
         <td>r</td>
         <td>
           Resets the view to the default lat/lon/z settings, that is the default
           of the database, or as overriden by URL parameters.
-        </td>
       </tr>
       <tr>
         <td>s</td>
@@ -123,7 +131,7 @@
         </td>
       </tr>
       <tr>
-        <td>&gt; or .</td>
+        <td>&gt; .</td>
         <td>
           Step forward. Equivalent to pressing the (Step +) button on the page.
           The amount to step forward is under the management of the Smart Step
@@ -131,7 +139,7 @@
         </td>
       </tr>
       <tr>
-        <td>&lt; or ,</td>
+        <td>&lt; ,</td>
         <td>
           Step backward. Equivalent to pressing the (Step -) button on the page.
           The amount to step backward is under the management of the Smart Step
