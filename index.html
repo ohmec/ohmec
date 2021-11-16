@@ -87,6 +87,21 @@
         <td>Modify underlying base map to use unlabeled watercolor "paint" map</td>
       </tr>
       <tr>
+        <td>a</td>
+        <td>
+          Toggles the advance button. Pressing the key is equivalent to pressing
+          the Advance button on the page, toggling either on or off depending
+          upon current status.
+        </td>
+      </tr>
+      <tr>
+        <td>r</td>
+        <td>
+          Resets the view to the default lat/lon/z settings, that is the default
+          of the database, or as overriden by URL parameters.
+        </td>
+      </tr>
+      <tr>
         <td>s</td>
         <td>
           Toggles the "smart step" button feature. When enabled (default true),
@@ -96,6 +111,31 @@
           to the next or previous change in the database.  NOTE the user must
           click on the map once to indicate focus on it (vs other browser items)
           before any keyboard event.
+        </td>
+      </tr>
+      <tr>
+        <td>z</td>
+        <td>
+          Zooms the viewing window to be the bounding box of the currently
+          active feature. This could be what is hovered over by the mouse,
+          or the currently selected feature "pinned" by the "i" button information
+          holding feature.
+        </td>
+      </tr>
+      <tr>
+        <td>&gt; or .</td>
+        <td>
+          Step forward. Equivalent to pressing the (Step +) button on the page.
+          The amount to step forward is under the management of the Smart Step
+          feature which may be on or off.
+        </td>
+      </tr>
+      <tr>
+        <td>&lt; or ,</td>
+        <td>
+          Step backward. Equivalent to pressing the (Step -) button on the page.
+          The amount to step backward is under the management of the Smart Step
+          feature which may be on or off.
         </td>
       </tr>
     </table>
