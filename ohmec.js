@@ -176,8 +176,6 @@ function completeMapMove() {
 
 ohmap.on('moveend', completeMapMove);
 
-let numBackgrounds = 0;
-
 function addBackgroundLayer(name, access, maxZoom, attribution) {
   let maxZoomSetting = (maxZoom > zoomSettingMax) ? zoomSettingMax : maxZoom;
   backgroundLayers[name] = L.tileLayer(access, {
@@ -250,7 +248,7 @@ ohmap.on('baselayerchange', updateLayerInfo);
 
 // feature info box
 let infobox = L.control();
-let infoPinnedId, infoPinnedProperties, infoTmout;
+let infoPinnedId, infoPinnedProperties;
 
 infobox.onAdd = function() {
   this._div = L.DomUtil.create('div', 'infobox');
@@ -288,6 +286,16 @@ function dateMax(maxDate, newDate) {
 
 let geojson;
 
+infobox.clear = function() {
+  infobox._div.style.background = infoboxNormalBackground;
+  infoPinned = false;
+  if (lastFeature) {
+    infobox.update(lastFeature.id,lastFeature.properties);
+  } else {
+    infobox.update();
+  }
+}
+
 function infoboxFeatureOn(e) {
   let layer = e.target;
 
@@ -318,14 +326,13 @@ function infoboxFeatureOn(e) {
 
 function infoboxFeatureOff(e) {
   geojson.resetStyle(e.target);
+  lastFeature = null;
   if(infoPinned) {
     infobox._div.style.background = infoboxPinnedBackground;
     infobox.update(infoPinnedId,infoPinnedProperties);
   } else {
-    infobox._div.style.background = infoboxNormalBackground;
-    infobox.update();
+    infobox.clear();
   }
-  lastFeature = null;
 }
 
 // upon mouse click, lower this feature to lowest in the
@@ -492,7 +499,6 @@ function onEachFeature(feature, layer) {
   });
 
   let labelBounds;
-  let label = getFeatureLabel(feature);
   let isPoint = feature.geometry.type === "Point";
 
   if (isPoint) {
@@ -835,8 +841,6 @@ legend.onAdd = function () {
 };
 
 legend.update = function () {
-  let year = (curDate.getFullYear() < 0) ? fixInt(-curDate.getFullYear(),4) : fixInt(curDate.getFullYear(),4);
-  let bc = (curDate.getFullYear() < 0) ? "BC" : "";
   this._div.innerHTML =
     'Current date:<br/><div id="fixeddate">' +
     dateStr(curDate,'&sol;') +
@@ -851,20 +855,26 @@ let refreshMap = function( {dateValue} ) {
   geojson.evaluateLayers();
 }
 
-function mouseInfoSlider(e) {
-  console.log(e);
-}
-
 let timelineDateMin = timelineDateMinOverride ? timelineDateMinOverride : timelineDateMinDefault;
 let timelineDateMax = timelineDateMaxOverride ? timelineDateMaxOverride : timelineDateMaxDefault;
 
-L.control.timelineSlider({
-  timelineDateMin:   timelineDateMin,
-  timelineDateMax:   timelineDateMax,
-  timelineDateStart: timelineDateStart,
-  mousedown:         mouseInfoSlider,
-  mousemove:         mouseInfoSlider,
-  updateTime:        refreshMap}).addTo(ohmap);
+let mapBounds = function() {
+  return ohmap.getBounds();
+}
+
+timelineSlider = L.control.timelineSlider({
+  timelineDateMin:         timelineDateMin,
+  timelineDateMax:         timelineDateMax,
+  timelineDateStart:       timelineDateStart,
+  infoboxHandle:           infobox,
+  smartStepFeature:        smartStepFeature,
+  clearInfobox:            infobox.clear,
+  idAddsPerDOI:            idAddsPerDOI,
+  idSubsPerDOI:            idSubsPerDOI,
+  boundsHash:              boundsHash,
+  mapBounds:               mapBounds,
+  datesOfInterestSorted:   datesOfInterestSorted,
+  updateTime:              refreshMap}).addTo(ohmap);
 
 // update HTML data
 function updateHTML(spanName, value) {
@@ -881,7 +891,6 @@ updateHTML('zdef',      zoomSettingStart);
 updateHTML('stepdef',   smartStepDefault ? 'on' : 'off');
 updateHTML('backdef',   backgroundLayerDefault);
 updateHTML('polycount', polygonCount);
-spanPtr = document.querySelector('#startdef');
 
 // if key `i` is pressed, potentially modify the infobox,
 // using this algorithm

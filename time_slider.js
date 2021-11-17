@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
+let thisSlider;
+
 function boundsIntersect(bounds1, bounds2) {
   return (bounds1.getWest()  <= bounds2.getEast()  &&
           bounds2.getWest()  <= bounds1.getEast()  &&
@@ -11,11 +13,11 @@ function boundsIntersect(bounds1, bounds2) {
 
 L.Control.TimeLineSlider = L.Control.extend({
   options: {
-    position: 'bottomleft',
-    timelineDateMin: new Date(1,0,1),
-    timelineDateMax: new Date,
-    timelineDateStart: new Date(1776,6,4),
-    sliderWidth: "750px",
+    position:           'bottomleft',
+    timelineDateMin:    new Date(1,0,1),
+    timelineDateMax:    new Date,
+    timelineDateStart:  new Date(1776,6,4),
+    sliderWidth:        "750px"
   },
 
   initialize: function (options) {
@@ -29,6 +31,8 @@ L.Control.TimeLineSlider = L.Control.extend({
   },
 
   onAdd: function() {
+    thisSlider = this;
+
     this.sheet = document.createElement('style');
     document.body.appendChild(this.sheet);
 
@@ -70,7 +74,7 @@ L.Control.TimeLineSlider = L.Control.extend({
     this.advanceDiv.innerHTML = '<input type="button" id="advButton" value="Advance"></input>';
     this.advButtonObject = L.DomUtil.get(this.advanceDiv).children[0];
 
-    let prefix = smartStepFeature ? "" : "G";
+    let prefix = thisSlider.options.smartStepFeature ? "" : "G";
     this.stepFDiv = L.DomUtil.create('div', 'stepF', this.sliderContainer);
     this.stepFDiv.innerHTML = '<input type="button" id="stepFButton" value="' + prefix + 'Step +"></input>';
     this.stepFButtonObject = L.DomUtil.get(this.stepFDiv).children[0];
@@ -79,80 +83,74 @@ L.Control.TimeLineSlider = L.Control.extend({
     this.stepRDiv.innerHTML = '<input type="button" id="stepRButton" value="' + prefix + 'Step -"></input>';
     this.stepRButtonObject = L.DomUtil.get(this.stepRDiv).children[0];
 
-    timelineSlider = this;
-
     this.sheet.textContent = this.setupStartStyles();
 
     // When time slider gets changed, trigger updateTime function
-    L.DomEvent.on(timelineSlider.rangeObject, "input", function() {
-      timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+    L.DomEvent.on(thisSlider.rangeObject, "input", function() {
+      thisSlider.options.updateTime({dateValue: thisSlider.rangeObject.value});
     });
 
     // When advance/pause button gets pressed toggle advance/pause,
     // potentially "move time"
 
-    timelineSlider.advanceTime = function() {
-      let incrTime = (timelineSlider.options.timelineDateMax.getTime() - timelineSlider.options.timelineDateMin.getTime())/240;
-      let newTime = parseFloat(timelineSlider.rangeObject.value) + parseFloat(incrTime);
-      if(newTime >= timelineSlider.options.timelineDateMax.getTime()) {
-        newTime = timelineSlider.options.timelineDateMax.getTime();
-        clearInterval(timelineSlider.intervalFunc);
-        timelineSlider.advButtonObject.value = "Advance";
+    thisSlider.advanceTime = function() {
+      let incrTime = (thisSlider.options.timelineDateMax.getTime() - thisSlider.options.timelineDateMin.getTime())/240;
+      let newTime = parseFloat(thisSlider.rangeObject.value) + parseFloat(incrTime);
+      if(newTime >= thisSlider.options.timelineDateMax.getTime()) {
+        newTime = thisSlider.options.timelineDateMax.getTime();
+        clearInterval(thisSlider.intervalFunc);
+        thisSlider.advButtonObject.value = "Advance";
       }
-      timelineSlider.rangeObject.value = newTime;
-      timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
-      infobox._div.style.background = infoboxNormalBackground;
-      infoPinned = false;
-      infobox.update();
+      thisSlider.rangeObject.value = newTime;
+      thisSlider.options.updateTime({dateValue: thisSlider.rangeObject.value});
+      thisSlider.options.clearInfobox();
     }
 
-    timelineSlider.affectAdvance = function() {
-      if(timelineSlider.advButtonObject.value == "Advance") {
-        timelineSlider.advButtonObject.value = "Stop";
-        timelineSlider.intervalFunc = setInterval(timelineSlider.advanceTime, 250);
+    thisSlider.affectAdvance = function() {
+      if(thisSlider.advButtonObject.value == "Advance") {
+        thisSlider.advButtonObject.value = "Stop";
+        thisSlider.intervalFunc = setInterval(thisSlider.advanceTime, 250);
       } else {
-        timelineSlider.advButtonObject.value = "Advance";
-        clearInterval(timelineSlider.intervalFunc);
+        thisSlider.advButtonObject.value = "Advance";
+        clearInterval(thisSlider.intervalFunc);
       }
     }
 
-    L.DomEvent.on(timelineSlider.advButtonObject, "click", timelineSlider.affectAdvance);
+    L.DomEvent.on(thisSlider.advButtonObject, "click", thisSlider.affectAdvance);
 
     // step time forward once in datesOfInterest array
     // if "smartStep" feature is turned on, only step forward
     // if something in the field of view has changed for that step,
     // else skip to the next one
 
-    timelineSlider.affectStepF = function() {
-      let curTime = timelineSlider.rangeObject.value;
-      for (let i=1;i<datesOfInterestSorted.length;i++) {
-        if (curTime < datesOfInterestSorted[i].getTime()) {
+    thisSlider.affectStepF = function() {
+      let curTime = thisSlider.rangeObject.value;
+      for (let i=1;i<thisSlider.options.datesOfInterestSorted.length;i++) {
+        if (curTime < thisSlider.options.datesOfInterestSorted[i].getTime()) {
           let useStep = true;
-          if(smartStepFeature) {
+          if(thisSlider.options.smartStepFeature) {
             useStep = false;
-            for(let id of idAddsPerDOI[i]) {
-              if(boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+            for(let id of thisSlider.options.idAddsPerDOI[i]) {
+              if(boundsIntersect(thisSlider.options.mapBounds(), thisSlider.options.boundsHash[id])) {
                 useStep = true;
               }
             }
-            for(let id of idSubsPerDOI[i]) {
-              if(boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+            for(let id of thisSlider.options.idSubsPerDOI[i]) {
+              if(boundsIntersect(thisSlider.options.mapBounds(), thisSlider.options.boundsHash[id])) {
                 useStep = true;
               }
             }
           }
-          if(useStep || !smartStepFeature) {
+          if(useStep || !thisSlider.options.smartStepFeature) {
             // make sure we haven't stepped beyond the bounds of the slider
-            if (datesOfInterestSorted[i].getTime() > timelineSlider.options.timelineDateMax.getTime()) {
-              timelineSlider.rangeObject.value = timelineSlider.options.timelineDateMax.getTime();
-              timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+            if (thisSlider.options.datesOfInterestSorted[i].getTime() > thisSlider.options.timelineDateMax.getTime()) {
+              thisSlider.rangeObject.value = thisSlider.options.timelineDateMax.getTime();
+              thisSlider.options.updateTime({dateValue: thisSlider.rangeObject.value});
             } else {
-              timelineSlider.rangeObject.value = datesOfInterestSorted[i].getTime();
-              timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+              thisSlider.rangeObject.value = thisSlider.options.datesOfInterestSorted[i].getTime();
+              thisSlider.options.updateTime({dateValue: thisSlider.rangeObject.value});
             }
-            infobox._div.style.background = infoboxNormalBackground;
-            infoPinned = false;
-            infobox.update();
+            thisSlider.options.clearInfobox();
             return;
           }
         }
@@ -165,50 +163,48 @@ L.Control.TimeLineSlider = L.Control.extend({
     // (indicating that something will be removed in this one) else skip
     // to the previous one
 
-    timelineSlider.affectStepR = function() {
-      let curTime = timelineSlider.rangeObject.value;
-      for (let i=datesOfInterestSorted.length-2;i>=0;i--) {
-        if (curTime > datesOfInterestSorted[i].getTime()) {
+    thisSlider.affectStepR = function() {
+      let curTime = thisSlider.rangeObject.value;
+      for (let i=thisSlider.options.datesOfInterestSorted.length-2;i>=0;i--) {
+        if (curTime > thisSlider.options.datesOfInterestSorted[i].getTime()) {
           let useStep = true;
-          if(smartStepFeature) {
+          if(thisSlider.options.smartStepFeature) {
             useStep = false;
-            for(let id of idAddsPerDOI[i+1]) {
-              if(boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+            for(let id of thisSlider.options.idAddsPerDOI[i+1]) {
+              if(boundsIntersect(thisSlider.options.mapBounds(), thisSlider.options.boundsHash[id])) {
                 useStep = true;
               }
             }
-            for(let id of idSubsPerDOI[i+1]) {
-              if(boundsIntersect(ohmap.getBounds(), boundsHash[id])) {
+            for(let id of thisSlider.options.idSubsPerDOI[i+1]) {
+              if(boundsIntersect(thisSlider.options.mapBounds(), thisSlider.options.boundsHash[id])) {
                 useStep = true;
               }
             }
           }
-          if(useStep || !smartStepFeature) {
+          if(useStep || !thisSlider.options.smartStepFeature) {
             // make sure we haven't stepped beyond the bounds of the slider
-            if (datesOfInterestSorted[i].getTime() < timelineSlider.options.timelineDateMin.getTime()) {
-              timelineSlider.rangeObject.value = timelineSlider.options.timelineDateMin.getTime();
-              timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+            if (thisSlider.options.datesOfInterestSorted[i].getTime() < thisSlider.options.timelineDateMin.getTime()) {
+              thisSlider.rangeObject.value = thisSlider.options.timelineDateMin.getTime();
+              thisSlider.options.updateTime({dateValue: thisSlider.rangeObject.value});
             } else {
-              timelineSlider.rangeObject.value = datesOfInterestSorted[i].getTime();
-              timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+              thisSlider.rangeObject.value = thisSlider.options.datesOfInterestSorted[i].getTime();
+              thisSlider.options.updateTime({dateValue: thisSlider.rangeObject.value});
             }
-            infobox._div.style.background = infoboxNormalBackground;
-            infoPinned = false;
-            infobox.update();
+            thisSlider.options.clearInfobox();
             return;
           }
         }
       }
     }
 
-    L.DomEvent.on(timelineSlider.stepFButtonObject, "click", timelineSlider.affectStepF);
-    L.DomEvent.on(timelineSlider.stepRButtonObject, "click", timelineSlider.affectStepR);
+    L.DomEvent.on(thisSlider.stepFButtonObject, "click", thisSlider.affectStepF);
+    L.DomEvent.on(thisSlider.stepRButtonObject, "click", thisSlider.affectStepR);
 
     // Initialize input change at start
     let inputEvent = new Event('input');
     this.rangeObject.dispatchEvent(inputEvent);
-    this.rangeObject.value = timelineSlider.options.timelineDateStart.getTime();
-    timelineSlider.options.updateTime({dateValue: timelineSlider.rangeObject.value});
+    this.rangeObject.value = thisSlider.options.timelineDateStart.getTime();
+    thisSlider.options.updateTime({dateValue: thisSlider.rangeObject.value});
 
     return this.sliderContainer;
   },
@@ -219,8 +215,8 @@ L.Control.TimeLineSlider = L.Control.extend({
   },
 
   setupStartStyles: function() {
-    let rangeWidth = (parseFloat(timelineSlider.options.sliderWidth) - 15) + "px";
-    let labelMargin = (parseFloat(timelineSlider.options.sliderWidth)/2 - 10) + "px";
+    let rangeWidth = (parseFloat(thisSlider.options.sliderWidth) - 15) + "px";
+    let labelMargin = (parseFloat(thisSlider.options.sliderWidth)/2 - 10) + "px";
     let slider_style = `
       .slider_container {
         background-color: rgba(4,112,255,0.7);
@@ -235,25 +231,25 @@ L.Control.TimeLineSlider = L.Control.extend({
         position: relative;
         left: -6px;
         height: 5px;
-        width: ${timelineSlider.options.sliderWidth};
+        width: ${thisSlider.options.sliderWidth};
       }
       .advance {
         position: relative;
         left: -40px;
         height: 30px;
-        width: ${timelineSlider.options.sliderWidth};
+        width: ${thisSlider.options.sliderWidth};
       }
       .stepF {
         position: relative;
         left: -40px;
         height: 0px;
-        width: ${timelineSlider.options.sliderWidth};
+        width: ${thisSlider.options.sliderWidth};
       }
       .stepR {
         position: relative;
         left: -40px;
         height: 0px;
-        width: ${timelineSlider.options.sliderWidth};
+        width: ${thisSlider.options.sliderWidth};
       }
       .range input {
         width: 100%;
