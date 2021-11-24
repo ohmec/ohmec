@@ -46,6 +46,7 @@ let infoboxPinnedBackground = "rgba(4, 64,160,0.7)";
 let infoPinned = false;
 let animationHash = {};
 let fHash = {};
+let useEurope = false;
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
@@ -84,6 +85,17 @@ for(let param of parameters) {
   match = param.match(test);
   if (match !== null) {
     backgroundLayerSetting = match[1];
+  }
+  test = /easter/;
+  match = param.match(test);
+  if (match !== null) {
+    timelineDateMinOverride = str2date('15000BC',false);
+    timelineDateMaxOverride = str2date( '6000BC',true);
+    timelineDateStart       = str2date('14500BC',false);
+    latSettingStart = 48;
+    lonSettingStart =  3;
+    zoomSettingStart = 4;
+    useEurope = true;
   }
 }
 
@@ -708,7 +720,16 @@ function prepare_animations() {
   }
 }
 
-geo_lint(dataNA);
+if(useEurope) {
+  geo_lint(dataEur);
+} else {
+  geo_lint(dataNA);
+}
+
+let geoDB = useEurope ? dataEur : dataNA;
+
+console.log(geoDB);
+
 prepare_animations();
 
 datesOfInterest.push(today);
@@ -721,7 +742,7 @@ let datesOfInterestSorted = uniqueDateSort(datesOfInterest);
 // go through each feature and add it to an array of valid
 // IDs per DOI
 let idsPerDOI = [];
-for(let f of dataNA.features) {
+for(let f of geoDB.features) {
   let sd = str2date(f.properties.startdatestr,false);
   let ed = str2date(f.properties.enddatestr,  true);
   for (let i=0;i<datesOfInterestSorted.length;i++) {
@@ -771,7 +792,7 @@ for (let doi=0;doi<idsPerDOI.length;doi++) {
   }
 }
 
-geojson = L.geoJson(dataNA, {
+geojson = L.geoJson(geoDB, {
   style:         featureStyle,
   pointToLayer:  pointToLayer,
   onEachFeature: onEachFeature
