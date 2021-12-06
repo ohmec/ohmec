@@ -418,7 +418,7 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
   } else if(useArc) {
     arcValue = properties.labelArc;
   }
-
+  // console.log(label); // remove this line; only for debug
   let segments = label.split('\n');
   let labelLength = label.length;
   if(segments.length > 1) {
@@ -487,6 +487,7 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
       inner += segmentLabel + '</text>';
     }
   }
+  // console.log(properties["entity2name"]); // remove this line; only for debug
   textLabel.innerHTML = inner;
   return textLabel;
 }
@@ -666,6 +667,73 @@ function geo_lint(dataset) {
   }
 }
 
+// augment native-lands metadata with enhanced geojson metadata so it meets ohmec baseline requirements
+function transform_dataNL(dataset) {
+  let id_set = new Set();
+  if(dataset.type !== "FeatureCollection")
+    throw "expected dataset type === FeatureCollection, got " + dataset.type;
+  if("features" in dataset) {
+    for(let f of dataset.features) {
+      if(f.type !== "Feature") {
+        throw "feature type not Feature, got " + f.type;
+      }
+      if(id_set.has(f.id)) {
+        throw "got duplicate dataset ID " + f.id;
+      }
+      id_set.add(f.id);
+      fHash[f.id] = f;
+      if("properties" in f) {
+        let p = f.properties;
+        for(let required of ["entity1type", "entity1name", "fidelity",
+            "startdatestr", "enddatestr"]) {
+          if(!(required in p)){
+            f.properties["entity1type"]="nation";  // these are all "magic numbers" and should be made into const
+            f.properties["entity1name"]="Indigenous";
+            f.properties["entity2type"]="tribe";
+            f.properties["entity2name"]=f.properties["Name"];
+            if(typeof f.properties["entity2name"] === "undefined") {
+              f.properties["entity2name"]=" ";
+            }
+            f.properties["fidelity"]=2;
+            f.properties["startdatestr"]="700";
+            f.properties["enddatestr"]="1768";
+            f.properties["source"]="https://native-land.ca/";
+          }
+        }
+        p.startDate = str2date(p.startdatestr,false);
+        if(p.enddatestr == 'present') {
+          p.endDate = today;
+        } else {
+          p.endDate = str2date(p.enddatestr,true);
+        }
+        let fid = p.fidelity;
+        if(fid < 1 || fid > 5) {
+          throw "fidelity for " + f.id + " should be between 1 (lowest) and 5 (highest), got " + fid;
+        }
+        timelineDateMinDefault = dateMin(timelineDateMinDefault, p.endDate);
+        timelineDateMaxDefault = dateMax(timelineDateMaxDefault, p.startDate);
+        datesOfInterest.push(p.startDate);
+        polygonCount += 1;
+        if("animateTo" in p) {
+          animationHash[f.id] = p.animateTo;
+        }
+      } else {
+        throw "no properties in feature " + f.id;
+      }
+      if("geometry" in f) {
+        let g = f.geometry;
+        if((g.type !== "Polygon") && (g.type !== "MultiPolygon") && (g.type !== "Point")) {
+          throw "feature " + f.id + " should have geometry of Polygon, MultiPolygon or Point, got " + g.type;
+        }
+      } else {
+        throw "no geometry in feature " + f.id;
+      }
+    }
+  } else {
+    throw "no features in dataset"
+  }
+}
+
 // prepare animations by keeping track of which coordinates change
 // to reduce compute time
 
@@ -709,6 +777,8 @@ function prepare_animations() {
 }
 
 geo_lint(dataNA);
+transform_dataNL(dataNL);
+dataNA.features = dataNA.features.concat(dataNL.features);
 prepare_animations();
 
 datesOfInterest.push(today);

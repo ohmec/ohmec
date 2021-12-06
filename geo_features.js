@@ -46,8 +46,12 @@ function featureStyle(feature) {
   } else if(entity1name == 'Indigenous' && entity2type == 'tribe') {
     // don't override a pre-defined property, but otherwise set to true for indigenous
     if(!("borderless" in feature.properties)) {
-      borderless = true;
+      borderless = false;  // now set to false with incorporation of data from native-land.ca
     }
+    strokeColor  = '#a00000';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = feature.properties["color"];
   } else if(entity1name == 'USA' && entity2type == 'secessionist') {
     strokeColor  = '#0000a0';
     strokeWeight = 2.0;
