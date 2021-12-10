@@ -455,6 +455,9 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
   let inner = '';
   for(let i=0; i<segments.length; i++) {
     let segmentLabel = segments[i];
+    // spaces might be used for alignment, but get glommed in HTML, convert to &nbsp;
+    let regexSpace = new RegExp(" ", "g");
+    segmentLabel = segmentLabel.replace(regexSpace,'&nbsp;');
     let thisFontsize = fontsize*(1 - 0.2*i);  // font shrinks a bit on each line
     // if labelArc is used, we first need to define the circular path that the text will traverse
     // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
