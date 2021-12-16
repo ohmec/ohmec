@@ -269,18 +269,23 @@ infobox.onAdd = function() {
 };
 
 infobox.update = function(id, prop) {
-  let e2text = '';
-  if(prop && ("entity2type" in prop)) {
-    e2text = '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>';
+  if (prop) {
+    this._div.innerHTML = '<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>';
+    if("entity2type" in prop) {
+      this._div.innerHTML += '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>';
+    }
+    this._div.innerHTML += prop.startdatestr + ' - ' + prop.enddatestr  + '<br/>';
+    if("source" in prop) {
+      this._div.innerHTML += '<a href="' + prop.source + '" target="_blank">source</a><br/>';
+    } else if("sources" in prop) {
+      for (let i=0;i<prop.sources.length;i++) {
+        this._div.innerHTML += '<a href="' + prop.sources[i] + '" target="_blank">source ' + (i+1) + '</a><br/>';
+      }
+    }
+    this._div.innerHTML += '<b>id:</b>' + id;
+  } else {
+    this._div.innerHTML = '<b>Feature Information</b>';
   }
-  this._div.innerHTML =
-    (prop ?
-      ('<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>' +
-       e2text +
-               prop.startdatestr + ' - '    + prop.enddatestr  + '<br/>' +
-               (prop.source ? ('<a href="' + prop.source + '" target="_blank">source</a><br/>') : '') +
-       '<b>' + 'id: '           + '</b>'   + id) :
-      '<b>Feature Information</b>');
 };
 
 infobox.addTo(ohmap);
@@ -324,8 +329,8 @@ function infoboxFeatureOn(e) {
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       layer.bringToFront();
     }
-    lastFeature = layer.feature;
   }
+  lastFeature = layer.feature;
   lastLayer = layer;
 
   if (infoPinned && (infoPinnedId == layer.feature.id)) {
@@ -350,7 +355,9 @@ function infoboxFeatureOff(e) {
 // upon mouse click, lower this feature to lowest in the
 // click stack so next time it hovers on something else
 function lowerZ(e) {
-  e.target.bringToBack();
+  if(e.target.feature.geometry.type !== 'Point') {
+    e.target.bringToBack();
+  }
 }
 
 // this renders the default leaflet Point marker as transparent,
@@ -453,7 +460,7 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
     // it is a circle with radius 'arc' that has a tangent at (50,h/2), either with the circle below
     // and the text on the top (if arc > 0) or the circle above with the text on the bottom (arc < 0).
     if(useArc) {
-      let my   = heightd2 + 2*arcValue + i*thisFontsize;
+      let my   = heightd2 + 2*arcValue + i*fontsize;
       let ar   = (arcValue >= 0) ? arcValue : -arcValue;
       let pos  = (arcValue >= 0) ? 1 : 0;
       let ar2n = arcValue*2;
@@ -489,7 +496,7 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
       inner += ' translate(' + xoff + ' ' + yoff + ')"';
     }
     if(!useArc) {
-      let ny = ty + i*thisFontsize
+      let ny = ty + i*fontsize;
       inner += ' x=' + tx + ' y=' + ny;
     }
     inner += '>';
@@ -728,8 +735,6 @@ if(useEurope) {
 
 let geoDB = useEurope ? dataEur : dataNA;
 
-console.log(geoDB);
-
 prepare_animations();
 
 datesOfInterest.push(today);
@@ -924,6 +929,7 @@ updateHTML('polycount', polygonCount);
 //    feature, pin that feature.
 
 function handleIPress() {
+  console.log("i pressed with lastFeature = " + lastFeature);
   if (infoPinned && (!lastFeature || (lastFeature.id == infoPinnedId))) {
     infoPinned = false;
     infobox._div.style.background = infoboxNormalBackground;

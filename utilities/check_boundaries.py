@@ -100,6 +100,9 @@ def compare_features(idA, idB):
         print("ERR: intAB for " + idA + " with " + idB + " is a MultiLine String. Here is its boundary")
         print("  " + str(bound) + " of length " + str(len(bound)))
         return 3
+    if intABtype == 'Polygon' or intABtype == 'MultiPolygon':
+      if idA in overlap_waiver or idB in overlap_waiver:
+        return 1
     if not idA in double_waiver and not idB in double_waiver:
       print("ERR:  intersection of " + idA + " with " + idB + " resulted in " + intABtype + ":")
       print("  " + str(intAB))
@@ -144,38 +147,39 @@ point_count = 0
 for feat1 in fullstruct["features"]:
   id1 = feat1["id"]
   props1 = feat1["properties"]
-  if id1 not in geoms:
-    geoms[id1] = shapely.geometry.asShape(feat1["geometry"])
-    check_props(feat1)
-    if not geoms[id1].is_valid:
-      sys.stderr.write(id1 + " is not valid\n")
-  start1 = conv_date(props1["startdatestr"],1)
-  end1 = conv_date(props1["enddatestr"],0)
-  for feat2 in fullstruct["features"]:
-    id2 = feat2["id"]
-    if id1 != id2:
-      idA = id1 if id1 < id2 else id2
-      idB = id1 if id1 > id2 else id2
-      idAB = idA + ':' + idB
-      if idAB not in already_handled:
-        props2 = feat2["properties"]
-        if id2 not in geoms:
-          geoms[id2] = shapely.geometry.asShape(feat2["geometry"])
-          check_props(feat2)
-          if not geoms[id2].is_valid:
-            sys.stderr.write(id2 + " is not valid\n")
-        start2 = conv_date(props2["startdatestr"],1)
-        end2 = conv_date(props2["enddatestr"],0)
-        if date_overlap(start1,end1,start2,end2):
-          res = compare_features(idA,idB)
-          if res >= 1:
-            boundary_count += 1
-          if res == 2:
-            overlap_count += 1
-          if res == 3:
-            gap_count += 1
-          if res == 4:
-            point_count += 1
-      already_handled[idAB] = 1
+  if feat1["geometry"]["type"] != "Point":
+    if id1 not in geoms:
+      geoms[id1] = shapely.geometry.asShape(feat1["geometry"])
+      check_props(feat1)
+      if not geoms[id1].is_valid:
+        sys.stderr.write(id1 + " is not valid\n")
+    start1 = conv_date(props1["startdatestr"],1)
+    end1 = conv_date(props1["enddatestr"],0)
+    for feat2 in fullstruct["features"]:
+      id2 = feat2["id"]
+      if id1 != id2 and feat2["geometry"]["type"] != "Point":
+        idA = id1 if id1 < id2 else id2
+        idB = id1 if id1 > id2 else id2
+        idAB = idA + ':' + idB
+        if idAB not in already_handled:
+          props2 = feat2["properties"]
+          if id2 not in geoms:
+            geoms[id2] = shapely.geometry.asShape(feat2["geometry"])
+            check_props(feat2)
+            if not geoms[id2].is_valid:
+              sys.stderr.write(id2 + " is not valid\n")
+          start2 = conv_date(props2["startdatestr"],1)
+          end2 = conv_date(props2["enddatestr"],0)
+          if date_overlap(start1,end1,start2,end2):
+            res = compare_features(idA,idB)
+            if res >= 1:
+              boundary_count += 1
+            if res == 2:
+              overlap_count += 1
+            if res == 3:
+              gap_count += 1
+            if res == 4:
+              point_count += 1
+        already_handled[idAB] = 1
 
 print("completed checking " + str(boundary_count) + " boundaries, with " + str(overlap_count) + " overlaps, " + str(gap_count) + " gaps and " + str(point_count) + " points")

@@ -29,10 +29,15 @@ function featureStyle(feature) {
 
   if(entity1name == 'England' && entity2type == 'grant') {
     strokeColor  = '#a00000';
-    strokeWeight = 0.1;
-    strokeDash   = '5';
+    strokeWeight = 1;
+    strokeDash   = '2';
     fillColor    = '#a08080';
     fillOpacity  = 0.0;
+  } else if(entity1name == 'England' && entity2type == 'colony') {
+    strokeColor  = '#a00000';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#a04040';
   } else if(entity1name == 'England' && entity2type == 'colony') {
     strokeColor  = '#a00000';
     strokeWeight = 1.5;
@@ -138,7 +143,7 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#ff8095';
-  } else if(entity1name == 'England' && entity2type == 'dominion' && entity2name == 'Newfoundland') {
+  } else if(entity1name == 'England' && entity2type == 'dominion') {
     strokeColor  = '#bb0020';
     strokeWeight = 1.5;
     strokeDash   = '1';
