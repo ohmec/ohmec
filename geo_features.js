@@ -33,21 +33,21 @@ function featureStyle(feature) {
     strokeDash   = '2';
     fillColor    = '#a08080';
     fillOpacity  = 0.0;
-  } else if(entity1name == 'England' && entity2type == 'colony') {
+  } else if((entity1name == 'England' || (entity1name == 'Great Britain')) && entity2type == 'colony') {
     strokeColor  = '#a00000';
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#a04040';
-  } else if(entity1name == 'England' && entity2type == 'colony') {
-    strokeColor  = '#a00000';
-    strokeWeight = 1.5;
-    strokeDash   = '1';
-    fillColor    = '#a04040';
-  } else if(entity1name == 'England' && entity2type == 'territory') {
+  } else if((entity1name == 'England' || (entity1name == 'Great Britain')) && entity2type == 'territory') {
     strokeColor  = '#a00000';
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#a06060';
+  } else if(entity1name == 'France' && ((entity2type == 'collectivity') || (entity2type == 'overseas department'))) {
+    strokeColor  = '#001080';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#ffffff';
   } else if(entity1name == 'Indigenous' && entity2type == 'tribe') {
     // don't override a pre-defined property, but otherwise set to true for indigenous
     if(!("borderless" in feature.properties)) {
@@ -83,11 +83,11 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#f0a010';
-  } else if(entity1name == 'Netherlands' && entity2type == 'colony') {
-    strokeColor  = '#b00000';
+  } else if(entity1name == 'Netherlands' && (entity2type == 'colony') || (entity2type == 'constituent country')) {
+    strokeColor  = '#1088cc';
     strokeWeight = 1.5;
     strokeDash   = '1';
-    fillColor    = '#1088cc';
+    fillColor    = '#f48008';
   } else if(entity1name == 'Texas') {
     strokeColor  = '#900020';
     strokeWeight = 1.5;
@@ -148,6 +148,66 @@ function featureStyle(feature) {
     strokeWeight = 1.5;
     strokeDash   = '1';
     fillColor    = '#031056';
+  } else if(entity1name == 'Cuba') {
+    strokeColor  = '#a0000c';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#001480';
+  } else if(entity1name == 'Jamaica') {
+    strokeColor  = '#fca715';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#0e6737';
+  } else if(entity1name == 'Haiti') {
+    strokeColor  = '#000090';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#c60026';
+  } else if(entity1name == 'Dominican Republic') {
+    strokeColor  = '#c2001a';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#041d50';
+  } else if(entity1name == 'The Bahamas') {
+    strokeColor  = '#0d657a';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#fdbe20';
+  } else if(entity1name == 'Saint Kitts and Nevis') {
+    strokeColor  = '#000000';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#139237';
+  } else if(entity1name == 'Antigua and Barbuda') {
+    strokeColor  = '#c0001a';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#faca10';
+  } else if(entity1name == 'Dominica') {
+    strokeColor  = '#facb10';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#0c5a2f';
+  } else if(entity1name == 'Saint Lucia') {
+    strokeColor  = '#fac110';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#57c1ff';
+  } else if(entity1name == 'Saint Vincent and the Grenadines') {
+    strokeColor  = '#021461';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#fac919';
+  } else if(entity1name == 'Grenada') {
+    strokeColor  = '#faca10';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#0e694c';
+  } else if(entity1name == 'Barbados') {
+    strokeColor  = '#fdbe1d';
+    strokeWeight = 1.5;
+    strokeDash   = '1';
+    fillColor    = '#01126c';
   } else if(entity1name == 'Roman Empire') {
     strokeColor  = '#802804';
     strokeWeight = 1.5;
