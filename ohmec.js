@@ -48,6 +48,8 @@ let animationHash = {};
 let fHash = {};
 let useEurope = false;
 
+let styleMatches = {};
+
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
   let match = param.match(test);
@@ -318,7 +320,7 @@ function infoboxFeatureOn(e) {
 
   if (layer.feature.geometry.type !== "Point") {  // Point styles are not being overridden at this time
     // borderless features shouldn't be highlighted (but still have selectability)
-    let opacity = (layer.feature.properties.borderless) ? 0.0 : 0.7;
+    let opacity = (layer.feature.style.borderless) ? 0.0 : 0.7;
     layer.setStyle({
       weight: 5,
       color: '#666',
@@ -635,8 +637,9 @@ function str2date(datestr,roundLate) {
 
 function geo_lint(dataset) {
   let id_set = new Set();
-  if(dataset.type !== "FeatureCollection")
+  if(dataset.type !== "FeatureCollection") {
     throw "expected dataset type === FeatureCollection, got " + dataset.type;
+  }
   if("features" in dataset) {
     for(let f of dataset.features) {
       if(f.type !== "Feature") {
@@ -681,6 +684,53 @@ function geo_lint(dataset) {
         }
       } else {
         throw "no geometry in feature " + f.id;
+      }
+      // capture the style from the style list.
+      // apply styles as matching in order, starting with default
+      // be careful to not override given styles, so hold those and
+      // reapply at the end
+      if("styles" in dataset) {
+        if("style" in f) {
+          f.stylehold = f.style;
+        }
+        f.style = {};
+        for(let s of dataset.styles) {
+          if(s.type === "default" && "style" in s) {
+            for(let e in s.style) {
+              f.style[e] = s.style[e];
+            }
+          } else if(s.type === "match") {
+            for(let m in s.match) {
+              let v = s.match[m];
+              // geometry type is special, rest are for properties
+              if(m === "geometryType") {
+                if(f.geometry.type === v) {
+                  for(let e in s.style) {
+                    f.style[e] = s.style[e];
+                  }
+                }
+              } else {
+                let match = 1;
+                for(let m in s.match) {
+                  let v = s.match[m];
+                  if(f.properties[m] !== v) {
+                    match = 0;
+                  }
+                }
+                if(match) {
+                  for(let e in s.style) {
+                    f.style[e] = s.style[e];
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      if("stylehold" in f) {
+        for(let e in f.stylehold) {
+          f.style[e] = f.stylehold[e];
+        }
       }
     }
   } else {
