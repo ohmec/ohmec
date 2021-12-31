@@ -47,6 +47,7 @@ let infoPinned = false;
 let animationHash = {};
 let fHash = {};
 let useEurope = false;
+let useNativeLands = false;
 
 let styleMatches = {};
 
@@ -98,6 +99,11 @@ for(let param of parameters) {
     lonSettingStart =  3;
     zoomSettingStart = 4;
     useEurope = true;
+  }
+  test = /nl/;
+  match = param.match(test);
+  if (match != null) {
+    useNativeLands = true;
   }
 }
 
@@ -162,6 +168,9 @@ let updateDirectLink = function() {
   }
   if(backgroundLayerSetting !== backgroundLayerDefault) {
     urlText += '&background=' + backgroundLayerSetting;
+  }
+  if(useNativeLands) {
+    urlText += '&nl';
   }
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
@@ -278,7 +287,11 @@ infobox.update = function(id, prop) {
     }
     this._div.innerHTML += prop.startdatestr + ' - ' + prop.enddatestr  + '<br/>';
     if("source" in prop) {
-      this._div.innerHTML += '<a href="' + prop.source + '" target="_blank">source</a><br/>';
+      if(prop.source.includes("native-land")) { // give explicit credit to Native Lands for their data
+        this._div.innerHTML += '<a href="' + prop.source + '" target="_blank">source: Native Lands</a><br/>';
+      } else {
+        this._div.innerHTML += '<a href="' + prop.source + '" target="_blank">source</a><br/>';
+      }
     } else if("sources" in prop) {
       for (let i=0;i<prop.sources.length;i++) {
         this._div.innerHTML += '<a href="' + prop.sources[i] + '" target="_blank">source ' + (i+1) + '</a><br/>';
@@ -635,13 +648,15 @@ function str2date(datestr,roundLate) {
   return newdate;
 }
 
-function geo_lint(dataset) {
+function geo_lint(dataset, convertFromNativeLands, replaceIndigenous) {
   let id_set = new Set();
+  let newFeatureList = [];
   if(dataset.type !== "FeatureCollection") {
     throw "expected dataset type === FeatureCollection, got " + dataset.type;
   }
   if("features" in dataset) {
     for(let f of dataset.features) {
+      let removeFeature = false;
       if(f.type !== "Feature") {
         throw "feature type not Feature, got " + f.type;
       }
@@ -652,30 +667,79 @@ function geo_lint(dataset) {
       fHash[f.id] = f;
       if("properties" in f) {
         let p = f.properties;
-        for(let required of ["entity1type", "entity1name", "fidelity",
-            "startdatestr", "enddatestr"]) {
-          if(!(required in p))
-            throw "feature " + f.id + " missing property " + required;
-        }
-        p.startDate = str2date(p.startdatestr,false);
-        if(p.enddatestr == 'present') {
-          p.endDate = today;
+        if(convertFromNativeLands) {
+          // make sure the feature lands in NA. NOTE this is clearly intended for
+          // adding to the NA database and not others, but this can be extended
+          // and formalized when other databases are considered.
+          // make sure this feature is in North America before adding
+          let bounds = L.polygon(f.geometry.coordinates).getBounds();
+          // roughly compare against Panama in the south (7N) and Greenland on the east (21W)
+          // geoJson has order [lon,lat] so oddly this flips the definitions of south and east
+          let boundsE = bounds.getSouth();
+          let boundsW = bounds.getNorth();
+          let boundsS = bounds.getWest();
+          let boundsN = bounds.getEast();
+          let is_na = (boundsE <= -21) && (boundsS >= 7);
+          // there are still some in NW South America, clip those too
+          if(is_na && (boundsN < 12.6) && (boundsW > -77)) {
+            is_na = false;
+          }
+          if(is_na) {
+            // convert the format from nativelands.ca into extended GeoJSON format
+            for(let required of ["Name", "color"]) {
+              if(!(required in p)) {
+                throw "feature " + f.id + " missing property " + required;
+              }
+            }
+            p.entity1type = "nation";
+            p.entity1name = "Indigenous";
+            p.entity2type = "tribe";
+            p.entity2name = p.Name;
+            p.fidelity = 4;
+            p.startdatestr = "700";   // arbitrary, and to be rectified with more research
+            p.enddatestr   = "1768";  // arbitrary, and to be rectified with more research
+            p.startDate = str2date(p.startdatestr,false);
+            p.endDate = str2date(p.enddatestr,true);
+            if("description" in p) {
+              p.source = p.description;
+            }
+          } else {
+            removeFeature = true;
+          }
         } else {
-          p.endDate = str2date(p.enddatestr,true);
-        }
-        let fid = p.fidelity;
-        if(fid < 1 || fid > 5) {
-          throw "fidelity for " + f.id + " should be between 1 (lowest) and 5 (highest), got " + fid;
-        }
-        timelineDateMinDefault = dateMin(timelineDateMinDefault, p.endDate);
-        timelineDateMaxDefault = dateMax(timelineDateMaxDefault, p.startDate);
-        datesOfInterest.push(p.startDate);
-        polygonCount += 1;
-        if("animateTo" in p) {
-          animationHash[f.id] = p.animateTo;
+          for(let required of ["entity1type", "entity1name", "fidelity",
+              "startdatestr", "enddatestr"]) {
+            if(!(required in p)) {
+              throw "feature " + f.id + " missing property " + required;
+            }
+          }
+          p.startDate = str2date(p.startdatestr,false);
+          if(p.enddatestr == 'present') {
+            p.endDate = today;
+          } else {
+            p.endDate = str2date(p.enddatestr,true);
+          }
+          let fid = p.fidelity;
+          if(fid < 1 || fid > 5) {
+            throw "fidelity for " + f.id + " should be between 1 (lowest) and 5 (highest), got " + fid;
+          }
+          // if nativelands.ca is used, don't add homegrown indigenous
+          if(replaceIndigenous && p.entity1name === 'Indigenous') {
+            removeFeature = true;
+          }
         }
       } else {
         throw "no properties in feature " + f.id;
+      }
+      if(!removeFeature) {
+        timelineDateMinDefault = dateMin(timelineDateMinDefault, f.properties.endDate);
+        timelineDateMaxDefault = dateMax(timelineDateMaxDefault, f.properties.startDate);
+        datesOfInterest.push(f.properties.startDate);
+        polygonCount += 1;
+        if("animateTo" in f.properties) {
+          animationHash[f.id] = f.properties.animateTo;
+        }
+        newFeatureList.push(f);
       }
       if("geometry" in f) {
         let g = f.geometry;
@@ -689,7 +753,20 @@ function geo_lint(dataset) {
       // apply styles as matching in order, starting with default
       // be careful to not override given styles, so hold those and
       // reapply at the end
-      if("styles" in dataset) {
+      if(convertFromNativeLands) {
+        f.style = {};
+        f.style.strokeColor = f.properties.color;
+        f.style.fillColor = f.properties.color;
+        f.style.strokeDash = 1;
+        f.style.strokeOn = true;
+        f.style.strokeOpacity = 1;
+        f.style.strokeWeight = 0.5;
+        f.style.fontname = "New Tegomin";
+        f.style.fontcolor = "#105010";
+        f.style.fillOn = true;
+        f.style.fillOpacity = 0.1;
+        f.style.borderless = 0;
+      } else if("styles" in dataset) {
         if("style" in f) {
           f.stylehold = f.style;
         }
@@ -736,6 +813,7 @@ function geo_lint(dataset) {
   } else {
     throw "no features in dataset"
   }
+  dataset.features = newFeatureList;
 }
 
 // prepare animations by keeping track of which coordinates change
@@ -781,9 +859,13 @@ function prepare_animations() {
 }
 
 if(useEurope) {
-  geo_lint(dataEur);
+  geo_lint(dataEur,false,false);
 } else {
-  geo_lint(dataNA);
+  geo_lint(dataNA,false,useNativeLands);
+  if(useNativeLands) {
+    geo_lint(dataNL,true,false);
+    dataNA.features = dataNA.features.concat(dataNL.features);
+  }
 }
 
 let geoDB = useEurope ? dataEur : dataNA;
@@ -982,7 +1064,6 @@ updateHTML('polycount', polygonCount);
 //    feature, pin that feature.
 
 function handleIPress() {
-  console.log("i pressed with lastFeature = " + lastFeature);
   if (infoPinned && (!lastFeature || (lastFeature.id == infoPinnedId))) {
     infoPinned = false;
     infobox._div.style.background = infoboxNormalBackground;
