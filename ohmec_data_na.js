@@ -105,7 +105,7 @@ dataNA = {
       "match":{ "entity1name": "Panama"},
       "style":{ "strokeColor": "#c80015", "fillColor": "#092088"}},
     { "type": "match",
-      "match":{ "entity1name": "Canada"},
+      "match":{ "entity1name": "Canada", "entity2type": "territory"},
       "style":{ "strokeColor": "#ffffff", "fillColor": "#ff8095"}},
     { "type": "match",
       "match":{ "entity1name": "Cuba"},
