@@ -11,7 +11,7 @@ dataEur = {
         "strokeColor":   "white",
         "strokeWeight":  2.0,
         "strokeDash":    1,
-        "borderless":    0,
+        "borderless":    false,
         "fillOn":        true,
         "fillColor":     "#c0c0c0",
         "fillOpacity":   0.6,

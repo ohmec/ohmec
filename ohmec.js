@@ -10,7 +10,7 @@ let today = new Date();
 let timelineDateStartDefault = new Date(1776,6,4);  // "interesting" start date, but arbitrary
 let timelineDateStart = timelineDateStartDefault;
 let timelineDateMinDefault = today;                 // these are the calculated min/max times of interest
-let timelineDateMaxDefault = new Date(1,0,1);
+let timelineDateMaxDefault = new Date(1000,0,1);
 let timelineDateMinOverride;                        // these allow the database to change timeline range
 let timelineDateMaxOverride;                        // unless provided in the URL override parameters
 
@@ -48,6 +48,15 @@ let animationHash = {};
 let fHash = {};
 let useEurope = false;
 let useNativeLands = false;
+let doneNLPopup = true;
+let NLMinDate = today;
+let NLMaxDate = new Date(1000,0,1);
+let NLPopupText = '<div id="nlpopup"><p>Data of the indigenous peoples is provided by <a href="http://native-land.ca">Native Land Digital</a> organization. ' +
+  'See their website for more information. ' +
+  'The map does not represent or intend to represent official or legal boundaries. ' +
+  'The map is not perfect - it is a work in progress with many contributors.</p>' +
+  '<p>The dates have been added by OHMEC temporarily as from approximately 700 - 1768AD. ' +
+  'OHMEC will work with Native Land Digital to attempt to get more accurate representation of where each tribe was and when.</p>';
 
 let styleMatches = {};
 
@@ -694,12 +703,15 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous) {
             p.entity1type = "nation";
             p.entity1name = "Indigenous";
             p.entity2type = "tribe";
-            p.entity2name = p.Name;
+            // for larger labels, put a carriage return for each parenthetical
+            p.entity2name = p.Name.replace(/ \(/g,'\n(');
             p.fidelity = 4;
             p.startdatestr = "700";   // arbitrary, and to be rectified with more research
             p.enddatestr   = "1768";  // arbitrary, and to be rectified with more research
             p.startDate = str2date(p.startdatestr,false);
             p.endDate = str2date(p.enddatestr,true);
+            NLMinDate = dateMin(NLMinDate, p.startDate);
+            NLMaxDate = dateMax(NLMaxDate, p.endDate);
             if("description" in p) {
               p.source = p.description;
             }
@@ -765,7 +777,7 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous) {
         f.style.fontcolor = "#105010";
         f.style.fillOn = true;
         f.style.fillOpacity = 0.1;
-        f.style.borderless = 0;
+        f.style.borderless = false;
       } else if("styles" in dataset) {
         if("style" in f) {
           f.stylehold = f.style;
@@ -1014,6 +1026,7 @@ let refreshMap = function( {dateValue} ) {
   curDate.setTime(dateValue);
   legend.update();
   geojson.evaluateLayers();
+  checkNLPopup();
 }
 
 let timelineDateMin = timelineDateMinOverride ? timelineDateMinOverride : timelineDateMinDefault;
@@ -1131,4 +1144,16 @@ function checkKeypress(e) {
   }
 }
 
+function checkNLPopup() {
+  if(useNativeLands && !doneNLPopup && curDate <= NLMaxDate && curDate >= NLMinDate) {
+    let center = ohmap.getCenter();
+    let bounds = ohmap.getBounds();
+    center.lat = (center.lat + bounds.getSouth())/2;
+    let NLPopup = L.popup({maxWidth: 500}).setLatLng(center).setContent(NLPopupText).openOn(ohmap);
+    doneNLPopup = true;
+  }
+}
+
 ohmap.on('keydown', checkKeypress);
+doneNLPopup = false;
+checkNLPopup();
