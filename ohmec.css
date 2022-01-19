@@ -37,6 +37,21 @@ h1 {
   line-height: 18px;
   color: #eee;
 }
+
+.leaflet-popup-content-wrapper,
+.leaflet-control-zoom a,
+.leaflet-control-zoom-in a,
+.leaflet-control-zoom-out a {
+  background-color: rgba(4,112,255,0.7);
+  color: #eee;
+}
+#nlpopup {
+  font: 16px New Tegomin, sans-serif;
+  color: #eee;
+}
+#nlpopup a:link {
+  color: #eee;
+}
 .curdate {
   font-weight: bold;
 }
