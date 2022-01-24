@@ -668,33 +668,47 @@ function uniqueDateSort(inArray) {
 let polygonCount = 0;
 
 function str2date(datestr,roundLate) {
+  // if roundLate is true, we'll set it for the next day, then subtract
+  // one second after completion.
   let yr,mo,dy;
-  let subtract = false;
   let stripBC = datestr.replace("BC",'');
   let isBC = (datestr === stripBC) ? false : true;
   let info = stripBC.split(':');
-  // if datestr only contained one member (year), consider it 1st or last day of the year
-  // if only contains two (year, month), consider it 1st or last day of month
+  // if datestr only contained one member (year), consider it 1st day of the year,
+  // either next year (if roundLate) or this.
+  // if only contains two (year, month), consider it 1st day of month,
+  // either next month (if roundLate) or this.
   if(info.length==3) {
     yr = info[0] * (isBC ? -1 : 1);
     mo = info[1]-1;
     dy = info[2];
+    if(roundLate) {
+      dy++;
+    }
   } else if(info.length==2) {
     yr = info[0] * (isBC ? -1 : 1);
-    mo = roundLate ? info[1] : (info[1]-1);
+    mo = info[1]-1;
     dy = 1;
-    subtract = roundLate;
+    if(roundLate) {
+      mo++;
+    }
   } else if(info.length==1) {
     yr = info[0] * (isBC ? -1 : 1);
-    mo = roundLate ? 11 : 0;
-    dy = roundLate ? 31 : 1;
+    mo = 0;
+    dy = 1;
+    if(roundLate) {
+      yr++;
+    }
   } else {
     throw "bad date format for date: " + datestr;
   }
   let newdate = new Date(yr,mo,dy);
   newdate.setFullYear(yr);  // fixes "feature" for dates from 1-99
-  if(subtract) {
+  if(roundLate) {
     newdate.setDate(newdate.getDate()-1);
+    newdate.setHours(23);
+    newdate.setMinutes(59);
+    newdate.setSeconds(59);
   }
   return newdate;
 }
