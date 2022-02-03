@@ -604,6 +604,11 @@ function onEachFeature(feature, layer) {
        feature.properties.entity1type === 'battle') {
       iconFile = 'poi_' + feature.properties.entity1type + '.svg';
     }
+    if(feature.properties.entity2type === 'settlement'  ||
+       feature.properties.entity2type === 'archaeology' ||
+       feature.properties.entity2type === 'battle') {
+      iconFile = 'poi_' + feature.properties.entity2type + '.svg';
+    }
 
     let iconElementBounds = [ [ plat+iconSize/2, plon-iconSize/2 ], [ plat-iconSize/2, plon+iconSize/2 ] ];
     feature.iconOverlay = L.imageOverlay(iconFile, iconElementBounds, { zIndex: 300 });
