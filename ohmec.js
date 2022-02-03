@@ -687,15 +687,17 @@ function str2date(datestr,roundLate) {
     yr = info[0] * (isBC ? -1 : 1);
     mo = info[1]-1;
     dy = info[2];
-    if(roundLate) {
-      dy++;
-    }
   } else if(info.length==2) {
     yr = info[0] * (isBC ? -1 : 1);
     mo = info[1]-1;
     dy = 1;
     if(roundLate) {
-      mo++;
+      if(info[1] == 12) {
+        mo = 0;
+        yr++;
+      } else {
+        mo++;
+      }
     }
   } else if(info.length==1) {
     yr = info[0] * (isBC ? -1 : 1);
@@ -710,7 +712,11 @@ function str2date(datestr,roundLate) {
   let newdate = new Date(yr,mo,dy);
   newdate.setFullYear(yr);  // fixes "feature" for dates from 1-99
   if(roundLate) {
-    newdate.setDate(newdate.getDate()-1);
+    if(info.length==3) {
+      newdate.setDate(newdate.getDate());
+    } else {
+      newdate.setDate(newdate.getDate()-1);
+    }
     newdate.setHours(23);
     newdate.setMinutes(59);
     newdate.setSeconds(59);
