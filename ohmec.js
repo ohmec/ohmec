@@ -596,22 +596,74 @@ function onEachFeature(feature, layer) {
     let plat = coords[1];
     let iconSize = 0.05;  // arbitraty size of icon, 0.05 degrees
     let bboxSize = 1.0;   // arbitraty size of label bounding box, 1 degree
-    let iconFile = 'poi_poi.svg';
+    let iconElementBounds = [ [ plat+iconSize/2, plon-iconSize/2 ], [ plat-iconSize/2, plon+iconSize/2 ] ];
+    let poiType = "poi";
+    let fillColor = "#c0c0ff";
 
     // other available icon images
     if(feature.properties.entity1type === 'settlement'  ||
        feature.properties.entity1type === 'archaeology' ||
        feature.properties.entity1type === 'battle') {
-      iconFile = 'poi_' + feature.properties.entity1type + '.svg';
+      poiType = feature.properties.entity1type;
     }
+    // if POI is in entity2, use the poi file as input, then modify
+    // the fill color to inherit from entity1
     if(feature.properties.entity2type === 'settlement'  ||
        feature.properties.entity2type === 'archaeology' ||
-       feature.properties.entity2type === 'battle') {
-      iconFile = 'poi_' + feature.properties.entity2type + '.svg';
+       feature.properties.entity2type === 'battle'      ||
+       feature.properties.entity2type === 'poi') {
+      poiType = feature.properties.entity2type;
+      if("style" in feature) {
+        fillColor = feature.style.fillColor;
+      }
     }
 
-    let iconElementBounds = [ [ plat+iconSize/2, plon-iconSize/2 ], [ plat-iconSize/2, plon+iconSize/2 ] ];
-    feature.iconOverlay = L.imageOverlay(iconFile, iconElementBounds, { zIndex: 300 });
+    // Author's note: I can't find a way to do this via the preferred SVG file
+    // manipulation method. So instead we're adding color via a more cumbersom
+    // direct SVG creation. The file inclusion method is left here for
+    // a brief period in case I can find the better way.
+//  let iconFile = 'poi_' + poiType + '.svg';
+//  feature.iconOverlay = L.imageOverlay(iconFile, iconElementBounds, { zIndex: 300 });
+
+    let poiElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+    poiElement.setAttribute('xmlns',   "http://www.w3.org/2000/svg");
+    poiElement.setAttribute('width',   40);
+    poiElement.setAttribute('height',  40);
+    poiElement.setAttribute('viewBox', "0 0 40 40");
+    let poiInner = '<path d="';
+    if(poiType === 'settlement') {
+      poiInner += "M 20,30 A 10,10 0 0 0 20,10 10,10 0 0 0 20,30 z\n";
+      poiInner += "M 20,13\n";
+      poiInner += "L 27,20 L 25,20 L 25,26 L 21.5,26 L 21.5,23 L 18.5,23\n";
+      poiInner += "L 18.5,26 L 15,26 L 15,20 L 13,20 z";
+    } else if(poiType === 'archaeology') {
+      poiInner += "M   20,30   A  10,10  0 0 0   20,10   10,10   0 0 0   20,30   z\n";
+      poiInner += "M   20,18.5 A 3.5,3.5 0 1 1   20,11.5 3.5,3.5 0 1 1   20,18.5 z\n";
+      poiInner += "M 15.7,26   A 3.5,3.5 0 1 1 15.7,19   3.5,3.5 0 1 1 15.7,26   z\n";
+      poiInner += "M 24.3,26   A 3.5,3.5 0 1 1 24.3,19   3.5,3.5 0 1 1 24.3,26   z";
+    } else if(poiType === 'battle') {
+      poiInner += "M 20,30 A 10,10 0 0 0 20,10 10,10 0 0 0 20,30 z\n";
+      poiInner += "M 20.0,17.2 L 22.8,14.3 L 25.7,14.3 L 25.7,17.2\n";
+      poiInner += "L 22.8,20.0 L 23.5,20.7 L 22.8,21.4 L 24.2,22.8 L 25.7,22.8\n";
+      poiInner += "L 26.4,23.5 L 25.7,24.2 L 26.4,25.0 L 25.0,26.4 L 24.2,25.7\n";
+      poiInner += "L 23.5,26.4 L 22.8,25.7 L 22.8,24.2 L 21.4,22.8 L 20.7,23.5\n";
+      poiInner += "L 20.0,22.8\n";
+      poiInner += "L 19.3,23.5 L 18.6,22.8 L 17.2,24.2 L 17.2,25.7 L 16.5,26.4\n";
+      poiInner += "L 15.8,25.7 L 15.1,26.4 L 13.6,25.0 L 14.3,24.2 L 13.6,23.5\n";
+      poiInner += "L 14.3,22.8 L 15.8,22.8 L 17.2,21.4 L 16.5,20.7 L 17.2,20.0\n";
+      poiInner += "L 14.3,17.2 L 14.3,14.3 L 17.2,14.3 z\n";
+      poiInner += "M 24.2,15.8 L 18.6,21.4\n";
+      poiInner += "M 15.8,15.8 L 21.4,21.4";
+    } else {
+      poiInner += "M 20,30 A 10,10 0 0 0 20,10 10,10 0 0 0 20,30 z\n";
+      poiInner += "M 20,13\n";
+      poiInner += "L 22.1,17.2 L 26.7,17.8 L 23.3,21.1 L 24.1,25.7 L 20.0,23.5\n";
+      poiInner += "L 15.9,25.7 L 16.7,21.1 L 13.3,17.8 L 17.9,17.2 z";
+    }
+    poiInner += '" stroke-width="0.75" fill="' + fillColor + '" stroke = "black" />';
+    poiElement.innerHTML = poiInner;
+    feature.iconOverlay = L.svgOverlay(poiElement, iconElementBounds, { zIndex: 300 });
 
     // create bounding box for the label since a point has no bounds.
     // the bounds are arbitrary for Point since there is no default size.
