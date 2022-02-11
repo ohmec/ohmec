@@ -56,7 +56,7 @@ let NLPopupText = '<div id="nlpopup"><p>Data of the indigenous peoples is provid
   'The map does not represent or intend to represent official or legal boundaries. ' +
   'The map is not perfect - it is a work in progress with many contributors.</p>' +
   '<p>The dates have been added by OHMEC temporarily as from approximately 700 - 1768AD. ' +
-  'OHMEC will work with Native Land Digital to attempt to get more accurate representation of where each tribe was and when.</p>';
+  'OHMEC will work with Native Land Digital to attempt to represent movements of the Native American tribes throughout their history.</p>';
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
