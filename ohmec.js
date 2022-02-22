@@ -48,6 +48,7 @@ let animationHash = {};
 let fHash = {};
 let useEurope = false;
 let useNativeLands = false;
+let cherokeeExample = false;
 let doneNLPopup = true;
 let NLMinDate = today;
 let NLMaxDate = new Date(1000,0,1);
@@ -111,6 +112,13 @@ for(let param of parameters) {
   match = param.match(test);
   if (match != null) {
     useNativeLands = true;
+  }
+  test = /cher/;
+  match = param.match(test);
+  if (match != null) {
+    timelineDateMinOverride = str2date('800BC',false);
+    timelineDateStart       = str2date('800BC',false);
+    cherokeeExample = true;
   }
 }
 
@@ -178,6 +186,9 @@ let updateDirectLink = function() {
   }
   if(useNativeLands) {
     urlText += '&nl';
+  }
+  if(cherokeeExample) {
+    urlText += '&cher';
   }
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
@@ -776,7 +787,7 @@ function str2date(datestr,roundLate) {
   return newdate;
 }
 
-function geo_lint(dataset, convertFromNativeLands, replaceIndigenous) {
+function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyCherokeeExample) {
   let id_set = new Set();
   let newFeatureList = [];
   if(dataset.type !== "FeatureCollection") {
@@ -856,6 +867,12 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous) {
           }
           // if nativelands.ca is used, don't add homegrown indigenous
           if(replaceIndigenous && p.entity1name === 'Indigenous') {
+            removeFeature = true;
+          }
+          if(applyCherokeeExample && p.entity1name === 'Indigenous') {
+            removeFeature = true;
+          }
+          if(!applyCherokeeExample && p.entity1type === 'tribe') {
             removeFeature = true;
           }
         }
@@ -990,9 +1007,9 @@ function prepare_animations() {
 }
 
 if(useEurope) {
-  geo_lint(dataEur,false,false);
+  geo_lint(dataEur,false,false,false);
 } else {
-  geo_lint(dataNA,false,useNativeLands);
+  geo_lint(dataNA,false,useNativeLands,cherokeeExample);
   if(useNativeLands) {
     geo_lint(dataNL,true,false);
     dataNA.features = dataNA.features.concat(dataNL.features);
@@ -1112,7 +1129,6 @@ geojson.evaluateLayers = function () {
   for(let l in this._layers) {
     let lyr = this._layers[l];
     let prop = lyr.feature.properties;
-    let bounds = L.latLngBounds(lyr.feature.origBounds.getNorthEast(), lyr.feature.origBounds.getSouthWest());
     let ratio;
     if(curDate >= prop.startDate && curDate <= prop.endDate) {
       if("animateTo" in prop) {
@@ -1128,7 +1144,6 @@ geojson.evaluateLayers = function () {
               let newlat = ((destC[o][0][i][1]-fromC[o][0][i][1])*ratio) + fromC[o][0][i][1];
               let newlon = ((destC[o][0][i][0]-fromC[o][0][i][0])*ratio) + fromC[o][0][i][0];
               lyr._latlngs[o][0][i] = L.latLng(newlat,newlon);
-              bounds.extend(lyr._latlngs[o][0][i]);
             }
           }
         } else {
@@ -1136,7 +1151,6 @@ geojson.evaluateLayers = function () {
             let newlat = ((destC[0][i][1]-fromC[0][i][1])*ratio) + fromC[0][i][1];
             let newlon = ((destC[0][i][0]-fromC[0][i][0])*ratio) + fromC[0][i][0];
             lyr._latlngs[0][i] = L.latLng(newlat,newlon);
-            bounds.extend(lyr._latlngs[0][i]);
           }
         }
       }
@@ -1145,6 +1159,7 @@ geojson.evaluateLayers = function () {
         lyr.feature.iconOverlay.addTo(ohmap);
       }
       if("animateTo" in prop) {
+        let bounds = L.polygon(lyr._latlngs).getBounds();
         lyr.feature.textOverlay.removeFrom(ohmap);
         lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, fHash[prop.animateTo].properties,ratio);
       }
