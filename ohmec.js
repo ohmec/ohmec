@@ -188,7 +188,7 @@ let updateDirectLink = function() {
     urlText += '&nl';
   }
   if(cherokeeExample) {
-    urlText += '&cher';
+    urlText += '&cherokee';
   }
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
