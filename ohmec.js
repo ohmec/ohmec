@@ -163,6 +163,10 @@ let updateDirectLink = function() {
   let latlon = ohmap.getCenter();
   let conjoin = '?';
   let urlText = splits[0];
+  if(cherokeeExample) {
+    urlText += '?cherokee';
+    conjoin = '&';
+  }
   if(timelineDateMinOverride) {
     urlText += conjoin +
       'startdatestr='  + dateStr(timelineDateMinOverride,':');
@@ -186,9 +190,6 @@ let updateDirectLink = function() {
   }
   if(useNativeLands) {
     urlText += '&nl';
-  }
-  if(cherokeeExample) {
-    urlText += '&cherokee';
   }
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
