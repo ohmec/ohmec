@@ -150,11 +150,12 @@ let linkSpan = document.querySelector('#directlink');
 
 function dateStr(dateInput,slash) {
   let year = dateInput.getFullYear();
-  let absYear = (year < 0) ? -1*year : year;
-  return fixInt(absYear,4) + slash +
+  if(year < 0) {
+    return fixInt(-1*year,4) + 'BC';
+  }
+  return fixInt(year,4) + slash +
          fixInt(dateInput.getMonth()+1,2) + slash +
-         fixInt(dateInput.getDate(),2) +
-         ((year < 0) ? 'BC' : '');
+         fixInt(dateInput.getDate(),2);
 }
 
 let updateDirectLink = function() {
@@ -1126,6 +1127,33 @@ geojson = L.geoJson(geoDB, {
   onEachFeature: onEachFeature
 }).addTo(ohmap);
 
+function cToHex(c) {
+  let hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+function str2RGB(colorStr) {
+  let parseResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colorStr);
+  let rgb = {};
+  rgb[0] = parseInt(parseResult[1], 16);
+  rgb[1] = parseInt(parseResult[2], 16);
+  rgb[2] = parseInt(parseResult[3], 16);
+  return rgb;
+}
+
+function interpolateFloat(ratio, floatFrom, floatTo) {
+  return (floatTo-floatFrom)*ratio + floatFrom;
+}
+
+function interpolateColor(ratio, colorFrom, colorTo) {
+  let rgbFrom = str2RGB(colorFrom);
+  let rgbTo   = str2RGB(colorTo);
+  let rNew = parseInt(interpolateFloat(ratio, rgbFrom[0], rgbTo[0]));
+  let gNew = parseInt(interpolateFloat(ratio, rgbFrom[1], rgbTo[1]));
+  let bNew = parseInt(interpolateFloat(ratio, rgbFrom[2], rgbTo[2]));
+  return "#" + cToHex(rNew) + cToHex(gNew) + cToHex(bNew);
+}
+
 geojson.evaluateLayers = function () {
   for(let l in this._layers) {
     let lyr = this._layers[l];
@@ -1142,17 +1170,64 @@ geojson.evaluateLayers = function () {
         if(lyr.feature.geometry.type === 'MultiPolygon') {
           for(let o in lyr.feature.pairDiffs) {
             for(let i of lyr.feature.pairDiffs[o]) {
-              let newlat = ((destC[o][0][i][1]-fromC[o][0][i][1])*ratio) + fromC[o][0][i][1];
-              let newlon = ((destC[o][0][i][0]-fromC[o][0][i][0])*ratio) + fromC[o][0][i][0];
+              let newlat = interpolateFloat(ratio, fromC[o][0][i][1], destC[o][0][i][1]); 
+              let newlon = interpolateFloat(ratio, fromC[o][0][i][0], destC[o][0][i][0]);
               lyr._latlngs[o][0][i] = L.latLng(newlat,newlon);
             }
           }
         } else {
           for(let i of lyr.feature.pairDiffs) {
-            let newlat = ((destC[0][i][1]-fromC[0][i][1])*ratio) + fromC[0][i][1];
-            let newlon = ((destC[0][i][0]-fromC[0][i][0])*ratio) + fromC[0][i][0];
+            let newlat = interpolateFloat(ratio, fromC[0][i][1], destC[0][i][1]);
+            let newlon = interpolateFloat(ratio, fromC[0][i][0], destC[0][i][0]);
             lyr._latlngs[0][i] = L.latLng(newlat,newlon);
           }
+        }
+        let resetStyle = false;
+        if(lyr.feature.style.fillColor !== fHash[prop.animateTo].style.fillColor) {
+          if(!("origFillColor" in prop)) {
+            prop.origFillColor = lyr.feature.style.fillColor;
+          }
+          let newFillColor = interpolateColor(ratio, prop.origFillColor, fHash[prop.animateTo].style.fillColor);
+          lyr.feature.style.fillColor = newFillColor;
+          resetStyle = true;
+        }
+        if(lyr.feature.style.strokeColor !== fHash[prop.animateTo].style.strokeColor) {
+          if(!("origStrokeColor" in prop)) {
+            prop.origStrokeColor = lyr.feature.style.strokeColor;
+          }
+          let newStrokeColor = interpolateColor(ratio, prop.origStrokeColor, fHash[prop.animateTo].style.strokeColor);
+          lyr.feature.style.strokeColor = newStrokeColor;
+          lyr.feature.style.color = newStrokeColor;
+          resetStyle = true;
+        }
+        if(lyr.feature.style.fillOpacity !== fHash[prop.animateTo].style.fillOpacity) {
+          if(!("origFillOpacity" in prop)) {
+            prop.origFillOpacity = lyr.feature.style.fillOpacity;
+          }
+          let newFillOpacity = interpolateFloat(ratio, prop.origFillOpacity, fHash[prop.animateTo].style.fillOpacity);
+          lyr.feature.style.fillOpacity = newFillOpacity;
+          resetStyle = true;
+        }
+        if(lyr.feature.style.strokeOpacity !== fHash[prop.animateTo].style.strokeOpacity) {
+          if(!("origStrokeOpacity" in prop)) {
+            prop.origStrokeOpacity = lyr.feature.style.strokeOpacity;
+          }
+          let newStrokeOpacity = interpolateFloat(ratio, prop.origStrokeOpacity, fHash[prop.animateTo].style.strokeOpacity);
+          lyr.feature.style.strokeOpacity = newStrokeOpacity;
+          lyr.feature.style.opacity = newStrokeOpacity;
+          resetStyle = true;
+        }
+        if(lyr.feature.style.strokeWeight !== fHash[prop.animateTo].style.strokeWeight) {
+          if(!("origStrokeWeight" in prop)) {
+            prop.origStrokeWeight = lyr.feature.style.strokeWeight;
+          }
+          let newStrokeWeight = interpolateFloat(ratio, prop.origStrokeWeight, fHash[prop.animateTo].style.strokeWeight);
+          lyr.feature.style.strokeWeight = newStrokeWeight;
+          lyr.feature.style.weight = newStrokeWeight;
+          resetStyle = true;
+        }
+        if(resetStyle) {
+          lyr.setStyle(lyr.feature.style);
         }
       }
       lyr.addTo(ohmap);

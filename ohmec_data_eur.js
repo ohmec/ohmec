@@ -345,6 +345,12 @@ dataEur = {
         "fidelity":1,
         "startdatestr":"-9700",
         "enddatestr":"-9500"},
+      "style":{
+        "strokeColor": "#008040",
+        "fillColor":   "#00ffcc",
+        "strokeOpacity": 0.1,
+        "fillOpacity":   0.1,
+        "strokeWeight":  5.0},
       "geometry":{
         "type":"Polygon",
         "coordinates":[
