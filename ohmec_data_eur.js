@@ -12,6 +12,7 @@ dataEur = {
         "strokeWeight":  2.0,
         "strokeDash":    1,
         "borderless":    false,
+        "layerDepth":    "default",
         "fillOn":        true,
         "fillColor":     "#c0c0c0",
         "fillOpacity":   0.6,
@@ -34,7 +35,7 @@ dataEur = {
       "style":{ "strokeColor": "#80b070", "fillColor": "#c8e8b0"}},
     { "type": "match",
       "match":{ "entity1type": "geography", "entity1name": "icecap"},
-      "style":{ "strokeColor": "#e0e0ff", "fillColor": "#f4f4ff", "strokeWeight": 1.0, "fillOpacity": 0.9}}],
+      "style":{ "strokeColor": "#e0e0ff", "fillColor": "#f4f4ff", "strokeWeight": 1.0, "fillOpacity": 0.9, "layerDepth": "back"}}],
   "features":[
     { "type":"Feature",
       "id":"Olmec00",

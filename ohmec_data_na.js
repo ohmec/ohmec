@@ -12,6 +12,7 @@ dataNA = {
         "strokeWeight":  1.5,
         "strokeDash":    "",
         "borderless":    false,
+        "layerDepth":    "default",
         "fillOn":        true,
         "fillColor":     "#c0c0c0",
         "fillOpacity":   0.6,
