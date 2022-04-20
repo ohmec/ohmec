@@ -916,6 +916,7 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
         f.style.fillOn = true;
         f.style.fillOpacity = 0.1;
         f.style.borderless = false;
+        f.style.layerDepth = "default";
       } else if("styles" in dataset) {
         if("style" in f) {
           f.stylehold = f.style;
@@ -1246,6 +1247,20 @@ geojson.evaluateLayers = function () {
         lyr.feature.iconOverlay.removeFrom(ohmap);
       }
       lyr.feature.textOverlay.removeFrom(ohmap);
+    }
+  }
+  // now check for layer control problems (front and back, ignore default)
+  for(let l in this._layers) {
+    let lyr = this._layers[l];
+    let prop = lyr.feature.properties;
+    let style = lyr.feature.style;
+    if(curDate >= prop.startDate && curDate <= prop.endDate && "layerDepth" in style && style.layerDepth !== "default") {
+      if(style.layerDepth === "front") {
+        lyr.bringToFront();
+      }
+      if(style.layerDepth === "back") {
+        lyr.bringToBack();
+      }
     }
   }
 }
