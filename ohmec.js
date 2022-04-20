@@ -13,8 +13,10 @@ let timelineDateMinDefault = today;                 // these are the calculated 
 let timelineDateMaxDefault = new Date(1000,0,1);
 let timelineDateMinOverride;                        // these allow the database to change timeline range
 let timelineDateMaxOverride;                        // unless provided in the URL override parameters
-let timelineIntervalCount = 240;
-let timelineIntervalDuration = 250;                 // milliseconds
+let timelineIntervalCountDefault = 240;
+let timelineIntervalDurationDefault = 250;          // milliseconds
+let timelineIntervalCount = timelineIntervalCountDefault;
+let timelineIntervalDuration = timelineIntervalDurationDefault;
 
 let latSettingDefault = 38.5;                       // centering around USA region for this Phase
 let lonSettingDefault = -98.0;
@@ -50,6 +52,7 @@ let infoPinned = false;
 let animationHash = {};
 let fHash = {};
 let useEurope = false;
+let useAA = false;
 let useNativeLands = false;
 let cherokeeExample = false;
 let doneNLPopup = true;
@@ -114,6 +117,11 @@ for(let param of parameters) {
   match = param.match(test);
   if (match !== null) {
     useEurope = true;
+  }
+  test = /aa/;
+  match = param.match(test);
+  if (match !== null) {
+    useAA = true;
   }
   test = /nl/;
   match = param.match(test);
@@ -198,6 +206,12 @@ let updateDirectLink = function() {
   }
   if(useNativeLands) {
     urlText += '&nl';
+  }
+  if(timelineIntervalCount !== timelineIntervalCountDefault) {
+    urlText += '&advInt=' + timelineIntervalCount;
+  }
+  if(timelineIntervalDuration !== timelineIntervalDurationDefault) {
+    urlText += '&advDur=' + timelineIntervalDuration;
   }
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
@@ -369,7 +383,9 @@ function infoboxFeatureOn(e) {
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-      layer.bringToFront();
+      if("layerDepth" in layer.feature.style && layer.feature.style.layerDepth !== "back") {
+        layer.bringToFront();
+      }
     }
   }
   lastFeature = layer.feature;
@@ -630,6 +646,7 @@ function onEachFeature(feature, layer) {
     // other available icon images
     if(feature.properties.entity1type === 'settlement'  ||
        feature.properties.entity1type === 'archaeology' ||
+       feature.properties.entity1type === 'diamond'     ||
        feature.properties.entity1type === 'battle') {
       poiType = feature.properties.entity1type;
     }
@@ -637,6 +654,7 @@ function onEachFeature(feature, layer) {
     // the fill color to inherit from entity1
     if(feature.properties.entity2type === 'settlement'  ||
        feature.properties.entity2type === 'archaeology' ||
+       feature.properties.entity2type === 'diamond'     ||
        feature.properties.entity2type === 'battle'      ||
        feature.properties.entity2type === 'poi') {
       poiType = feature.properties.entity2type;
@@ -669,6 +687,10 @@ function onEachFeature(feature, layer) {
       poiInner += "M   20,18.5 A 3.5,3.5 0 1 1   20,11.5 3.5,3.5 0 1 1   20,18.5 z\n";
       poiInner += "M 15.7,26   A 3.5,3.5 0 1 1 15.7,19   3.5,3.5 0 1 1 15.7,26   z\n";
       poiInner += "M 24.3,26   A 3.5,3.5 0 1 1 24.3,19   3.5,3.5 0 1 1 24.3,26   z";
+    } else if(poiType === 'diamond') {
+      poiInner += "M 20,30 A 10,10 0 0 0 20,10 10,10 0 0 0 20,30 z\n";
+      poiInner += "M 20,13\n";
+      poiInner += "L 27,20 L 20,27 L 13,20 z";
     } else if(poiType === 'battle') {
       poiInner += "M 20,30 A 10,10 0 0 0 20,10 10,10 0 0 0 20,30 z\n";
       poiInner += "M 20.0,17.2 L 22.8,14.3 L 25.7,14.3 L 25.7,17.2\n";
@@ -1044,6 +1066,8 @@ function prepare_animations() {
 
 if(useEurope) {
   geo_lint(dataEur,false,false,false);
+} else if(useAA) {
+  geo_lint(dataAA,false,false,false);
 } else {
   geo_lint(dataNA,false,useNativeLands,cherokeeExample);
   if(useNativeLands) {
@@ -1052,7 +1076,7 @@ if(useEurope) {
   }
 }
 
-let geoDB = useEurope ? dataEur : dataNA;
+let geoDB = useEurope ? dataEur : useAA ? dataAA : dataNA;
 
 prepare_animations();
 
@@ -1282,7 +1306,7 @@ geojson.evaluateLayers = function () {
       lyr.feature.textOverlay.removeFrom(ohmap);
     }
   }
-  // now check for layer control problems (front and back, ignore default)
+  // now check for layer control properties (front and back, ignore default)
   for(let l in this._layers) {
     let lyr = this._layers[l];
     let prop = lyr.feature.properties;
