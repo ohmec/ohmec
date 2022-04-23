@@ -76,6 +76,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap15000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -91,6 +92,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap14000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -106,6 +108,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap13000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -121,6 +124,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap12000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -136,6 +140,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap11000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -151,6 +156,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap10000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -166,6 +172,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap09000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -181,6 +188,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap08000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -196,6 +204,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap07500BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -211,6 +220,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap07000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -226,6 +236,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap06500BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -241,6 +252,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap06000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -256,6 +268,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "animateTo":"Icecap05000BC",
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
@@ -271,6 +284,7 @@ dataEur = {
       "properties":{
         "entity1type":"geography",
         "entity1name":"icecap",
+        "noLabel":true,
         "editdatestr":"2021:11:08",
         "source":"http://metrocosm.com/timelapse-evolution-of-earths-surface",
         "fidelity":2,
@@ -399,6 +413,8 @@ dataEur = {
         "editdatestr":"2021:11:09",
         "source":"https://en.wikipedia.org/wiki/Cave_of_Altamira",
         "fidelity":3,
+        "iconScale":10.0,
+        "labelY":3,
         "startdatestr":"-14590",
         "enddatestr":"-12000"},
       "geometry":{
@@ -503,7 +519,9 @@ dataEur = {
         "entity1name":"Maglemose Archaeology Site",
         "editdatestr":"2021:11:09",
         "source":"https://www.sciencedirect.com/science/article/pii/S1040618214002006?via%3Dihub",
-        "fidelity":3,
+        "fidelity":5,
+        "iconScale":7.0,
+        "labelY":4,
         "startdatestr":"-8400",
         "enddatestr":"-6000"},
       "geometry":{
@@ -517,6 +535,8 @@ dataEur = {
         "editdatestr":"2021:11:09",
         "source":"https://www.sciencedirect.com/science/article/pii/S1040618214002006?via%3Dihub",
         "fidelity":3,
+        "iconScale":7.0,
+        "labelY":4,
         "startdatestr":"-8280",
         "enddatestr":"-6000"},
       "geometry":{
@@ -530,6 +550,8 @@ dataEur = {
         "editdatestr":"2021:11:09",
         "source":"https://en.natmus.dk/historical-knowledge/denmark/prehistoric-period-until-1050-ad/the-mesolithic-period/the-aurochs-from-vig",
         "fidelity":3,
+        "iconScale":7.0,
+        "labelY":4,
         "startdatestr":"-8050",
         "enddatestr":"-7500"},
       "geometry":{

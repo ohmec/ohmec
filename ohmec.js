@@ -549,10 +549,10 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
 }
 
 function getFeatureLabel(feature) {
-  if("entity2name" in feature.properties) {
+  if("noLabel" in feature.properties && feature.properties.noLabel) {
+    return ""
+  } else if("entity2name" in feature.properties) {
     return feature.properties.entity2name;
-  } else if(feature.properties.entity1type === 'geography' && feature.properties.entity1name === 'icecap') {
-    return ' '
   } else {
     return feature.properties.entity1name;
   }
@@ -609,6 +609,13 @@ function onEachFeature(feature, layer) {
     let plat = coords[1];
     let iconSize = 0.05;  // arbitraty size of icon, 0.05 degrees
     let bboxSize = 1.0;   // arbitraty size of label bounding box, 1 degree
+
+    // allow the icon and label box to be scaled
+    if("iconScale" in feature.properties) {
+      iconSize = iconSize * feature.properties.iconScale;
+      bboxSize = bboxSize * feature.properties.iconScale;
+    }
+
     let iconElementBounds = [ [ plat+iconSize/2, plon-iconSize/2 ], [ plat-iconSize/2, plon+iconSize/2 ] ];
     let poiType = "poi";
     let fillColor = "#c0c0ff";
