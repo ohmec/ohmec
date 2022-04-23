@@ -519,7 +519,7 @@ dataEur = {
         "entity1name":"Maglemose Archaeology Site",
         "editdatestr":"2021:11:09",
         "source":"https://www.sciencedirect.com/science/article/pii/S1040618214002006?via%3Dihub",
-        "fidelity":5,
+        "fidelity":3,
         "iconScale":7.0,
         "labelY":4,
         "startdatestr":"-8400",
