@@ -6,6 +6,9 @@ dataNA = {
   "startdatestr":"1600:01:01",
   "curdatestr":  "1764:01:01",
   "enddatestr":  "2010:12:31",
+  "defaultLat":  38.5,
+  "defaultLon": -98.0,
+  "defaultZ":     4.5,
   "styles":[
     { "type": "default",
       "style":{

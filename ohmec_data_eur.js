@@ -6,6 +6,9 @@ dataEur = {
   "startdatestr":"15000BC",
   "curdatestr":  "14500BC",
   "enddatestr":   "6000BC",
+  "defaultLat":       48.0,
+  "defaultLon":        3.0,
+  "defaultZ":          4.0,
   "styles":[
     { "type": "default",
       "style":{
