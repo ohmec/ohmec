@@ -27,7 +27,8 @@ let lonSettingMax = 180.0;
 
 let zoomSettingMin = 2.5;
 let zoomSettingMax = 15.0;
-let zoomSettingStart = 4.5;
+let zoomSettingDefault = 4.5;
+let zoomSettingStart = zoomSettingDefault;
 
 let boundsHash = {};
 let smartStepDefault = 1;
@@ -112,9 +113,6 @@ for(let param of parameters) {
   test = /easter/;
   match = param.match(test);
   if (match !== null) {
-    latSettingStart = 48;
-    lonSettingStart =  3;
-    zoomSettingStart = 4;
     useEurope = true;
   }
   test = /nl/;
@@ -493,7 +491,7 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
     }
   }
 
-  let fontsize = isPoint ? fontinfo.scale/25 : fontinfo.scale/labelLength;
+  let fontsize = isPoint ? fontinfo.scale/25 : labelLength ? fontinfo.scale/labelLength : 1;
   fontsize *= labelScale;
 
   let inner = '';
@@ -820,6 +818,16 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
   if("enddatestr" in dataset && !timelineDateMaxOverride) {
     timelineDateMaxOverride = str2date(dataset.enddatestr,true);
   }
+  if("defaultLat" in dataset && latSettingStart === latSettingDefault) {
+    latSettingStart = dataset.defaultLat;
+  }
+  if("defaultLon" in dataset && lonSettingStart === lonSettingDefault) {
+    lonSettingStart = dataset.defaultLon;
+  }
+  if("defaultZ" in dataset && zoomSettingStart === zoomSettingDefault) {
+    zoomSettingStart = dataset.defaultZ;
+  }
+  ohmap.setView([latSettingStart, lonSettingStart],zoomSettingStart);
   if("features" in dataset) {
     for(let f of dataset.features) {
       let removeFeature = false;
