@@ -3,6 +3,9 @@ dataEur = {
   "_comment2":"Licensed under the Apache License, Version 2.0, see LICENSE for details.",
   "_comment3":"SPDX-License-Identifier: Apache-2.0",
   "type":"FeatureCollection",
+  "startdatestr":"15000BC",
+  "curdatestr":  "14500BC",
+  "enddatestr":   "6000BC",
   "styles":[
     { "type": "default",
       "style":{

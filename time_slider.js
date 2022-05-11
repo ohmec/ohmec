@@ -13,11 +13,13 @@ function boundsIntersect(bounds1, bounds2) {
 
 L.Control.TimeLineSlider = L.Control.extend({
   options: {
-    position:           'bottomleft',
-    timelineDateMin:    new Date(1,0,1),
-    timelineDateMax:    new Date,
-    timelineDateStart:  new Date(1776,6,4),
-    sliderWidth:        "750px"
+    position:                 'bottomleft',
+    timelineDateMin:          new Date(1,0,1),
+    timelineDateMax:          new Date,
+    timelineDateStart:        new Date(1776,6,4),
+    timelineIntervalCount:    240,
+    timelineIntervalDuration: 250,
+    sliderWidth:              "750px"
   },
 
   initialize: function (options) {
@@ -94,7 +96,10 @@ L.Control.TimeLineSlider = L.Control.extend({
     // potentially "move time"
 
     thisSlider.advanceTime = function() {
-      let incrTime = (thisSlider.options.timelineDateMax.getTime() - thisSlider.options.timelineDateMin.getTime())/240;
+      let incrTime =
+        (thisSlider.options.timelineDateMax.getTime() -
+         thisSlider.options.timelineDateMin.getTime())/
+         thisSlider.options.timelineIntervalCount;
       let newTime = parseFloat(thisSlider.rangeObject.value) + parseFloat(incrTime);
       if(newTime >= thisSlider.options.timelineDateMax.getTime()) {
         newTime = thisSlider.options.timelineDateMax.getTime();
@@ -109,7 +114,7 @@ L.Control.TimeLineSlider = L.Control.extend({
     thisSlider.affectAdvance = function() {
       if(thisSlider.advButtonObject.value == "Advance") {
         thisSlider.advButtonObject.value = "Stop";
-        thisSlider.intervalFunc = setInterval(thisSlider.advanceTime, 250);
+        thisSlider.intervalFunc = setInterval(thisSlider.advanceTime, thisSlider.options.timelineIntervalDuration);
       } else {
         thisSlider.advButtonObject.value = "Advance";
         clearInterval(thisSlider.intervalFunc);

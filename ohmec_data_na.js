@@ -3,6 +3,9 @@ dataNA = {
   "_comment2":"Licensed under the Apache License, Version 2.0, see LICENSE for details.",
   "_comment3":"SPDX-License-Identifier: Apache-2.0",
   "type":"FeatureCollection",
+  "startdatestr":"1600:01:01",
+  "curdatestr":  "1764:01:01",
+  "enddatestr":  "2010:12:31",
   "styles":[
     { "type": "default",
       "style":{

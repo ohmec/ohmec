@@ -13,6 +13,8 @@ let timelineDateMinDefault = today;                 // these are the calculated 
 let timelineDateMaxDefault = new Date(1000,0,1);
 let timelineDateMinOverride;                        // these allow the database to change timeline range
 let timelineDateMaxOverride;                        // unless provided in the URL override parameters
+let timelineIntervalCount = 240;
+let timelineIntervalDuration = 250;                 // milliseconds
 
 let latSettingDefault = 38.5;                       // centering around USA region for this Phase
 let lonSettingDefault = -98.0;
@@ -97,12 +99,19 @@ for(let param of parameters) {
   if (match !== null) {
     backgroundLayerSetting = match[1];
   }
+  test = /advInt=(\d+)/;
+  match = param.match(test);
+  if (match !== null && match[1] !== 0) {
+    timelineIntervalCount = match[1];
+  }
+  test = /advDur=(\d+)/;
+  match = param.match(test);
+  if (match !== null && match[1] !== 0) {
+    timelineIntervalDuration = match[1];
+  }
   test = /easter/;
   match = param.match(test);
   if (match !== null) {
-    timelineDateMinOverride = str2date('15000BC',false);
-    timelineDateMaxOverride = str2date( '6000BC',true);
-    timelineDateStart       = str2date('14500BC',false);
     latSettingStart = 48;
     lonSettingStart =  3;
     zoomSettingStart = 4;
@@ -802,6 +811,15 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
   if(dataset.type !== "FeatureCollection") {
     throw "expected dataset type === FeatureCollection, got " + dataset.type;
   }
+  if("startdatestr" in dataset && !timelineDateMinOverride) {
+    timelineDateMinOverride = str2date(dataset.startdatestr,false);
+  }
+  if("curdatestr" in dataset && timelineDateStart === timelineDateStartDefault) {
+    timelineDateStart = str2date(dataset.curdatestr,false);
+  }
+  if("enddatestr" in dataset && !timelineDateMaxOverride) {
+    timelineDateMaxOverride = str2date(dataset.enddatestr,true);
+  }
   if("features" in dataset) {
     for(let f of dataset.features) {
       let removeFeature = false;
@@ -1308,18 +1326,20 @@ let mapBounds = function() {
 }
 
 timelineSlider = L.control.timelineSlider({
-  timelineDateMin:         timelineDateMin,
-  timelineDateMax:         timelineDateMax,
-  timelineDateStart:       timelineDateStart,
-  infoboxHandle:           infobox,
-  smartStepFeature:        smartStepFeature,
-  clearInfobox:            infobox.clear,
-  idAddsPerDOI:            idAddsPerDOI,
-  idSubsPerDOI:            idSubsPerDOI,
-  boundsHash:              boundsHash,
-  mapBounds:               mapBounds,
-  datesOfInterestSorted:   datesOfInterestSorted,
-  updateTime:              refreshMap}).addTo(ohmap);
+  timelineDateMin:          timelineDateMin,
+  timelineDateMax:          timelineDateMax,
+  timelineDateStart:        timelineDateStart,
+  timelineIntervalCount:    timelineIntervalCount,
+  timelineIntervalDuration: timelineIntervalDuration,
+  infoboxHandle:            infobox,
+  smartStepFeature:         smartStepFeature,
+  clearInfobox:             infobox.clear,
+  idAddsPerDOI:             idAddsPerDOI,
+  idSubsPerDOI:             idSubsPerDOI,
+  boundsHash:               boundsHash,
+  mapBounds:                mapBounds,
+  datesOfInterestSorted:    datesOfInterestSorted,
+  updateTime:               refreshMap}).addTo(ohmap);
 
 // update HTML data
 function updateHTML(spanName, value) {
