@@ -110,6 +110,10 @@ def compare_features(idA, idB):
   return 1
 
 def conv_date(datestr,is_start):
+  fm = re.fullmatch("(\d+)BC", datestr)
+  if fm:
+    val = int(fm.group(1))*-1
+    return val
   if datestr == 'present':
     return '2100:01:01'
   args = datestr.split(':')
@@ -154,7 +158,7 @@ for feat1 in fullstruct["features"]:
       geoms[id1] = shapely.geometry.asShape(feat1["geometry"])
       check_props(feat1)
       if not geoms[id1].is_valid:
-        sys.stderr.write(id1 + " is not valid\n")
+        print(id1 + " is not valid\n")
     start1 = conv_date(props1["startdatestr"],1)
     end1 = conv_date(props1["enddatestr"],0)
     for feat2 in fullstruct["features"]:
@@ -169,7 +173,7 @@ for feat1 in fullstruct["features"]:
             geoms[id2] = shapely.geometry.asShape(feat2["geometry"])
             check_props(feat2)
             if not geoms[id2].is_valid:
-              sys.stderr.write(id2 + " is not valid\n")
+              print(id2 + " is not valid\n")
           start2 = conv_date(props2["startdatestr"],1)
           end2 = conv_date(props2["enddatestr"],0)
           if date_overlap(start1,end1,start2,end2):
