@@ -183,6 +183,14 @@ let updateDirectLink = function() {
     urlText += '?cherokee';
     conjoin = '&';
   }
+  if(useAA) {
+    urlText += '?aa';
+    conjoin = '&';
+  }
+  if(useEurope) {
+    urlText += '?easter';
+    conjoin = '&';
+  }
   if(timelineDateMinOverride) {
     urlText += conjoin +
       'startdatestr='  + dateStr(timelineDateMinOverride,':');
