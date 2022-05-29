@@ -13,8 +13,8 @@ let timelineDateMinDefault = today;                 // these are the calculated 
 let timelineDateMaxDefault = new Date(1000,0,1);
 let timelineDateMinOverride;                        // these allow the database to change timeline range
 let timelineDateMaxOverride;                        // unless provided in the URL override parameters
-let timelineIntervalCountDefault = 240;
-let timelineIntervalDurationDefault = 250;          // milliseconds
+let timelineIntervalCountDefault = 500;
+let timelineIntervalDurationDefault = 50;           // milliseconds
 let timelineIntervalCount = timelineIntervalCountDefault;
 let timelineIntervalDuration = timelineIntervalDurationDefault;
 
