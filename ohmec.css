@@ -45,11 +45,11 @@ h1 {
   background-color: rgba(4,112,255,0.7);
   color: #eee;
 }
-#nlpopup {
+#popup {
   font: 16px New Tegomin, sans-serif;
   color: #eee;
 }
-#nlpopup a:link {
+#popup a:link {
   color: #eee;
 }
 .curdate {

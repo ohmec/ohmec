@@ -55,15 +55,10 @@ let useEurope = false;
 let useAA = false;
 let useNativeLands = false;
 let cherokeeExample = false;
-let doneNLPopup = true;
-let NLMinDate = today;
-let NLMaxDate = new Date(1000,0,1);
-let NLPopupText = '<div id="nlpopup"><p>Data of the indigenous peoples is provided by <a href="http://native-land.ca">Native Land Digital</a> organization. ' +
-  'See their website for more information. ' +
-  'The map does not represent or intend to represent official or legal boundaries. ' +
-  'The map is not perfect - it is a work in progress with many contributors.</p>' +
-  '<p>The dates have been added by OHMEC temporarily as from approximately 700 - 1768AD. ' +
-  'OHMEC will work with Native Land Digital to attempt to represent movements of the Native American tribes throughout their history.</p>';
+let donePopup = true;
+let popupEndDate;
+let popupStartDate;
+let popupText;
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
@@ -113,7 +108,7 @@ for(let param of parameters) {
   if (match !== null && match[1] !== 0) {
     timelineIntervalDuration = match[1];
   }
-  test = /easter/;
+  test = /viking/;
   match = param.match(test);
   if (match !== null) {
     useEurope = true;
@@ -188,7 +183,7 @@ let updateDirectLink = function() {
     conjoin = '&';
   }
   if(useEurope) {
-    urlText += '?easter';
+    urlText += '?viking';
     conjoin = '&';
   }
   if(timelineDateMinOverride) {
@@ -857,6 +852,11 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
   if("defaultZ" in dataset && zoomSettingStart === zoomSettingDefault) {
     zoomSettingStart = dataset.defaultZ;
   }
+  if("popup" in dataset) {
+    popupText = dataset.popup.text;
+    popupStartDate = str2date(dataset.popup.startdatestr,false);
+    popupEndDate = str2date(dataset.popup.enddatestr,true);
+  }
   ohmap.setView([latSettingStart, lonSettingStart],zoomSettingStart);
   if("features" in dataset) {
     for(let f of dataset.features) {
@@ -905,8 +905,6 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
             p.enddatestr   = "1768";  // arbitrary, and to be rectified with more research
             p.startDate = str2date(p.startdatestr,false);
             p.endDate = str2date(p.enddatestr,true);
-            NLMinDate = dateMin(NLMinDate, p.startDate);
-            NLMaxDate = dateMax(NLMaxDate, p.endDate);
             if("description" in p) {
               p.source = p.description;
             }
@@ -1355,7 +1353,7 @@ let refreshMap = function( {dateValue} ) {
   curDate.setTime(dateValue);
   legend.update();
   geojson.evaluateLayers();
-  checkNLPopup();
+  checkPopup();
 }
 
 let timelineDateMin = timelineDateMinOverride ? timelineDateMinOverride : timelineDateMinDefault;
@@ -1475,16 +1473,16 @@ function checkKeypress(e) {
   }
 }
 
-function checkNLPopup() {
-  if(useNativeLands && !doneNLPopup && curDate <= NLMaxDate && curDate >= NLMinDate) {
+function checkPopup() {
+  if(popupText && !donePopup && curDate <= popupEndDate && curDate >= popupStartDate) {
     let center = ohmap.getCenter();
     let bounds = ohmap.getBounds();
     center.lat = (center.lat + bounds.getSouth())/2;
-    let NLPopup = L.popup({maxWidth: 500}).setLatLng(center).setContent(NLPopupText).openOn(ohmap);
-    doneNLPopup = true;
+    let popup = L.popup({maxWidth: 500}).setLatLng(center).setContent('<div id="popup">' + popupText + '</div>').openOn(ohmap);
+    donePopup = true;
   }
 }
 
 ohmap.on('keydown', checkKeypress);
-doneNLPopup = false;
-checkNLPopup();
+donePopup = false;
+checkPopup();
