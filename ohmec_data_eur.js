@@ -9,6 +9,11 @@ dataEur = {
   "defaultLat":       48.0,
   "defaultLon":        3.0,
   "defaultZ":          4.0,
+  "popup": {
+    "text":"<p>This micro-study of the pre-Viking peoples is simply used to visualize the movements of those people with respect to the receding ice sheets of the late Pleistocene age. The purpose was primarily for testing the animation abilities and has been set aside for the time being.</p>",
+    "startdatestr":"15000BC",
+    "enddatestr":"6000BC"
+  },
   "styles":[
     { "type": "default",
       "style":{
