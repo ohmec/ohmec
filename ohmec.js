@@ -834,23 +834,25 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
   if(dataset.type !== "FeatureCollection") {
     throw "expected dataset type === FeatureCollection, got " + dataset.type;
   }
-  if("startdatestr" in dataset && !timelineDateMinOverride) {
-    timelineDateMinOverride = str2date(dataset.startdatestr,false);
-  }
-  if("curdatestr" in dataset && timelineDateStart === timelineDateStartDefault) {
-    timelineDateStart = str2date(dataset.curdatestr,false);
-  }
-  if("enddatestr" in dataset && !timelineDateMaxOverride) {
-    timelineDateMaxOverride = str2date(dataset.enddatestr,true);
-  }
-  if("defaultLat" in dataset && latSettingStart === latSettingDefault) {
-    latSettingStart = dataset.defaultLat;
-  }
-  if("defaultLon" in dataset && lonSettingStart === lonSettingDefault) {
-    lonSettingStart = dataset.defaultLon;
-  }
-  if("defaultZ" in dataset && zoomSettingStart === zoomSettingDefault) {
-    zoomSettingStart = dataset.defaultZ;
+  if("viewpoint" in dataset) {
+    if("startdatestr" in dataset.viewpoint && !timelineDateMinOverride) {
+      timelineDateMinOverride = str2date(dataset.viewpoint.startdatestr,false);
+    }
+    if("curdatestr" in dataset.viewpoint && timelineDateStart === timelineDateStartDefault) {
+      timelineDateStart = str2date(dataset.viewpoint.curdatestr,false);
+    }
+    if("enddatestr" in dataset.viewpoint && !timelineDateMaxOverride) {
+      timelineDateMaxOverride = str2date(dataset.viewpoint.enddatestr,true);
+    }
+    if("defaultLat" in dataset.viewpoint && latSettingStart === latSettingDefault) {
+      latSettingStart = dataset.viewpoint.defaultLat;
+    }
+    if("defaultLon" in dataset.viewpoint && lonSettingStart === lonSettingDefault) {
+      lonSettingStart = dataset.viewpoint.defaultLon;
+    }
+    if("defaultZ" in dataset.viewpoint && zoomSettingStart === zoomSettingDefault) {
+      zoomSettingStart = dataset.viewpoint.defaultZ;
+    }
   }
   if("popup" in dataset) {
     popupText = dataset.popup.text;
