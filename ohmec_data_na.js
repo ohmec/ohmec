@@ -10,7 +10,7 @@ dataNA = {
     "defaultLat":  38.5,
     "defaultLon": -98.0,
     "defaultZ":     4.5
-  }
+  },
   "styles":[
     { "type": "default",
       "style":{
