@@ -112,22 +112,22 @@ def compare_features(idA, idB):
 def conv_date(datestr,is_start):
   fm = re.fullmatch("(\d+)BC", datestr)
   if fm:
-    val = str(int(fm.group(1))*-1)
+    val = int(fm.group(1))*-1
     if is_start:
-      return val + ":01:01"
-    return val + ":12:31"
+      return val
+    return val + 0.99999
   if datestr == 'present':
-    return '2100:01:01'
+    return 2100
   args = datestr.split(':')
   if len(args) == 3:
-    return datestr
+    return int(args[0]) + (int(args[1])-1)/12 + (int(args[2])-1)/366
   if len(args) == 2:
     if is_start:
-      return datestr + ':01'
-    return datestr + ':31'
+      return int(args[0]) + (int(args[1])-1)/12
+    return int(args[0]) + int(args[1])/12 - 0.0001
   if is_start:
-    return datestr + ':01:01'
-  return datestr + ':12:31'
+    return int(datestr)
+  return int(datestr)+0.9999
 
 def check_props(feat):
   idf = feat["id"]
