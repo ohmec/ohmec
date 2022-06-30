@@ -11,6 +11,20 @@ dataNA = {
     "defaultLon": -98.0,
     "defaultZ":     4.5
   },
+  "popups": [
+    { "text":"<p>Mapping of New France is a guesstimate of \"occupation\" vs. land grants as in early English claims, thus is done in animation style.</p>",
+      "startdatestr":"1609",
+      "enddatestr":  "1645",
+      "coordinates":[-71.24,46.82]},
+    { "text":"<p>Mapping of English claims is done via documented land grants and claims vs. occupations as with New France, thus is not done in animation style.</p>",
+      "startdatestr":"1620",
+      "enddatestr":  "1645",
+      "coordinates":[-70.66,41.96]},
+    { "text":"<p>Migration patterns of the Cherokee and Proto-Cherokee peoples are based upon the research of Jay Palmer and his research published in 1994. It isolates the tribe for demonstration of migration animation.</p>",
+      "startdatestr":"800BC",
+      "enddatestr":"1100",
+      "coordinates":[-101.8,35.1]}
+  ],
   "styles":[
     { "type": "default",
       "style":{

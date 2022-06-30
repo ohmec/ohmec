@@ -1,10 +1,11 @@
 dataNL = {
 	"type": "FeatureCollection",
-  "popup": {
-    "text":"<p>Data of the indigenous peoples is provided by <a href=\"http://native-land.ca\">Native Land Digital</a> organization. See their website for more information. The map does not represent or intend to represent official or legal boundaries. The map is not perfect - it is a work in progress with many contributors.</p><p>The dates have been added by OHMEC temporarily as from approximately 700 - 1768AD. OHMEC will work with Native Land Digital to attempt to represent movements of the Native American tribes throughout their history.</p>",
-    "startdatestr":"700:01:01",
-    "enddatestr":"1768:12:31"
-  },
+  "popups": [
+    { "text":"<p>Data of the indigenous peoples is provided by <a href=\"http://native-land.ca\">Native Land Digital</a> organization. See their website for more information. The map does not represent or intend to represent official or legal boundaries. The map is not perfect - it is a work in progress with many contributors.</p><p>The dates have been added by OHMEC temporarily as from approximately 700 - 1768AD. OHMEC will work with Native Land Digital to attempt to represent movements of the Native American tribes throughout their history.</p>",
+      "startdatestr":"700:01:01",
+      "enddatestr":"1768:12:31",
+      "coordinates":[-101.8,35.1]}
+  ],
 	"features": [{
 		"type": "Feature",
 		"properties": {
