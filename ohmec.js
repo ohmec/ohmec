@@ -55,10 +55,7 @@ let useEurope = false;
 let useAA = false;
 let useNativeLands = false;
 let cherokeeExample = false;
-let donePopup = true;
-let popupEndDate;
-let popupStartDate;
-let popupText;
+let popupList = [];
 
 for(let param of parameters) {
   let test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
@@ -854,10 +851,16 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
       zoomSettingStart = dataset.viewpoint.defaultZ;
     }
   }
-  if("popup" in dataset) {
-    popupText = dataset.popup.text;
-    popupStartDate = str2date(dataset.popup.startdatestr,false);
-    popupEndDate = str2date(dataset.popup.enddatestr,true);
+  if("popups" in dataset) {
+    for(let p of dataset.popups) {
+      let pentry = {};
+      pentry.text = p.text;
+      pentry.startDate = str2date(p.startdatestr,false);
+      pentry.endDate = str2date(p.enddatestr,false);
+      pentry.coordinates = p.coordinates;
+      pentry.done = false;
+      popupList.push(pentry);
+    }
   }
   ohmap.setView([latSettingStart, lonSettingStart],zoomSettingStart);
   if("features" in dataset) {
@@ -1081,6 +1084,7 @@ if(useEurope) {
   if(useNativeLands) {
     geo_lint(dataNL,true,false);
     dataNA.features = dataNA.features.concat(dataNL.features);
+    dataNA.popups = dataNA.popups.concat(dataNL.popups);
   }
 }
 
@@ -1355,7 +1359,7 @@ let refreshMap = function( {dateValue} ) {
   curDate.setTime(dateValue);
   legend.update();
   geojson.evaluateLayers();
-  checkPopup();
+  checkPopups();
 }
 
 let timelineDateMin = timelineDateMinOverride ? timelineDateMinOverride : timelineDateMinDefault;
@@ -1475,16 +1479,23 @@ function checkKeypress(e) {
   }
 }
 
-function checkPopup() {
-  if(popupText && !donePopup && curDate <= popupEndDate && curDate >= popupStartDate) {
-    let center = ohmap.getCenter();
+function checkPopups() {
+  for(let p of popupList) {
     let bounds = ohmap.getBounds();
-    center.lat = (center.lat + bounds.getSouth())/2;
-    let popup = L.popup({maxWidth: 500}).setLatLng(center).setContent('<div id="popup">' + popupText + '</div>').openOn(ohmap);
-    donePopup = true;
+    let ll = new L.latLng(p.coordinates[1], p.coordinates[0]);
+    if(!p.done && curDate <= p.endDate && curDate >= p.startDate && bounds.contains(ll)) {
+      let popup = L.popup({
+        maxWidth: 500,
+        autoClose: false}).
+          setLatLng(ll).
+          setContent('<div id="popup">' + p.text + '</div>').
+          openOn(ohmap);
+      p.done = true;
+    }
   }
 }
 
 ohmap.on('keydown', checkKeypress);
-donePopup = false;
-checkPopup();
+ohmap.on('moveend', checkPopups);
+
+checkPopups();

@@ -11,11 +11,12 @@ dataAA = {
     "defaultLon":     -115.0,
     "defaultZ":          3.5
   },
-  "popup": {
-    "text":"<p>This study of the Ancient American past is a highly speculative visualization of movements of a variety of peoples, and is roughly following the work of Dr Michael Waters and his team at Texas A&amp;M. The visualization begins with the splitting of the Ancient Berigians (AB) from the Ancient North Eurasians (ANE) around 20000BC. After the Beringian Standstill, a group - the Southern Native Americans (SNA) - is postulated to have split off and migrated down the Pacific Coast. A second group - the Northern Native Americans - separates and populates North America via the split in the Canadian ice sheets, to become the Clovis Culture. This work is currently un-corroborated and simply goes off public researched published by Texas A&amp;M and others.</p>",
-    "startdatestr":"22000BC",
-    "enddatestr":"10000BC"
-  },
+  "popups": [
+    { "text":"<p>This study of the Ancient American past is a highly speculative visualization of movements of a variety of peoples, and is roughly following the work of Dr Michael Waters and his team at Texas A&amp;M. The visualization begins with the splitting of the Ancient Berigians (AB) from the Ancient North Eurasians (ANE) around 20000BC. After the Beringian Standstill, a group - the Southern Native Americans (SNA) - is postulated to have split off and migrated down the Pacific Coast. A second group - the Northern Native Americans - separates and populates North America via the split in the Canadian ice sheets, to become the Clovis Culture. This work is currently un-corroborated and simply goes off public researched published by Texas A&amp;M and others.</p>",
+      "startdatestr":"22000BC",
+      "enddatestr":  "10000BC",
+      "coordinates":[-117.1,32.5]}
+  ],
   "styles":[
     { "type": "default",
       "style":{
