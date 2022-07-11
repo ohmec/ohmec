@@ -31,7 +31,7 @@ filename = sys.argv[1]
 coords = {}
 multicoords = {}
 entity2name = {}
-SIGDIGITS = 3
+SIGDIGITS = 5
 
 def parse_kml(filename):
   in_placemark = 0
