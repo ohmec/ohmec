@@ -6,6 +6,48 @@ html, body {
   height: 100%;
   margin: 10px;
 }
+td {
+  padding-top:    1px;
+  padding-bottom: 1px;
+  padding-left:   10px;
+  padding-right:  10px;
+}
+.tablinks {
+  overflow: hidden;
+  border: 0px;
+  background-color: #f1f1f100;
+}
+
+/* Style the buttons inside the tablinks */
+.tablinks button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 13px;
+  transition: 0.3s;
+  font-size: 25px;
+  font-family: "Benne", "Helvetica", serif;
+  border: 3px solid #00000000;
+}
+.tablinks button:hover {
+  border: 3px solid #77a0f4ff;
+}
+
+/* Create an active/current tablink class */
+.tablinks button.active {
+  background-color: #77a0f4;
+}
+
+/* Style the tablinks content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+  font-family: "Benne", "Helvetica", serif;
+}
 body {
   background-image: url("background.png");
   font-family: "Benne", "Helvetica", serif;
@@ -49,8 +91,8 @@ h1 {
   font: 16px New Tegomin, sans-serif;
   color: #eee;
 }
-#popup a:link {
-  color: #eee;
+#popup a {
+  color: #ffa0c0;
 }
 .curdate {
   font-weight: bold;

@@ -2,10 +2,6 @@
 // Licensed under the Apache License, Version 2.0, see LICENSE for details.
 // SPDX-License-Identifier: Apache-2.0
 
-// check for URL override
-
-let parameters = location.search.substring(1).split("&");
-
 let today = new Date();
 let timelineDateStartDefault = new Date(1776,6,4);  // "interesting" start date, but arbitrary
 let timelineDateStart = timelineDateStartDefault;
@@ -48,18 +44,57 @@ let lastFeature = null;
 let infoboxNormalBackground = "rgba(4,112,255,0.7)";
 let infoboxPinnedBackground = "rgba(4, 64,160,0.7)";
 
+let hrefText = location.href;
+let splits = hrefText.split('?');
+let urlText = splits[0];
+splits = urlText.split('/');
+let pagename = splits[splits.length-1];
+
 let infoPinned = false;
 let animationHash = {};
 let fHash = {};
-let useEurope = false;
-let useAA = false;
-let useNativeLands = false;
-let cherokeeExample = false;
+let useEurope = pagename === 'index_viking.html';
+let useAA = pagename === 'index_aa.html';
+let useNativeLands = pagename === 'index_nl.html';
+let cherokeeExample = pagename === 'index_cherokee.html';
 let popupList = [];
 
+// check for URL override. If the override is the old style
+// of invoking a "study", then go ahead and open the right
+// page if not already on the right page
+
+let parameters = location.search.substring(1).split("&");
+
+if (cherokeeExample) {
+  timelineDateMinOverride = str2date('800BC',false);
+  timelineDateStart       = str2date('800BC',false);
+}
+
 for(let param of parameters) {
-  let test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
+  // check for old study invocations using parameters
+  let test = /viking|easter/;
   let match = param.match(test);
+  let newURL = hrefText;
+  if(match !== null && pagename === 'index.html') {
+    open(newURL.replace('index.html','index_viking.html'),"_self");
+  }
+  test = /^aa$/;
+  match = param.match(test);
+  if(match !== null && pagename === 'index.html') {
+    open(newURL.replace('index.html','index_aa.html'),"_self");
+  }
+  test = /^nl$/;
+  match = param.match(test);
+  if(match !== null && pagename === 'index.html') {
+    open(newURL.replace('index.html','index_nl.html'),"_self");
+  }
+  test = /cher/;
+  match = param.match(test);
+  if(match !== null && pagename === 'index.html') {
+    open(newURL.replace('index.html','index_cherokee.html'),"_self");
+  }
+  test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
+  match = param.match(test);
   if (match !== null) {
     if (match[1] == 'startdatestr') {
       timelineDateMinOverride = str2date(match[2],false);
@@ -105,28 +140,6 @@ for(let param of parameters) {
   if (match !== null && match[1] !== 0) {
     timelineIntervalDuration = match[1];
   }
-  test = /viking/;
-  match = param.match(test);
-  if (match !== null) {
-    useEurope = true;
-  }
-  test = /aa/;
-  match = param.match(test);
-  if (match !== null) {
-    useAA = true;
-  }
-  test = /nl/;
-  match = param.match(test);
-  if (match != null) {
-    useNativeLands = true;
-  }
-  test = /cher/;
-  match = param.match(test);
-  if (match != null) {
-    timelineDateMinOverride = str2date('800BC',false);
-    timelineDateStart       = str2date('800BC',false);
-    cherokeeExample = true;
-  }
 }
 
 // Declare the bounds of which the user can pan the viewing portal.
@@ -171,18 +184,6 @@ let updateDirectLink = function() {
   let latlon = ohmap.getCenter();
   let conjoin = '?';
   let urlText = splits[0];
-  if(cherokeeExample) {
-    urlText += '?cherokee';
-    conjoin = '&';
-  }
-  if(useAA) {
-    urlText += '?aa';
-    conjoin = '&';
-  }
-  if(useEurope) {
-    urlText += '?viking';
-    conjoin = '&';
-  }
   if(timelineDateMinOverride) {
     urlText += conjoin +
       'startdatestr='  + dateStr(timelineDateMinOverride,':');
@@ -203,9 +204,6 @@ let updateDirectLink = function() {
   }
   if(backgroundLayerSetting !== backgroundLayerDefault) {
     urlText += '&background=' + backgroundLayerSetting;
-  }
-  if(useNativeLands) {
-    urlText += '&nl';
   }
   if(timelineIntervalCount !== timelineIntervalCountDefault) {
     urlText += '&advInt=' + timelineIntervalCount;
@@ -1392,14 +1390,6 @@ function updateHTML(spanName, value) {
   spanHandle.textContent = value;
 }
   
-updateHTML('startdef',  dateStr(timelineDateMinDefault,':'));
-updateHTML('enddef',    dateStr(timelineDateMaxDefault,':'));
-updateHTML('curdef',    dateStr(timelineDateStartDefault,':'));
-updateHTML('latdef',    latSettingDefault);
-updateHTML('londef',    lonSettingDefault);
-updateHTML('zdef',      zoomSettingStart);
-updateHTML('stepdef',   smartStepDefault ? 'on' : 'off');
-updateHTML('backdef',   backgroundLayerDefault);
 updateHTML('polycount', polygonCount);
 
 // if key `i` is pressed, potentially modify the infobox,

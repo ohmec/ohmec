@@ -20,7 +20,7 @@ dataNA = {
       "startdatestr":"1620",
       "enddatestr":  "1645",
       "coordinates":[-70.66,41.96]},
-    { "text":"<p>Migration patterns of the Cherokee and Proto-Cherokee peoples are based upon the research of Jay Palmer and his research published in 1994. It isolates the tribe for demonstration of migration animation.</p>",
+    { "text":"<p>Migration patterns of the Cherokee and Proto-Cherokee Nations are based upon the research of Jay Palmer and <a href=\"https://journals.sagepub.com/doi/abs/10.2190/5V04-FAKU-G22R-DNA0?journalCode=naaa\" target=\"_blank\">his research</a> published in 1994. It isolates the tribe for demonstration of migration animation.</p>",
       "startdatestr":"800BC",
       "enddatestr":"1100",
       "coordinates":[-101.8,35.1]}

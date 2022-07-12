@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!-- Copyright OHMEC contributors.                                            -->
+<!-- Licensed under the Apache License, Version 2.0, see LICENSE for details. -->
+<!-- SPDX-License-Identifier: Apache-2.0                                      -->
+<html>
+  <head>
+    <title>OHMEC</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="ohmec.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik|New+Tegomin|Special+Elite|Akaya+Telivigala|Fredericka+the+Great|Cabin+Sketch|Rye|Corben|MedievalSharp|Benne"/>
+  </head>
+  <body>
+    <table padding=2>
+      <tr>
+        <td rowspan=2><a href="logo_name.jpg"><img height=150 align="middle" src="logo_name.jpg"/></a></td>
+        <td><h1>Open History Map Exploration</h1></td>
+      </tr>
+        <td>
+          <div class="tablinks" id="tablinks"></div>
+        </td>
+      </tr>
+    </table>
+    &nbsp;<br/>
+    <p>
+      The <a href="http://ohmec.net">OHMEC</a> project is a free,
+      open-source geography project, with a goal of representing all
+      historical indigenous lands and political boundaries in a unified
+      database. The uniqueness of OHMEC is its ability to represent these
+      lands and boundaries on any date, as well as being able to show the
+      dynamic changes in lands and boundaries from any point in history
+      to the present. It is very much a work in progress. This early
+      demonstration shows a rendering of data in the North American
+      arena using <a href="https://leafletjs.com">Leaflet</a> to display
+      geographical polygons from the database, overlaid on top of
+      a modern map.
+    </p>
+    <p>
+      The OHMEC project is being developed openly in a
+      <a href="https://github.com/ohmec/ohmec" target="_blank">Github repository</a>.
+      Participation is welcome, see that repo for more information
+      on the management of the project. Also see
+      <a href="https://docs.google.com/presentation/d/1WiXMrLPC4fOwNaKD7UhH2Wb1JSVcva5z4sNdd0qS7vg/edit?usp=sharing">this slidedeck</a>
+      for more insight into the project. A specification of the
+      <a href="https://docs.google.com/document/d/15D9t61Y1WYYH02BuIp3C8InJD40L19uHIcPNDfNv0Bk/edit?usp=sharing">extended GeoJSON</a>
+      format that underpins the historical database is provided here.
+      For information or any questions, please use <a href="mailto:ohmec.contact@gmail.com">ohmec.contact@gmail.com</a>.
+    </p>
+    <h2>Interacting with the map</h2>
+    <p>
+      Hovering over any polygonal entity provides information about
+      the feature in the <i>info box</i> in the upper right. This
+      typically includes a link, or multiple links, that the user
+      can click on to find out more about the foundation of the
+      data. See the <b><i>i</i></b> key below on how to hold the
+      info box in order to click the link.
+    </p>
+    <p>
+      Holding the shift key down and creating a bounding box will
+      redefine the current zoom window. Clicking on a polygon will
+      deprioritize it in the "click stack" when there are multiple
+      overlapping features, allowing the user to hover over the
+      lower ones to see their information.
+    </p>
+    <p>
+      Visualization and control can be modified by key press events.
+      The following keys pressed <u>after click-selecting the map
+      pane</u> have a particular effect.
+    </p>
+    <table id="keytable">
+      <tr>
+        <th>key</th>
+        <th>effect</th>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>Modify underlying base map to use unlabeled relief map (default)</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>Modify underlying base map to use unlabeled darker world imagery map</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Modify underlying base map to use unlabeled light physical imagery map</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>Modify underlying base map to use unlabeled white relief map</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Modify underlying base map to use unlabeled Stamen terrain map</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Modify underlying base map to use labeled street map</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Modify underlying base map to use unlabeled watercolor "paint" map</td>
+      </tr>
+      <tr>
+        <td>a</td>
+        <td>
+          Toggles the advance button. Pressing the key is equivalent to pressing
+          the Advance button on the page, toggling either on or off depending
+          upon current status.
+        </td>
+      </tr>
+      <tr>
+        <td>i</td>
+        <td>Toggles enable/disable of "pinning" the feature information
+            for the currently selected feature. Press once to pin, a
+            second time to unpin. Panning, zooming, or changing the date
+            also releases the pin.
+        </td>
+      </tr>
+      <tr>
+        <td>r</td>
+        <td>
+          Resets the view to the default lat/lon/z settings, that is the default
+          of the database, or as overriden by URL parameters.
+      </tr>
+      <tr>
+        <td>s</td>
+        <td>
+          Toggles the "smart step" button feature. When enabled (default true),
+          the (Step +) and (Step -) buttons move the timeline slider forward or
+          backward to the next time where a change in the database is visible
+          in the current viewpoint. When false, the step buttons simply move
+          to the next or previous change in the database.  NOTE the user must
+          click on the map once to indicate focus on it (vs other browser items)
+          before any keyboard event.
+        </td>
+      </tr>
+      <tr>
+        <td>z</td>
+        <td>
+          Zooms the viewing window to be the bounding box of the currently
+          active feature. This could be what is hovered over by the mouse,
+          or the currently selected feature "pinned" by the "i" button information
+          holding feature.
+        </td>
+      </tr>
+      <tr>
+        <td>&gt; .</td>
+        <td>
+          Step forward. Equivalent to pressing the (Step +) button on the page.
+          The amount to step forward is under the management of the Smart Step
+          feature which may be on or off.
+        </td>
+      </tr>
+      <tr>
+        <td>&lt; ,</td>
+        <td>
+          Step backward. Equivalent to pressing the (Step -) button on the page.
+          The amount to step backward is under the management of the Smart Step
+          feature which may be on or off.
+        </td>
+      </tr>
+    </table>
+    <h2>URL arguments</h2>
+    <p>
+      Arguments can be passed to the URL to modify timeline parameters
+      and default viewing perspective. These arguments are shown below,
+      and are set as for example
+      <font size="4" face="Courier"><b>https://ohmec.github.io/ohmec/index.html?param1=val1&amp;param2=val2</b></font>.
+    </p>
+    <table id="paramtable">
+      <tr>
+        <th>parameter</th>
+        <th>argument</th>
+        <th>description</th>
+      </tr>
+      <tr>
+        <td>startdatestr</td>
+        <td>YYYY:MM:DD</td>
+        <td>Sets timeline slider start date to MM/DD/YYYY.</td>
+      </tr>
+      <tr>
+        <td>enddatestr</td>
+        <td>YYYY:MM:DD</td>
+        <td>Sets timeline slider end date to MM/DD/YYYY.</td>
+      </tr>
+      <tr>
+        <td>curdatestr</td>
+        <td>YYYY:MM:DD</td>
+        <td>Sets timeline slider current date to MM/DD/YYYY.</td>
+      </tr>
+      <tr>
+        <td>lat</td>
+        <td>N</td>
+        <td>Sets center latitude to value N (range -90 to 90).</td>
+      </tr>
+      <tr>
+        <td>lon</td>
+        <td>N</td>
+        <td>Sets center longitude to value N (range -180 to 180).</td>
+      </tr>
+      <tr>
+        <td>z</td>
+        <td>N</td>
+        <td>Sets zoom value to N (range 2.5 to 15).</td>
+      </tr>
+      <tr>
+        <td>smartstep</td>
+        <td>on|off</td>
+        <td>Enables or disables the smart step feature.</td>
+      </tr>
+      <tr>
+        <td>background</td>
+        <td>relief|world|<br/>physical|white|<br/>stamen|streets|paint</td>
+        <td>Sets the background map to the given option.</td>
+      </tr>
+    </table>
+    <h2>Studies</h2>
+    <p>
+      There are several <b>special historical studies</b> available
+      via the different web pages selectable by the tabs at the top
+      of the page. These are described below, as well as the primary
+      page.
+    </p>
+    <h3>Primary</h3>
+    <p>
+      The primary page is itself a study of the North American
+      theater, from the time 1600 to present. This combines information
+      on Native North American tribes, Western occupations, and
+      Western claims and grants. Most of these are step-wise
+      increments of land boundaries as indicated with claims or
+      grants. A few are animated to indicate the increase in
+      occupation.
+    </p>
+    <p>
+      Initial Native occupations are, in this study, indicated as
+      borderless locations static in time. The end date has been
+      researched and chosen as the date in which the tribe was given
+      reservation land. At that time, reservation boundaries are
+      shown equivalent to today's boundaries. For bordered viewpoints,
+      see the Native Lands study discussed below. For dynamic
+      viewpoints, see the Cherokee and Ancient Americas studies
+      discussed below.
+    </p>
+    <h3>Native Lands</h3>
+    <p>
+      The Native Lands study swaps out the OHMEC Native tribal
+      locations and uses data from the organization
+      <a href="http://native-land.ca">Native Land Digital</a>. This
+      is a richer dataset that has boundaries that encompass all
+      of the tribes' known homelands throughout their history. OHMEC
+      would like to work with Native Land Digital to attempt to
+      represent movements of the tribes akin to the Cherokee study.
+    </p>
+    <h3>Ancient Americas</h3>
+    <p>
+      The Ancient Americas study focuses on the ancient prehistoric
+      movements of peoples into the Americas, as best we know through
+      modern scholarship. The study at this time focuses on the
+      years 22000BC to 10000BC, following the movements of the
+      Ancient North Eurasians into Beringia, then the split of the
+      Southern Native Americans (SNA) along the Pacific Coast, and
+      the Northern Native Americans (NNA, aka Clovis Culture) through
+      the parting of the Canadian ice sheets. The fidelity of the
+      mapping is highly speculative and is shown for educational
+      visualization purposes.
+    </p>
+    <h3>Cherokee</h3>
+    <p>
+      The Cherokee study highlights the movements of the Proto-
+      Cherokee and Cherokee tribes through the period 800BC to
+      present. All other Native tribes are absent in this study.
+      Eventually it is desired to have information on all Native
+      tribes in this fashion, but this was made possible by a 1990s
+      archaeological study.
+    </p>
+    <h3>Viking</h3>
+    <p>
+      The Viking study shows a brief highlight of pre-Viking peoples
+      in the northern European arena from roughly 15000BC to 6000BC.
+      This was an early experiement with modeling tribal movements
+      as well as the effect of geographical changes in the form of
+      receding ice sheets.
+    </p>
+    <script type="text/javascript" src="tablinks.js"></script>
+  </body>
+</html>
