@@ -859,6 +859,7 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
       pentry.endDate = str2date(p.enddatestr,false);
       pentry.coordinates = p.coordinates;
       pentry.done = false;
+      pentry.popup = null;
       popupList.push(pentry);
     }
   }
@@ -1483,14 +1484,22 @@ function checkPopups() {
   for(let p of popupList) {
     let bounds = ohmap.getBounds();
     let ll = new L.latLng(p.coordinates[1], p.coordinates[0]);
-    if(!p.done && curDate <= p.endDate && curDate >= p.startDate && bounds.contains(ll)) {
-      let popup = L.popup({
+    if(!p.done && curDate <= p.endDate && curDate >= p.startDate && bounds.contains(ll) && !p.popup) {
+      p.popup = L.popup({
         maxWidth: 500,
         autoClose: false}).
           setLatLng(ll).
           setContent('<div id="popup">' + p.text + '</div>').
           openOn(ohmap);
       p.done = true;
+    }
+  }
+  // check for ones that need to be closed once age range is exited
+  for(let p of popupList) {
+    if(p.popup) {
+      if(p.popup.isOpen() && !(curDate <= p.endDate && curDate >= p.startDate)) {
+        ohmap.closePopup(p.popup);
+      }
     }
   }
 }
