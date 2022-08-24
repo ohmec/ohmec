@@ -88,7 +88,7 @@ def export_entity(idname, entity_name, geometry):
     print("            <tessellate>1</tessellate>")
     print("            <coordinates>")
     for pair in geometry["coordinates"][0]:
-      print("            " + str(pair[0]) + "," + str(pair[1]) + ",0")
+      print("              " + str(pair[0]) + "," + str(pair[1]) + ",0")
     print("            </coordinates>")
     print("          </LinearRing>")
     print("        </outerBoundaryIs>")
@@ -107,7 +107,7 @@ def export_entity(idname, entity_name, geometry):
       print("            <tessellate>1</tessellate>")
       print("            <coordinates>")
       for pair in polygon[0]:
-        print("            " + str(pair[0]) + "," + str(pair[1]) + ",0")
+        print("              " + str(pair[0]) + "," + str(pair[1]) + ",0")
       print("            </coordinates>")
       print("          </LinearRing>")
       print("        </outerBoundaryIs>")

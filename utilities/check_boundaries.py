@@ -50,6 +50,11 @@ varname = fm.group(1)
 varjson = fm.group(2)
 fullstruct = json.loads(varjson)
 
+def get_first_date(startA, startB, strA, strB):
+  if startA <= startB:
+    return strB
+  return strA
+
 def date_overlap(startA, endA, startB, endB):
   if startA <= startB and endA >= startB:
     return 1
@@ -61,7 +66,7 @@ def date_overlap(startA, endA, startB, endB):
     return 1
   return 0
 
-def compare_features(idA, idB):
+def compare_features(idA, idB, first_date):
   '''Check if features A and B have a) no intersection (skip);
   b) has "clean" intersection (defined as a single LineString); c) has
   a double intersection (>= 2 LineStrings), could be OK but most likely
@@ -74,7 +79,7 @@ def compare_features(idA, idB):
   intAB = geoms[idA].intersection(geoms[idB])
   if geoms[idA].overlaps(geoms[idB]):
     if not idA in overlap_waiver and not idB in overlap_waiver:
-      print("ERR:  intersection of " + idA + " with " + idB + " resulted in overlap")
+      print("ERR:  intersection of " + idA + " with " + idB + " on date " + first_date + " resulted in overlap")
       print("  " + str(intAB))
       return 2
   else:
@@ -83,7 +88,7 @@ def compare_features(idA, idB):
       if idA in point_waiver or idB in point_waiver:
         return 1
       else:
-        print("ERR: intersection of " + idA + " with " + idB + " resulted in " + intABtype + ":")
+        print("ERR: intersection of " + idA + " with " + idB + " on date " + first_date + " resulted in " + intABtype + ":")
         print("  " + str(intAB))
         return 4
     if intABtype == 'LineString':
@@ -97,14 +102,14 @@ def compare_features(idA, idB):
       elif idA in double_waiver or idB in double_waiver:
         return 1
       else:
-        print("ERR: intAB for " + idA + " with " + idB + " is a MultiLine String. Here is its boundary")
+        print("ERR: intAB for " + idA + " with " + idB + " on date " + first_date + " is a MultiLine String. Here is its boundary")
         print("  " + str(bound) + " of length " + str(len(bound)))
         return 3
     if intABtype == 'Polygon' or intABtype == 'MultiPolygon':
       if idA in overlap_waiver or idB in overlap_waiver:
         return 1
     if not idA in double_waiver and not idB in double_waiver:
-      print("ERR:  intersection of " + idA + " with " + idB + " resulted in " + intABtype + ":")
+      print("ERR:  intersection of " + idA + " with " + idB + " on date " + first_date + " resulted in " + intABtype + ":")
       print("  " + str(intAB))
       return 3
   return 1
@@ -161,6 +166,9 @@ for feat1 in fullstruct["features"]:
       check_props(feat1)
       if not geoms[id1].is_valid:
         print(id1 + " is not valid\n")
+        print("buffer version:")
+        buf = geoms[id1].buffer(0)
+        print(buf)
     start1 = conv_date(props1["startdatestr"],1)
     end1 = conv_date(props1["enddatestr"],0)
     for feat2 in fullstruct["features"]:
@@ -176,10 +184,14 @@ for feat1 in fullstruct["features"]:
             check_props(feat2)
             if not geoms[id2].is_valid:
               print(id2 + " is not valid\n")
+              print("buffer version:")
+              buf = geoms[id2].buffer(0)
+              print(buf)
           start2 = conv_date(props2["startdatestr"],1)
           end2 = conv_date(props2["enddatestr"],0)
           if date_overlap(start1,end1,start2,end2):
-            res = compare_features(idA,idB)
+            first_date = get_first_date(start1,start2,props1["startdatestr"],props2["startdatestr"])
+            res = compare_features(idA,idB,first_date)
             if res >= 1:
               boundary_count += 1
             if res == 2:
