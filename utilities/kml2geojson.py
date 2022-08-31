@@ -23,15 +23,20 @@ import sys
 import json
 import re
 
-if(len(sys.argv) != 2):
-  print("usage: kml2geojson.py kmlfilename")
+SIGDIGITS = 5
+
+if(len(sys.argv) == 2):
+  filename = sys.argv[1]
+elif(len(sys.argv) == 3):
+  SIGDIGITS = int(sys.argv[1])
+  filename = sys.argv[2]
+else:
+  print("usage: kml2geojson.py [sigdig] kmlfilename")
   sys.exit(2)
-filename = sys.argv[1]
 
 coords = {}
 multicoords = {}
 entity2name = {}
-SIGDIGITS = 5
 
 def parse_kml(filename):
   in_placemark = 0
