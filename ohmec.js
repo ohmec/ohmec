@@ -737,6 +737,9 @@ function onEachFeature(feature, layer) {
     isPoint,
     feature.properties,
     getFeatureFont(feature));
+  if(feature.id === "PROLM1") {
+    console.log(labelBounds);
+  }
 
   let labelElementBounds = [ [ labelBounds.getNorth(), labelBounds.getWest() ], [ labelBounds.getSouth(), labelBounds.getEast() ] ];
   feature.textOverlay = L.svgOverlay(feature.textLabel, labelElementBounds);
