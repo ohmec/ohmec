@@ -496,6 +496,11 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
 
   let segments = label.split('\n');
   let labelLength = label.length;
+  // add in any subLabels
+  if("subLabel" in properties) {
+    let subsegments = properties.subLabel.split('\n');
+    segments = segments.concat(subsegments);
+  }
   if(segments.length > 1) {
     labelLength = segments[0].length;
     for(let i=1; i<segments.length; i++) {
