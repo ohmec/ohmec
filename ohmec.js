@@ -737,9 +737,6 @@ function onEachFeature(feature, layer) {
     isPoint,
     feature.properties,
     getFeatureFont(feature));
-  if(feature.id === "PROLM1") {
-    console.log(labelBounds);
-  }
 
   let labelElementBounds = [ [ labelBounds.getNorth(), labelBounds.getWest() ], [ labelBounds.getSouth(), labelBounds.getEast() ] ];
   feature.textOverlay = L.svgOverlay(feature.textLabel, labelElementBounds);
@@ -1485,6 +1482,7 @@ function checkPopups() {
     if(!p.done && curDate <= p.endDate && curDate >= p.startDate && bounds.contains(ll) && !p.popup) {
       p.popup = L.popup({
         maxWidth: 500,
+        autoPan: false,
         autoClose: false}).
           setLatLng(ll).
           setContent('<div id="popup">' + p.text + '</div>').
