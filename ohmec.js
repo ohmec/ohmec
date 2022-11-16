@@ -31,6 +31,7 @@ let zoomSettingStart = zoomSettingDefault;
 let boundsHash = {};
 let smartStepDefault = 1;
 let smartStepFeature = smartStepDefault;
+let popupFeature = true;
 
 let timelineSlider;
 let backgroundLayerDefault = 'relief';
@@ -140,6 +141,11 @@ for(let param of parameters) {
   if (match !== null && match[1] !== 0) {
     timelineIntervalDuration = match[1];
   }
+  test = /popup=(on|off)/;
+  match = param.match(test);
+  if (match !== null) {
+    popupFeature = (match[1]==='on') ? true : false;
+  }
 }
 
 // Declare the bounds of which the user can pan the viewing portal.
@@ -210,6 +216,9 @@ let updateDirectLink = function() {
   }
   if(timelineIntervalDuration !== timelineIntervalDurationDefault) {
     urlText += '&advDur=' + timelineIntervalDuration;
+  }
+  if(popupFeature === false) {
+    urlText += '&popup=off';
   }
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
@@ -854,7 +863,7 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
       zoomSettingStart = dataset.viewpoint.defaultZ;
     }
   }
-  if("popups" in dataset) {
+  if("popups" in dataset && popupFeature) {
     for(let p of dataset.popups) {
       let pentry = {};
       pentry.text = p.text;
