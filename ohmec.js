@@ -1216,12 +1216,24 @@ function cToHex(c) {
 }
 
 function str2RGB(colorStr) {
-  let parseResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colorStr);
-  let rgb = {};
-  rgb[0] = parseInt(parseResult[1], 16);
-  rgb[1] = parseInt(parseResult[2], 16);
-  rgb[2] = parseInt(parseResult[3], 16);
-  return rgb;
+  let test = /^#?([a-f\d]{8})$/;  // 4-field color
+  let match = colorStr.match(test);
+  if(match !== null) {
+    let parseResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colorStr);
+    let rgb = [];
+    rgb[0] = parseInt(parseResult[1], 16);
+    rgb[1] = parseInt(parseResult[2], 16);
+    rgb[2] = parseInt(parseResult[3], 16);
+    rgb[3] = parseInt(parseResult[4], 16);
+    return rgb;
+  } else {
+    let parseResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colorStr);
+    let rgb = [];
+    rgb[0] = parseInt(parseResult[1], 16);
+    rgb[1] = parseInt(parseResult[2], 16);
+    rgb[2] = parseInt(parseResult[3], 16);
+    return rgb;
+  }
 }
 
 function interpolateFloat(ratio, floatFrom, floatTo) {
@@ -1231,10 +1243,20 @@ function interpolateFloat(ratio, floatFrom, floatTo) {
 function interpolateColor(ratio, colorFrom, colorTo) {
   let rgbFrom = str2RGB(colorFrom);
   let rgbTo   = str2RGB(colorTo);
-  let rNew = parseInt(interpolateFloat(ratio, rgbFrom[0], rgbTo[0]));
-  let gNew = parseInt(interpolateFloat(ratio, rgbFrom[1], rgbTo[1]));
-  let bNew = parseInt(interpolateFloat(ratio, rgbFrom[2], rgbTo[2]));
-  return "#" + cToHex(rNew) + cToHex(gNew) + cToHex(bNew);
+  if (rgbFrom.length === 3 && rgbTo.length === 3) {
+    let rNew = parseInt(interpolateFloat(ratio, rgbFrom[0], rgbTo[0]));
+    let gNew = parseInt(interpolateFloat(ratio, rgbFrom[1], rgbTo[1]));
+    let bNew = parseInt(interpolateFloat(ratio, rgbFrom[2], rgbTo[2]));
+    return "#" + cToHex(rNew) + cToHex(gNew) + cToHex(bNew);
+  } else {
+    let rNew = parseInt(interpolateFloat(ratio, rgbFrom[0], rgbTo[0]));
+    let gNew = parseInt(interpolateFloat(ratio, rgbFrom[1], rgbTo[1]));
+    let bNew = parseInt(interpolateFloat(ratio, rgbFrom[2], rgbTo[2]));
+    let oFrom = (rgbFrom.length === 3) ? 255 : rgbFrom[3];
+    let oTo   = (  rgbTo.length === 3) ? 255 :   rgbTo[3];
+    let oNew = parseInt(interpolateFloat(ratio, oFrom, oTo));
+    return "#" + cToHex(rNew) + cToHex(gNew) + cToHex(bNew) + cToHex(oNew);
+  }
 }
 
 geojson.evaluateLayers = function () {
@@ -1266,47 +1288,43 @@ geojson.evaluateLayers = function () {
           }
         }
         let resetStyle = false;
-        if(lyr.feature.style.fillColor !== fHash[prop.animateTo].style.fillColor) {
-          if(!("origFillColor" in prop)) {
-            prop.origFillColor = lyr.feature.style.fillColor;
-          }
+        if(!("origFillColor"     in prop)) prop.origFillColor     = lyr.feature.style.fillColor;
+        if(!("origStrokeColor"   in prop)) prop.origStrokeColor   = lyr.feature.style.strokeColor;
+        if(!("origFillOpacity"   in prop)) prop.origFillOpacity   = lyr.feature.style.fillOpacity;
+        if(!("origStrokeOpacity" in prop)) prop.origStrokeOpacity = lyr.feature.style.strokeOpacity;
+        if(!("origStrokeWeight"  in prop)) prop.origStrokeWeight  = lyr.feature.style.strokeWeight;
+        if(!("origFontcolor"     in prop)) prop.origFontcolor     = lyr.feature.style.fontcolor;
+        if(prop.origFillColor !== fHash[prop.animateTo].style.fillColor) {
           let newFillColor = interpolateColor(ratio, prop.origFillColor, fHash[prop.animateTo].style.fillColor);
           lyr.feature.style.fillColor = newFillColor;
           resetStyle = true;
         }
-        if(lyr.feature.style.strokeColor !== fHash[prop.animateTo].style.strokeColor) {
-          if(!("origStrokeColor" in prop)) {
-            prop.origStrokeColor = lyr.feature.style.strokeColor;
-          }
+        if(prop.origStrokeColor !== fHash[prop.animateTo].style.strokeColor) {
           let newStrokeColor = interpolateColor(ratio, prop.origStrokeColor, fHash[prop.animateTo].style.strokeColor);
           lyr.feature.style.strokeColor = newStrokeColor;
           lyr.feature.style.color = newStrokeColor;
           resetStyle = true;
         }
-        if(lyr.feature.style.fillOpacity !== fHash[prop.animateTo].style.fillOpacity) {
-          if(!("origFillOpacity" in prop)) {
-            prop.origFillOpacity = lyr.feature.style.fillOpacity;
-          }
+        if(prop.origFillOpacity !== fHash[prop.animateTo].style.fillOpacity) {
           let newFillOpacity = interpolateFloat(ratio, prop.origFillOpacity, fHash[prop.animateTo].style.fillOpacity);
           lyr.feature.style.fillOpacity = newFillOpacity;
           resetStyle = true;
         }
-        if(lyr.feature.style.strokeOpacity !== fHash[prop.animateTo].style.strokeOpacity) {
-          if(!("origStrokeOpacity" in prop)) {
-            prop.origStrokeOpacity = lyr.feature.style.strokeOpacity;
-          }
+        if(prop.origStrokeOpacity !== fHash[prop.animateTo].style.strokeOpacity) {
           let newStrokeOpacity = interpolateFloat(ratio, prop.origStrokeOpacity, fHash[prop.animateTo].style.strokeOpacity);
           lyr.feature.style.strokeOpacity = newStrokeOpacity;
           lyr.feature.style.opacity = newStrokeOpacity;
           resetStyle = true;
         }
-        if(lyr.feature.style.strokeWeight !== fHash[prop.animateTo].style.strokeWeight) {
-          if(!("origStrokeWeight" in prop)) {
-            prop.origStrokeWeight = lyr.feature.style.strokeWeight;
-          }
+        if(prop.origStrokeWeight !== fHash[prop.animateTo].style.strokeWeight) {
           let newStrokeWeight = interpolateFloat(ratio, prop.origStrokeWeight, fHash[prop.animateTo].style.strokeWeight);
           lyr.feature.style.strokeWeight = newStrokeWeight;
           lyr.feature.style.weight = newStrokeWeight;
+          resetStyle = true;
+        }
+        if(prop.origFontcolor !== fHash[prop.animateTo].style.fontcolor) {
+          let newFontcolor = interpolateColor(ratio, prop.origFontcolor, fHash[prop.animateTo].style.fontcolor);
+          lyr.feature.style.fontcolor = newFontcolor;
           resetStyle = true;
         }
         if(resetStyle) {
