@@ -102,6 +102,8 @@ def compare_features(idA, idB, first_date):
       elif idA in double_waiver or idB in double_waiver:
         return 1
       else:
+        if len(bound) == 0:
+          return 1
         print("ERR: intAB for " + idA + " with " + idB + " on date " + first_date + " is a MultiLine String. Here is its boundary")
         print("  " + str(bound) + " of length " + str(len(bound)))
         return 3

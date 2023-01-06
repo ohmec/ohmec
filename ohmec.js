@@ -953,7 +953,7 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
           if(applyCherokeeExample && p.entity1name === 'Indigenous') {
             removeFeature = true;
           }
-          if(!applyCherokeeExample && p.entity1type === 'tribe') {
+          if(!applyCherokeeExample && p.entity1type === 'tribe' && p.entity1name.match(/Cherokee/)) {
             removeFeature = true;
           }
         }
