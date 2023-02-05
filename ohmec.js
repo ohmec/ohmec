@@ -438,7 +438,9 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
 
   let width = 100;
   let widthd2 = width/2;
-  let height = width * (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest());
+  let height =
+    (bounds.getEast() === bounds.getWest()) ? 1 :
+    (width * (bounds.getNorth() - bounds.getSouth()) / (bounds.getEast() - bounds.getWest()));
   let heightd2 = height/2;
   let textLabel = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
@@ -585,6 +587,8 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
 
 function getFeatureLabel(feature) {
   if("noLabel" in feature.properties && feature.properties.noLabel) {
+    return ""
+  } else if("noLabel" in feature.style && feature.style.noLabel) {
     return ""
   } else if("entity2name" in feature.properties) {
     return feature.properties.entity2name;
@@ -741,7 +745,7 @@ function onEachFeature(feature, layer) {
   feature.origBounds = labelBounds;
   feature.textLabel = getTextLabel(
     labelBounds,
-    feature.id, 
+    feature.id,
     getFeatureLabel(feature),
     isPoint,
     feature.properties,
@@ -755,7 +759,7 @@ function updateTextOverlay(feature, bounds, altProperties, ratio) {
   // create SVG for label
   let textLabel = getTextLabel(
     bounds,
-    feature.id, 
+    feature.id,
     getFeatureLabel(feature),
     false,
     feature.properties,
@@ -972,8 +976,8 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
       }
       if("geometry" in f) {
         let g = f.geometry;
-        if((g.type !== "Polygon") && (g.type !== "MultiPolygon") && (g.type !== "Point")) {
-          throw "feature " + f.id + " should have geometry of Polygon, MultiPolygon or Point, got " + g.type;
+        if((g.type !== "Polygon") && (g.type !== "MultiPolygon") && (g.type !== "Point") && (g.type !== "LineString")) {
+          throw "feature " + f.id + " should have geometry of Polygon, MultiPolygon, LineString or Point, got " + g.type;
         }
       } else {
         throw "no geometry in feature " + f.id;
@@ -1072,7 +1076,7 @@ function prepare_animations() {
           }
         }
       }
-    } else {
+    } else if(fromF.geometry.type === 'Polygon') {
       let fromC = fromF.geometry.coordinates[0];
       let destC = destF.geometry.coordinates[0];
       if (fromC.length != destC.length) {
@@ -1084,8 +1088,26 @@ function prepare_animations() {
           fromF.pairDiffs.push(i);
         }
       }
+    } else if(fromF.geometry.type === 'LineString') {
+      let fromC = fromF.geometry.coordinates;
+      let destC = destF.geometry.coordinates;
+      // figure out the animation length, ie. the length of new
+      // line that must be grown. this isn't precise - it should
+      // take into consideration the latitude - but should be
+      // close enough for decent animation
+      fromF.animLength = 0;
+      for(let i=fromC.length;i<destC.length;i++) {
+        fromF.animLength += distComp(destC[i-1],destC[i]);
+      }
+      if(destC.length < (fromC.length)) {
+        throw "for now can only animate from " + id_from + " to " + animationHash[id_from] + " if length is same or growing, got (" + fromC.length + " vs " + destC.length + ")";
+      }
     }
   }
+}
+
+function distComp(ptA, ptB) {
+  return Math.sqrt(((ptA[0]-ptB[0])**2)+((ptA[1]-ptB[1])**2));
 }
 
 if(useEurope) {
@@ -1263,7 +1285,7 @@ geojson.evaluateLayers = function () {
   for(let l in this._layers) {
     let lyr = this._layers[l];
     let prop = lyr.feature.properties;
-    let ratio;
+    let timeRatio;
     if(curDate >= prop.startDate && curDate <= prop.endDate) {
       if("animateTo" in prop) {
         lyr.removeFrom(ohmap);
@@ -1271,21 +1293,53 @@ geojson.evaluateLayers = function () {
         let destC = fHash[prop.animateTo].geometry.coordinates;
         let timeDiv = (fHash[prop.animateTo].properties.startDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
         let timeNum = (curDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
-        ratio = timeNum/timeDiv;
+        timeRatio = timeNum/timeDiv;
         if(lyr.feature.geometry.type === 'MultiPolygon') {
           for(let o in lyr.feature.pairDiffs) {
             for(let i of lyr.feature.pairDiffs[o]) {
-              let newlat = interpolateFloat(ratio, fromC[o][0][i][1], destC[o][0][i][1]); 
-              let newlon = interpolateFloat(ratio, fromC[o][0][i][0], destC[o][0][i][0]);
+              let newlat = interpolateFloat(timeRatio, fromC[o][0][i][1], destC[o][0][i][1]);
+              let newlon = interpolateFloat(timeRatio, fromC[o][0][i][0], destC[o][0][i][0]);
               lyr._latlngs[o][0][i] = L.latLng(newlat,newlon);
             }
           }
-        } else {
+        } else if(lyr.feature.geometry.type === 'Polygon') {
           for(let i of lyr.feature.pairDiffs) {
-            let newlat = interpolateFloat(ratio, fromC[0][i][1], destC[0][i][1]);
-            let newlon = interpolateFloat(ratio, fromC[0][i][0], destC[0][i][0]);
+            let newlat = interpolateFloat(timeRatio, fromC[0][i][1], destC[0][i][1]);
+            let newlon = interpolateFloat(timeRatio, fromC[0][i][0], destC[0][i][0]);
             lyr._latlngs[0][i] = L.latLng(newlat,newlon);
           }
+        } else if(lyr.feature.geometry.type === 'LineString') {
+          if(fromC.length == (destC.length-1)) { // interpolate the last entry
+            let newlat = interpolateFloat(timeRatio, destC[destC.length-2][1], destC[destC.length-1][1]);
+            let newlon = interpolateFloat(timeRatio, destC[destC.length-2][0], destC[destC.length-1][0]);
+            lyr._latlngs[destC.length-1] = L.latLng(newlat,newlon);
+          } else if(fromC.length != destC.length) {
+            // need to walk through the paths and figure out where we are in the interpolation
+            // from the end of fromC to destC
+            lyr._latlngs = [];
+            for(let i=0;i<fromC.length;i++) {
+              lyr._latlngs[i] = L.latLng(destC[i][1],destC[i][0]);
+            }
+            let sumLength = 0;
+            for(let i=fromC.length;i<destC.length;i++) {
+              let thisLength = distComp(destC[i-1],destC[i]);
+              // if this segment still stays under time ratio, add it completely
+              if((thisLength+sumLength) < (timeRatio*lyr.feature.animLength)) {
+                lyr._latlngs[i] = L.latLng(destC[i][1],destC[i][0]);
+              // else if this segment crosses over the time ratio, interpolate it
+              } else if(sumLength < (timeRatio*lyr.feature.animLength)) {
+                let startRatio = sumLength / lyr.feature.animLength;
+                let endRatio = (sumLength+thisLength) / lyr.feature.animLength;
+                let interpRatio = (timeRatio - startRatio) / (endRatio - startRatio);
+                let newlat = interpolateFloat(interpRatio, destC[i-1][1], destC[i][1]);
+                let newlon = interpolateFloat(interpRatio, destC[i-1][0], destC[i][0]);
+                lyr._latlngs[i] = L.latLng(newlat,newlon);
+              } // else don't add anything
+              sumLength += thisLength;
+            }
+          }
+        } else {
+          throw "how do I animate a " + lyr.feature.geometry.type;
         }
         let resetStyle = false;
         if(!("origFillColor"     in prop)) prop.origFillColor     = lyr.feature.style.fillColor;
@@ -1295,35 +1349,35 @@ geojson.evaluateLayers = function () {
         if(!("origStrokeWeight"  in prop)) prop.origStrokeWeight  = lyr.feature.style.strokeWeight;
         if(!("origFontcolor"     in prop)) prop.origFontcolor     = lyr.feature.style.fontcolor;
         if(prop.origFillColor !== fHash[prop.animateTo].style.fillColor) {
-          let newFillColor = interpolateColor(ratio, prop.origFillColor, fHash[prop.animateTo].style.fillColor);
+          let newFillColor = interpolateColor(timeRatio, prop.origFillColor, fHash[prop.animateTo].style.fillColor);
           lyr.feature.style.fillColor = newFillColor;
           resetStyle = true;
         }
         if(prop.origStrokeColor !== fHash[prop.animateTo].style.strokeColor) {
-          let newStrokeColor = interpolateColor(ratio, prop.origStrokeColor, fHash[prop.animateTo].style.strokeColor);
+          let newStrokeColor = interpolateColor(timeRatio, prop.origStrokeColor, fHash[prop.animateTo].style.strokeColor);
           lyr.feature.style.strokeColor = newStrokeColor;
           lyr.feature.style.color = newStrokeColor;
           resetStyle = true;
         }
         if(prop.origFillOpacity !== fHash[prop.animateTo].style.fillOpacity) {
-          let newFillOpacity = interpolateFloat(ratio, prop.origFillOpacity, fHash[prop.animateTo].style.fillOpacity);
+          let newFillOpacity = interpolateFloat(timeRatio, prop.origFillOpacity, fHash[prop.animateTo].style.fillOpacity);
           lyr.feature.style.fillOpacity = newFillOpacity;
           resetStyle = true;
         }
         if(prop.origStrokeOpacity !== fHash[prop.animateTo].style.strokeOpacity) {
-          let newStrokeOpacity = interpolateFloat(ratio, prop.origStrokeOpacity, fHash[prop.animateTo].style.strokeOpacity);
+          let newStrokeOpacity = interpolateFloat(timeRatio, prop.origStrokeOpacity, fHash[prop.animateTo].style.strokeOpacity);
           lyr.feature.style.strokeOpacity = newStrokeOpacity;
           lyr.feature.style.opacity = newStrokeOpacity;
           resetStyle = true;
         }
         if(prop.origStrokeWeight !== fHash[prop.animateTo].style.strokeWeight) {
-          let newStrokeWeight = interpolateFloat(ratio, prop.origStrokeWeight, fHash[prop.animateTo].style.strokeWeight);
+          let newStrokeWeight = interpolateFloat(timeRatio, prop.origStrokeWeight, fHash[prop.animateTo].style.strokeWeight);
           lyr.feature.style.strokeWeight = newStrokeWeight;
           lyr.feature.style.weight = newStrokeWeight;
           resetStyle = true;
         }
         if(prop.origFontcolor !== fHash[prop.animateTo].style.fontcolor) {
-          let newFontcolor = interpolateColor(ratio, prop.origFontcolor, fHash[prop.animateTo].style.fontcolor);
+          let newFontcolor = interpolateColor(timeRatio, prop.origFontcolor, fHash[prop.animateTo].style.fontcolor);
           lyr.feature.style.fontcolor = newFontcolor;
           resetStyle = true;
         }
@@ -1338,7 +1392,7 @@ geojson.evaluateLayers = function () {
       if("animateTo" in prop) {
         let bounds = L.polygon(lyr._latlngs).getBounds();
         lyr.feature.textOverlay.removeFrom(ohmap);
-        lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, fHash[prop.animateTo].properties,ratio);
+        lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, fHash[prop.animateTo].properties,timeRatio);
       }
       lyr.feature.textOverlay.addTo(ohmap);
     } else {
@@ -1421,7 +1475,7 @@ function updateHTML(spanName, value) {
   let spanHandle = document.querySelector('#' + spanName);
   spanHandle.textContent = value;
 }
-  
+
 updateHTML('polycount', polygonCount);
 
 // if key `i` is pressed, potentially modify the infobox,

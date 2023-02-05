@@ -162,7 +162,7 @@ point_count = 0
 for feat1 in fullstruct["features"]:
   id1 = feat1["id"]
   props1 = feat1["properties"]
-  if feat1["geometry"]["type"] != "Point":
+  if feat1["geometry"]["type"] == "Polygon" or feat1["geometry"]["type"] == "MultiPolygon":
     if id1 not in geoms:
       geoms[id1] = shapely.geometry.asShape(feat1["geometry"])
       check_props(feat1)
@@ -175,7 +175,7 @@ for feat1 in fullstruct["features"]:
     end1 = conv_date(props1["enddatestr"],0)
     for feat2 in fullstruct["features"]:
       id2 = feat2["id"]
-      if id1 != id2 and feat2["geometry"]["type"] != "Point":
+      if id1 != id2 and (feat2["geometry"]["type"] == "Polygon" or feat2["geometry"]["type"] == "MultiPolygon"):
         idA = id1 if id1 < id2 else id2
         idB = id1 if id1 > id2 else id2
         idAB = idA + ':' + idB
