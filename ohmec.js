@@ -1337,7 +1337,6 @@ geojson.evaluateLayers = function () {
               } // else don't add anything
               sumLength += thisLength;
             }
-            console.log(lyr._latlngs);
           }
         } else {
           throw "how do I animate a " + lyr.feature.geometry.type;
