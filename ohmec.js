@@ -41,6 +41,7 @@ let maxZoomPerBackground = {};
 let lastBackgroundLayer;
 let lastLayer;
 let lastFeature = null;
+let allLayers = [];
 
 let infoboxNormalBackground = "rgba(4,112,255,0.7)";
 let infoboxPinnedBackground = "rgba(4, 64,160,0.7)";
@@ -404,6 +405,16 @@ function infoboxFeatureOn(e) {
     infobox._div.style.background = infoboxNormalBackground;
   }
   infobox.update(layer.feature.id,layer.feature.properties);
+
+  // check other layers to see if they need to be brought up to the front
+  for(let l in allLayers) {
+    let lyr = allLayers[l];
+    let prop = lyr.feature.properties;
+    let style = lyr.feature.style;
+    if(curDate >= prop.startDate && curDate <= prop.endDate && "layerDepth" in style && style.layerDepth === "front") {
+      lyr.bringToFront();
+    }
+  }
 }
 
 function infoboxFeatureOff(e) {
@@ -1404,6 +1415,7 @@ geojson.evaluateLayers = function () {
     }
   }
   // now check for layer control properties (front and back, ignore default)
+  allLayers = this._layers;
   for(let l in this._layers) {
     let lyr = this._layers[l];
     let prop = lyr.feature.properties;
