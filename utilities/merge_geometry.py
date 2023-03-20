@@ -41,8 +41,21 @@ varjson = fm.group(2)
 fullstruct = json.loads(varjson)
 geoms = {}
 
+def get_shape(thisfeat):
+  thisid = thisfeat["id"]
+  if "coordinate_copy" in thisfeat["geometry"]:
+    copyname = thisfeat["geometry"]["coordinate_copy"]
+    if copyname in geoms:
+      return geoms[copyname]
+    else:
+      sys.stderr.write("can't handle out of order coordinate copies at this time.\n")
+      sys.stderr.write(thisid + " needs copy from " + copyname + "\n")
+      sys.exit(2)
+  else:
+    return shapely.geometry.asShape(thisfeat["geometry"])
+
 for feature in fullstruct["features"]:
-  geoms[feature["id"]] = shapely.geometry.asShape(feature["geometry"])
+  geoms[feature["id"]] = get_shape(feature)
   if not geoms[feature["id"]].is_valid:
     sys.stderr.write(feature["id"] + " is not valid\n")
 

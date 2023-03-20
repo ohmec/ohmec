@@ -971,6 +971,14 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
           if(!applyCherokeeExample && p.entity1type === 'tribe' && p.entity1name.match(/Cherokee/)) {
             removeFeature = true;
           }
+          if("coordinate_copy" in f.geometry) {
+            if(f.geometry.coordinate_copy in fHash) {
+              console.log("copying coordinates from " + f.geometry.coordinate_copy + " to " + f.id);
+              f.geometry.coordinates = fHash[f.geometry.coordinate_copy].geometry.coordinates;
+            } else {
+              throw "can't copy coordinates from " + f.geometry.coordinate_copy + " for " + f.id;
+            }
+          }
         }
       } else {
         throw "no properties in feature " + f.id;
@@ -1088,8 +1096,20 @@ function prepare_animations() {
         }
       }
     } else if(fromF.geometry.type === 'Polygon') {
-      let fromC = fromF.geometry.coordinates[0];
-      let destC = destF.geometry.coordinates[0];
+      let fromC, destC;
+      if("coordinates" in fromF.geometry) {
+        fromC = fromF.geometry.coordinates[0];
+      } else {
+        throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since no coordinates for " + id_from;
+      }
+      if("coordinates" in destF.geometry) {
+        if (!destF.geometry.coordinates) {
+          throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since no coordinates for " + animationHash[id_from];
+        }
+        destC = destF.geometry.coordinates[0];
+      } else {
+        throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since no coordinates for " + animationHash[id_from];
+      }
       if (fromC.length != destC.length) {
         throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since coordinate lengths differ (" + fromC.length + " vs " + destC.length + ")";
       }

@@ -159,12 +159,25 @@ overlap_count = 0
 gap_count = 0
 point_count = 0
 
+def get_shape(thisfeat):
+  thisid = thisfeat["id"]
+  if "coordinate_copy" in thisfeat["geometry"]:
+    copyname = thisfeat["geometry"]["coordinate_copy"]
+    if copyname in geoms:
+      return geoms[copyname]
+    else:
+      sys.stderr.write("can't handle out of order coordinate copies at this time.\n")
+      sys.stderr.write(thisid + " needs copy from " + copyname + "\n")
+      sys.exit(2)
+  else:
+    return shapely.geometry.asShape(thisfeat["geometry"])
+
 for feat1 in fullstruct["features"]:
   id1 = feat1["id"]
   props1 = feat1["properties"]
   if feat1["geometry"]["type"] == "Polygon" or feat1["geometry"]["type"] == "MultiPolygon":
     if id1 not in geoms:
-      geoms[id1] = shapely.geometry.asShape(feat1["geometry"])
+      geoms[id1] = get_shape(feat1)
       check_props(feat1)
       if not geoms[id1].is_valid:
         print(id1 + " is not valid\n")
@@ -182,7 +195,7 @@ for feat1 in fullstruct["features"]:
         if idAB not in already_handled:
           props2 = feat2["properties"]
           if id2 not in geoms:
-            geoms[id2] = shapely.geometry.asShape(feat2["geometry"])
+            geoms[id2] = get_shape(feat2)
             check_props(feat2)
             if not geoms[id2].is_valid:
               print(id2 + " is not valid\n")
