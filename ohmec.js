@@ -674,7 +674,8 @@ function onEachFeature(feature, layer) {
     if(feature.properties.entity1type === 'settlement'  ||
        feature.properties.entity1type === 'archaeology' ||
        feature.properties.entity1type === 'diamond'     ||
-       feature.properties.entity1type === 'battle') {
+       feature.properties.entity1type === 'battle'      ||
+       feature.properties.entity1type === 'camp') {
       poiType = feature.properties.entity1type;
     }
     // if POI is in entity2, use the poi file as input, then modify
@@ -683,6 +684,7 @@ function onEachFeature(feature, layer) {
        feature.properties.entity2type === 'archaeology' ||
        feature.properties.entity2type === 'diamond'     ||
        feature.properties.entity2type === 'battle'      ||
+       feature.properties.entity2type === 'camp'        ||
        feature.properties.entity2type === 'poi') {
       poiType = feature.properties.entity2type;
       if("style" in feature) {
@@ -731,6 +733,12 @@ function onEachFeature(feature, layer) {
       poiInner += "L 14.3,17.2 L 14.3,14.3 L 17.2,14.3 z\n";
       poiInner += "M 24.2,15.8 L 18.6,21.4\n";
       poiInner += "M 15.8,15.8 L 21.4,21.4";
+    } else if(poiType === 'camp') {
+      poiInner += "M 20,30 A 10,10 0 0 0 20,10 10,10 0 0 0 20,30 z\n";
+      poiInner += "M 19,12\n";
+      poiInner += "L 28,24 L 28.5,24 L 11.5,24 L 12,24 L 21,12 L 20,13.3 z\n";
+      poiInner += "M 20,18\n";
+      poiInner += "L 24.5,24 L 15.5,24 L 20,18 z";
     } else {
       poiInner += "M 20,30 A 10,10 0 0 0 20,10 10,10 0 0 0 20,30 z\n";
       poiInner += "M 20,13\n";
@@ -973,7 +981,6 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
           }
           if("coordinate_copy" in f.geometry) {
             if(f.geometry.coordinate_copy in fHash) {
-              console.log("copying coordinates from " + f.geometry.coordinate_copy + " to " + f.id);
               f.geometry.coordinates = fHash[f.geometry.coordinate_copy].geometry.coordinates;
             } else {
               throw "can't copy coordinates from " + f.geometry.coordinate_copy + " for " + f.id;
