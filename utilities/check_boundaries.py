@@ -169,6 +169,15 @@ def get_shape(thisfeat):
       sys.stderr.write("can't handle out of order coordinate copies at this time.\n")
       sys.stderr.write(thisid + " needs copy from " + copyname + "\n")
       sys.exit(2)
+  elif "coordinate_copies" in thisfeat["geometry"]:
+    thisfeat["coordinates"] = []
+    for copyname in thisfeat["geometry"]["coordinate_copies"]:
+      if geoms[copyname]["type"] == "Polygon":
+        thisfeat["coordinates"].append(geoms[copyname]["coordinates"])
+      if geoms[copyname]["type"] == "MultiPolygon":
+        for subarray in geoms[copyname]["coordinates"]:
+          thisfeat["coordinates"].append(subarray)
+    return shapely.geometry.asShape(thisfeat["geometry"])
   else:
     return shapely.geometry.asShape(thisfeat["geometry"])
 

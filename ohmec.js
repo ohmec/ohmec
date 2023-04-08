@@ -981,9 +981,34 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
           }
           if("coordinate_copy" in f.geometry) {
             if(f.geometry.coordinate_copy in fHash) {
-              f.geometry.coordinates = fHash[f.geometry.coordinate_copy].geometry.coordinates;
+              if(fHash[f.geometry.coordinate_copy].geometry.type === f.geometry.type) {
+                f.geometry.coordinates = fHash[f.geometry.coordinate_copy].geometry.coordinates;
+              } else {
+                throw "can't copy coordinates from " + f.geometry.coordinate_copy + " type " +
+                  fHash[f.geometry.coordinate_copy].geometry.type + " to " + f.id + " type " + f.geometry.type;
+              }
             } else {
               throw "can't copy coordinates from " + f.geometry.coordinate_copy + " for " + f.id;
+            }
+          }
+          if("coordinate_copies" in f.geometry) {
+            f.geometry.coordinates = [];
+            for(let copyid of f.geometry.coordinate_copies) {
+              if(copyid in fHash) {
+                if(f.geometry.type !== 'MultiPolygon') {
+                  throw "can't copy multiple coordinates to " + f.id + " type " + f.geometry.type;
+                } else if(fHash[copyid].geometry.type === 'Polygon') {
+                  f.geometry.coordinates.push(fHash[copyid].coordinates);
+                } else if(fHash[copyid].geometry.type === 'MultiPolygon') {
+                  for(let c=0;c<fHash[copyid].geometry.coordinates.length;c++) {
+                    f.geometry.coordinates.push(fHash[copyid].geometry.coordinates[c]);
+                  }
+                } else {
+                  throw "can't copy coordinates from " + copyid + " type " + fHash[copyid].geometry.type;
+                }
+              } else {
+                throw "can't copy coordinates from " + copyid + " for " + f.id;
+              }
             }
           }
         }
