@@ -26,6 +26,7 @@ import shapely.ops
 import re
 
 geoms = {}
+shapes = {}
 borderless = {}
 overlap_waiver = {}
 double_waiver = {}
@@ -74,10 +75,10 @@ def compare_features(idA, idB, first_date):
   properties.borderless or Indigenous types are skipped'''
   if idA in borderless or idB in borderless:
     return 0
-  if not geoms[idA].intersects(geoms[idB]):
+  if not shapes[idA].intersects(shapes[idB]):
     return 0
-  intAB = geoms[idA].intersection(geoms[idB])
-  if geoms[idA].overlaps(geoms[idB]):
+  intAB = shapes[idA].intersection(shapes[idB])
+  if shapes[idA].overlaps(shapes[idB]):
     if not idA in overlap_waiver and not idB in overlap_waiver:
       print("ERR:  intersection of " + idA + " with " + idB + " on date " + first_date + " resulted in overlap")
       print("  " + str(intAB))
@@ -159,7 +160,7 @@ overlap_count = 0
 gap_count = 0
 point_count = 0
 
-def get_shape(thisfeat):
+def get_geoms(thisfeat):
   thisid = thisfeat["id"]
   if "coordinate_copy" in thisfeat["geometry"]:
     copyname = thisfeat["geometry"]["coordinate_copy"]
@@ -170,28 +171,32 @@ def get_shape(thisfeat):
       sys.stderr.write(thisid + " needs copy from " + copyname + "\n")
       sys.exit(2)
   elif "coordinate_copies" in thisfeat["geometry"]:
-    thisfeat["coordinates"] = []
+    thisfeat["geometry"]["coordinates"] = []
     for copyname in thisfeat["geometry"]["coordinate_copies"]:
       if geoms[copyname]["type"] == "Polygon":
-        thisfeat["coordinates"].append(geoms[copyname]["coordinates"])
+        thisfeat["geometry"]["coordinates"].append(geoms[copyname]["coordinates"])
       if geoms[copyname]["type"] == "MultiPolygon":
         for subarray in geoms[copyname]["coordinates"]:
-          thisfeat["coordinates"].append(subarray)
-    return shapely.geometry.asShape(thisfeat["geometry"])
+          thisfeat["geometry"]["coordinates"].append(subarray)
+    return thisfeat["geometry"]
   else:
-    return shapely.geometry.asShape(thisfeat["geometry"])
+    return thisfeat["geometry"]
+
+def get_shape(geoms):
+  return shapely.geometry.asShape(geoms)
 
 for feat1 in fullstruct["features"]:
   id1 = feat1["id"]
   props1 = feat1["properties"]
   if feat1["geometry"]["type"] == "Polygon" or feat1["geometry"]["type"] == "MultiPolygon":
     if id1 not in geoms:
-      geoms[id1] = get_shape(feat1)
+      geoms[id1] = get_geoms(feat1)
+      shapes[id1] = get_shape(geoms[id1])
       check_props(feat1)
-      if not geoms[id1].is_valid:
+      if not shapes[id1].is_valid:
         print(id1 + " is not valid\n")
         print("buffer version:")
-        buf = geoms[id1].buffer(0)
+        buf = shapes[id1].buffer(0)
         print(buf)
     start1 = conv_date(props1["startdatestr"],1)
     end1 = conv_date(props1["enddatestr"],0)
@@ -203,13 +208,14 @@ for feat1 in fullstruct["features"]:
         idAB = idA + ':' + idB
         if idAB not in already_handled:
           props2 = feat2["properties"]
-          if id2 not in geoms:
-            geoms[id2] = get_shape(feat2)
+          if id2 not in shapes:
+            geoms[id2] = get_geoms(feat2)
+            shapes[id2] = get_shape(geoms[id2])
             check_props(feat2)
-            if not geoms[id2].is_valid:
+            if not shapes[id2].is_valid:
               print(id2 + " is not valid\n")
               print("buffer version:")
-              buf = geoms[id2].buffer(0)
+              buf = shapes[id2].buffer(0)
               print(buf)
           start2 = conv_date(props2["startdatestr"],1)
           end2 = conv_date(props2["enddatestr"],0)

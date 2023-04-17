@@ -41,7 +41,7 @@ varjson = fm.group(2)
 fullstruct = json.loads(varjson)
 geoms = {}
 
-def get_shape(thisfeat):
+def get_geoms(thisfeat):
   thisid = thisfeat["id"]
   if "coordinate_copy" in thisfeat["geometry"]:
     copyname = thisfeat["geometry"]["coordinate_copy"]
@@ -52,29 +52,30 @@ def get_shape(thisfeat):
       sys.stderr.write(thisid + " needs copy from " + copyname + "\n")
       sys.exit(2)
   elif "coordinate_copies" in thisfeat["geometry"]:
-    thisfeat["coordinates"] = []
+    thisfeat["geometry"]["coordinates"] = []
     for copyname in thisfeat["geometry"]["coordinate_copies"]:
       if geoms[copyname]["type"] == "Polygon":
-        thisfeat["coordinates"].append(geoms[copyname]["coordinates"])
+        thisfeat["geometry"]["coordinates"].append(geoms[copyname]["coordinates"])
       if geoms[copyname]["type"] == "MultiPolygon":
         for subarray in geoms[copyname]["coordinates"]:
-          thisfeat["coordinates"].append(subarray)
-    return shapely.geometry.asShape(thisfeat["geometry"])
+          thisfeat["geometry"]["coordinates"].append(subarray)
+    return thisfeat["geometry"]
   else:
-    return shapely.geometry.asShape(thisfeat["geometry"])
+    return thisfeat["geometry"]
 
 for feature in fullstruct["features"]:
-  geoms[feature["id"]] = get_shape(feature)
-  if not geoms[feature["id"]].is_valid:
+  geoms[feature["id"]] = get_geoms(feature)
+  shape = shapely.geometry.asShape(geoms[feature["id"]])
+  if not shape.is_valid:
     sys.stderr.write(feature["id"] + " is not valid\n")
 
 first = 1
 for idname in ids_to_merge:
   sys.stderr.write("merging " + idname + "\n")
   if first:
-    merged_polygon = geoms[idname]
+    merged_polygon = shapely.geometry.asShape(geoms[idname])
   else:
-    merged_polygon = merged_polygon.union(geoms[idname])
+    merged_polygon = merged_polygon.union(shapely.geometry.asShape(geoms[idname]))
   first = 0
 
 feature = geojson.Feature(geometry=merged_polygon, properties={})
