@@ -571,6 +571,9 @@ function getTextLabel(bounds, id, label, isPoint, properties, fontinfo, altPrope
     inner += '<text text-anchor="' + anchor + '"';
     inner += ' font-family="' + fontinfo.name + ', Courier, sans-serif"';
     inner += ' fill="' + fontinfo.color + '"';
+    if("labelSpacing" in properties) {
+      inner += ' letter-spacing="' + properties.labelSpacing + '"';
+    }
     inner += ' font-size="' + thisFontsize.toFixed(2) + 'px"';
     if("labelRotate" in properties || "labelX" in properties || "labelY" in properties) {
       inner += ' transform="';
@@ -998,7 +1001,7 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
                 if(f.geometry.type !== 'MultiPolygon') {
                   throw "can't copy multiple coordinates to " + f.id + " type " + f.geometry.type;
                 } else if(fHash[copyid].geometry.type === 'Polygon') {
-                  f.geometry.coordinates.push(fHash[copyid].coordinates);
+                  f.geometry.coordinates.push(fHash[copyid].geometry.coordinates);
                 } else if(fHash[copyid].geometry.type === 'MultiPolygon') {
                   for(let c=0;c<fHash[copyid].geometry.coordinates.length;c++) {
                     f.geometry.coordinates.push(fHash[copyid].geometry.coordinates[c]);
