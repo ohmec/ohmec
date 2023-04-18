@@ -26,6 +26,7 @@ function addTabLinks() {
   splits = urlText.split('/');
   let pagename = splits[splits.length-1];
   addButton(tabDiv,'home',     'primary',                        'Home',             pagename==='index.html');
+  addButton(tabDiv,'meso',     'Mesoamerica',                    'Mesoamerica',      pagename==='index_meso.html');
   addButton(tabDiv,'nl',       'uses Native Lands database',     'Native Lands',     pagename==='index_nl.html');
   addButton(tabDiv,'aa',       'Ancient Americas animation',     'Ancient Americas', pagename==='index_aa.html');
   addButton(tabDiv,'cherokee', 'Cherokee migration animation',   'Cherokee',         pagename==='index_cherokee.html');

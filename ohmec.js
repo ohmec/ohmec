@@ -57,6 +57,7 @@ let animationHash = {};
 let fHash = {};
 let useEurope = pagename === 'index_viking.html';
 let useAA = pagename === 'index_aa.html';
+let useMeso = pagename === 'index_meso.html';
 let useNativeLands = pagename === 'index_nl.html';
 let cherokeeExample = pagename === 'index_cherokee.html';
 let popupList = [];
@@ -984,7 +985,9 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
           }
           if("coordinate_copy" in f.geometry) {
             if(f.geometry.coordinate_copy in fHash) {
-              if(fHash[f.geometry.coordinate_copy].geometry.type === f.geometry.type) {
+              if(f.geometry.coordinate_copy === f.id) {
+                throw "can't copy coordinates from self (id " + f.id + ")";
+              } else if(fHash[f.geometry.coordinate_copy].geometry.type === f.geometry.type) {
                 f.geometry.coordinates = fHash[f.geometry.coordinate_copy].geometry.coordinates;
               } else {
                 throw "can't copy coordinates from " + f.geometry.coordinate_copy + " type " +
@@ -1109,7 +1112,13 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
 
 function prepare_animations() {
   for(let id_from in animationHash) {
+    if(!(id_from in fHash)) {
+      throw "can't find animate-from id " + id_from + " in fHash";
+    }
     let fromF = fHash[id_from];
+    if(!(animationHash[id_from] in fHash)) {
+      throw "can't find animate-to id " + animationHash[id_from] + " in fHash";
+    }
     // find the list of differing coordinates
     let destF = fHash[animationHash[id_from]];
     if(fromF.geometry.type === 'MultiPolygon') {
@@ -1180,6 +1189,8 @@ if(useEurope) {
   geo_lint(dataEur,false,false,false);
 } else if(useAA) {
   geo_lint(dataAA,false,false,false);
+} else if(useMeso) {
+  geo_lint(dataMeso,false,false,false);
 } else {
   geo_lint(dataNA,false,useNativeLands,cherokeeExample);
   if(useNativeLands) {
@@ -1189,7 +1200,7 @@ if(useEurope) {
   }
 }
 
-let geoDB = useEurope ? dataEur : useAA ? dataAA : dataNA;
+let geoDB = useEurope ? dataEur : useAA ? dataAA : useMeso ? dataMeso : dataNA;
 
 prepare_animations();
 

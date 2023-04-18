@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!-- Copyright OHMEC contributors.                                            -->
+<!-- Licensed under the Apache License, Version 2.0, see LICENSE for details. -->
+<!-- SPDX-License-Identifier: Apache-2.0                                      -->
+<html>
+  <head>
+    <title>OHMEC</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""/>
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin="">
+    </script>
+    <link rel="stylesheet" href="ohmec.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik|New+Tegomin|Special+Elite|Akaya+Telivigala|Fredericka+the+Great|Cabin+Sketch|Rye|Corben|MedievalSharp|Benne"/>
+  </head>
+  <body>
+    <table padding=2>
+      <tr>
+        <td rowspan=2><a href="logo_name.jpg"><img height=150 align="middle" src="logo_name.jpg"/></a></td>
+        <td><h1>Open History Map Exploration</h1></td>
+      </tr>
+        <td>
+          <div class="tablinks" id="tablinks"></div>
+        </td>
+      </tr>
+    </table>
+    &nbsp;<br/>
+    <div id='map'></div>
+    <p>
+      The <a href="http://ohmec.net">OHMEC</a> project is a free,
+      open-source geography project, with a goal of representing all
+      historical indigenous lands and political boundaries in a unified
+      database. The uniqueness of OHMEC is its ability to represent these
+      lands and boundaries on any date, as well as being able to show the
+      dynamic changes in lands and boundaries from any point in history
+      to the present. It is very much a work in progress. This early
+      demonstration shows a rendering of historical data in Mesoamerica
+      using <a href="https://leafletjs.com">Leaflet</a> to display
+      geographical features from the database, overlaid on top of
+      a modern map.
+    </p>
+    <p>
+      The OHMEC project is being developed openly in a
+      <a href="https://github.com/ohmec/ohmec" target="_blank">Github repository</a>.
+      Participation is welcome, see that repo for more information
+      on the management of the project. Also see
+      <a href="https://docs.google.com/presentation/d/1WiXMrLPC4fOwNaKD7UhH2Wb1JSVcva5z4sNdd0qS7vg/edit?usp=sharing">this slidedeck</a>
+      for more insight into the project. A specification of the
+      <a href="https://docs.google.com/document/d/15D9t61Y1WYYH02BuIp3C8InJD40L19uHIcPNDfNv0Bk/edit?usp=sharing">extended GeoJSON</a>
+      format that underpins the historical database is provided here.
+      For information or any questions, please use <a href="mailto:ohmec.contact@gmail.com">ohmec.contact@gmail.com</a>.
+    </p>
+    <p>
+      This Mesoamerican study focuses on the time period between
+      1800 BC and 1600, about 100 years after the first Western
+      incursion into the hemisphere. The geographical arena of the
+      study is roughly the modern Mexico and Central American
+      regions. Clearly the farther back into history the data is,
+      the lower the fidelity and confidence. That said, the
+      Mesoamerican region is rich with advanced civilizations
+      that left many architectural and written records. In addition,
+      there were many eyewitnesses to the stark encounters of the
+      early Spanish entrants into the homeland of the Aztec, Mayan
+      and other existing Mesoamerican civilizations.
+    </p>
+    <p>
+      A few closer focus links are shown here:<br/>
+      &nbsp;&nbsp;<a href="https://ohmec.github.io/ohmec/index_meso.html?startdatestr=1427&enddatestr=1526&curdatestr=1427&lat=19&lon=-97&z=7.0">100 Years of the Aztec Alliance</a><br/>
+      &nbsp;&nbsp;<a href="https://ohmec.github.io/ohmec/index_meso.html?startdatestr=1492&enddatestr=1504&curdatestr=1492&lat=20&lon=-77&z=5.5">Columbus's Voyages to the New World</a><br/>
+    <p>
+      At this time, there are <span id='polycount'>0</span> features rendered in the database(s).
+    </p>
+    <p>
+      To recreate this viewpoint, use the following direct link:<br/>
+        &nbsp;&nbsp;&nbsp;<a id='directlink' href="URL">URL</a>
+    </p>
+
+    <script type="text/javascript" src="ohmec_data_meso.js"></script>
+    <script type="text/javascript" src="time_slider.js"></script>
+    <script type="text/javascript" src="ohmec.js"></script>
+    <script type="text/javascript" src="tablinks.js"></script>
+  </body>
+</html>
