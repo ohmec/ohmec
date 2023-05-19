@@ -36,7 +36,7 @@ fm = re.fullmatch("\s*(\w+)\s*=\s*(.*);\s*", fullfile, re.MULTILINE | re.DOTALL)
 varname = fm.group(1)
 varjson = fm.group(2)
 fullstruct = json.loads(varjson)
-coords = {}
+geoms = {}
 
 def export_header(ids):
   """print out the KML header for this conversion"""
@@ -77,27 +77,27 @@ def export_footer():
   print("  </Document>")
   print("</kml>")
 
-def get_coords(thisfeat):
+def get_geoms(thisfeat):
   thisid = thisfeat["id"]
   if "coordinate_copy" in thisfeat["geometry"]:
     copyname = thisfeat["geometry"]["coordinate_copy"]
     if copyname in geoms:
-      return coords[copyname]
+      return geoms[copyname]
     else:
       sys.stderr.write("can't handle out of order coordinate copies at this time.\n")
       sys.stderr.write(thisid + " needs copy from " + copyname + "\n")
       sys.exit(2)
   elif "coordinate_copies" in thisfeat["geometry"]:
-    thisfeat["coordinates"] = []
+    thisfeat["geometry"]["coordinates"] = []
     for copyname in thisfeat["geometry"]["coordinate_copies"]:
       if geoms[copyname]["type"] == "Polygon":
-        thisfeat["coordinates"].append(geoms[copyname]["coordinates"])
+        thisfeat["geometry"]["coordinates"].append(geoms[copyname]["coordinates"])
       if geoms[copyname]["type"] == "MultiPolygon":
         for subarray in geoms[copyname]["coordinates"]:
-          thisfeat["coordinates"].append(subarray)
-    return thisfeat["geometry"]["coordinates"]
+          thisfeat["geometry"]["coordinates"].append(subarray)
+    return thisfeat["geometry"]
   else:
-    return thisfeat["geometry"]["coordinates"]
+    return thisfeat["geometry"]
 
 def export_entity(idname, entity_name, geometry, coords):
   """export the KML for this entity given a geometry of Polygon or MultiPolygon"""
@@ -142,13 +142,14 @@ if("features" in fullstruct):
   export_header(ids_to_print)
   for feature in fullstruct["features"]:
     thisid = feature["id"]
-    coords[thisid] = get_coords(feature)
+    geoms[thisid] = get_geoms(feature)
+    coords = geoms[thisid]["coordinates"]
     if(thisid in ids_to_print):
       properties = feature["properties"]
       if("entity2name" in properties):
-        export_entity(thisid, properties["entity2name"], feature["geometry"], coords[thisid])
+        export_entity(thisid, properties["entity2name"], feature["geometry"], coords)
       else:
-        export_entity(thisid, properties["entity1name"], feature["geometry"], coords[thisid])
+        export_entity(thisid, properties["entity1name"], feature["geometry"], coords)
       printed[thisid] = 1
       sys.stderr.write("exporting " + thisid + "\n")
   export_footer()
