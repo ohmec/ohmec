@@ -930,7 +930,7 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
           let boundsN = bounds.getEast();
           let is_na = (boundsE <= -21) && (boundsS >= 7);
           // there are still some in NW South America, clip those too
-          if(is_na && (boundsN < 12.6) && (boundsW > -77)) {
+          if(is_na && (boundsN < 12.68) && (boundsW > -77)) {
             is_na = false;
           }
           if(is_na) {
