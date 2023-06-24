@@ -383,7 +383,8 @@ function infoboxFeatureOn(e) {
 
   if (layer.feature.geometry.type !== "Point") {  // Point styles are not being overridden at this time
     // borderless features shouldn't be highlighted (but still have selectability)
-    let opacity = (layer.feature.style.borderless) ? 0.0 : 0.7;
+    let newOpacity = (layer.feature.style.fillOpacity >= 0.60) ? 0.80 : 0.70;
+    let opacity = (layer.feature.style.borderless) ? 0.0 : newOpacity;
     layer.setStyle({
       weight: 5,
       color: '#666',
@@ -399,6 +400,13 @@ function infoboxFeatureOn(e) {
   }
   lastFeature = layer.feature;
   lastLayer = layer;
+
+  // possibly update font color if it differs in style
+  if(layer.feature.style.borderless && layer.feature.style.hifontcolor !== layer.feature.style.fontcolor) {
+    layer.feature.textOverlay.removeFrom(ohmap);
+    layer.feature.textOverlay = updateTextOverlay(layer.feature, layer.getBounds(), true);
+    layer.feature.textOverlay.addTo(ohmap);
+  }
 
   if (infoPinned && (infoPinnedId == layer.feature.id)) {
     infobox._div.style.background = infoboxPinnedBackground;
@@ -426,6 +434,14 @@ function infoboxFeatureOff(e) {
     infobox.update(infoPinnedId,infoPinnedProperties);
   } else {
     infobox.clear();
+  }
+
+  // possibly revert font color if it differs in style
+  let layer = e.target;
+  if(layer.feature.style.borderless && layer.feature.style.hifontcolor !== layer.feature.style.fontcolor) {
+    layer.feature.textOverlay.removeFrom(ohmap);
+    layer.feature.textOverlay = updateTextOverlay(layer.feature, layer.getBounds(), false);
+    layer.feature.textOverlay.addTo(ohmap);
   }
 }
 
@@ -612,7 +628,7 @@ function getFeatureLabel(feature) {
   }
 }
 
-function getFeatureFont(feature) {
+function getFeatureFont(feature, useHiFont) {
   // default styles
   let fontname   = 'sans serif';
   let fontscale  = 80;
@@ -634,8 +650,8 @@ function getFeatureFont(feature) {
     }
     return {
       name:  feature.style.fontname,
-      scale: fontscale,
-      color: feature.style.fontcolor
+      scale: useHiFont ? (fontscale*1.05) : fontscale,
+      color: useHiFont ? feature.style.hifontcolor : feature.style.fontcolor
     };
   } else {
     return {
@@ -772,13 +788,13 @@ function onEachFeature(feature, layer) {
     getFeatureLabel(feature),
     isPoint,
     feature.properties,
-    getFeatureFont(feature));
+    getFeatureFont(feature,false));
 
   let labelElementBounds = [ [ labelBounds.getNorth(), labelBounds.getWest() ], [ labelBounds.getSouth(), labelBounds.getEast() ] ];
   feature.textOverlay = L.svgOverlay(feature.textLabel, labelElementBounds);
 }
 
-function updateTextOverlay(feature, bounds, altProperties, ratio) {
+function updateTextOverlay(feature, bounds, useHiFont, altProperties, ratio) {
   // create SVG for label
   let textLabel = getTextLabel(
     bounds,
@@ -786,7 +802,7 @@ function updateTextOverlay(feature, bounds, altProperties, ratio) {
     getFeatureLabel(feature),
     false,
     feature.properties,
-    getFeatureFont(feature),
+    getFeatureFont(feature,useHiFont),
     altProperties,
     ratio);
 
@@ -1472,7 +1488,7 @@ geojson.evaluateLayers = function () {
       if("animateTo" in prop) {
         let bounds = L.polygon(lyr._latlngs).getBounds();
         lyr.feature.textOverlay.removeFrom(ohmap);
-        lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, fHash[prop.animateTo].properties,timeRatio);
+        lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, false, fHash[prop.animateTo].properties,timeRatio);
       }
       lyr.feature.textOverlay.addTo(ohmap);
     } else {
