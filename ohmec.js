@@ -963,6 +963,9 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
               throw "feature " + f.id + " missing property " + required;
             }
           }
+          if(!("source" in p) && !("sources" in p)) {
+            throw "feature " + f.id + " requires either `source` or `sources` property";
+          }
           p.startDate = str2date(p.startdatestr,false);
           if(p.enddatestr == 'present') {
             p.endDate = today;
