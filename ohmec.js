@@ -438,7 +438,7 @@ function infoboxFeatureOn(e) {
   lastLayer = layer;
 
   // possibly update font color if it differs in style
-  if(layer.feature.style.borderless && layer.feature.style.hifontcolor !== layer.feature.style.fontcolor) {
+  if(layer.feature.style.borderless && layer.feature.style.hifontcolor !== layer.feature.style.fontcolor && !("animateTo" in layer.feature.properties)) {
     layer.feature.textOverlay.removeFrom(ohmap);
     layer.feature.textOverlay = updateTextOverlay(layer.feature, layer.getBounds(), true);
     layer.feature.textOverlay.addTo(ohmap);
@@ -474,7 +474,7 @@ function infoboxFeatureOff(e) {
 
   // possibly revert font color if it differs in style
   let layer = e.target;
-  if(layer.feature.style.borderless && layer.feature.style.hifontcolor !== layer.feature.style.fontcolor) {
+  if(layer.feature.style.borderless && layer.feature.style.hifontcolor !== layer.feature.style.fontcolor && !("animateTo" in layer.feature.properties)) {
     layer.feature.textOverlay.removeFrom(ohmap);
     layer.feature.textOverlay = updateTextOverlay(layer.feature, layer.getBounds(), false);
     layer.feature.textOverlay.addTo(ohmap);
