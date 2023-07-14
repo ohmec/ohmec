@@ -31,7 +31,8 @@ let zoomSettingStart = zoomSettingDefault;
 let boundsHash = {};
 let smartStepDefault = 1;
 let smartStepFeature = smartStepDefault;
-let popupFeature = true;
+let popupFeatureEnabled = true;
+let popupSelectExpanded = false;
 
 let timelineSlider;
 let backgroundLayerDefault = 'relief';
@@ -146,7 +147,7 @@ for(let param of parameters) {
   test = /popup=(on|off)/;
   match = param.match(test);
   if (match !== null) {
-    popupFeature = (match[1]==='on') ? true : false;
+    popupFeatureEnabled = (match[1]==='on') ? true : false;
   }
 }
 
@@ -219,7 +220,7 @@ let updateDirectLink = function() {
   if(timelineIntervalDuration !== timelineIntervalDurationDefault) {
     urlText += '&advDur=' + timelineIntervalDuration;
   }
-  if(popupFeature === false) {
+  if(popupFeatureEnabled === false) {
     urlText += '&popup=off';
   }
   linkSpan.textContent = urlText;
@@ -354,6 +355,41 @@ infobox.update = function(id, prop) {
 };
 
 infobox.addTo(ohmap);
+
+// popup select
+let popupSelect = L.control();
+popupSelect.setPosition("topleft");
+
+popupSelect.update = function(id, prop) {
+  if(popupSelectExpanded) {
+    if(popupFeatureEnabled) {
+      this._div.innerHTML = '<input type="radio" id="psel" name="psel" checked /><label for="psel">popups enabled</label>';
+    } else {
+      this._div.innerHTML = '<input type="radio" id="psel" name="psel" /><label for="psel">popups disabled</label>';
+    }
+  } else {
+    if(popupFeatureEnabled) {
+      this._div.innerHTML = '<input type="radio" id="psel" name="psel" checked /><label for="psel"></label>';
+    } else {
+      this._div.innerHTML = '<input type="radio" id="psel" name="psel" /><label for="psel"></label>';
+    }
+  }
+}
+
+
+popupSelect.onAdd = function() {
+  this._div = L.DomUtil.create('div', 'popupselect');
+  this.update();
+
+  this._div.addEventListener("click", () => {
+    popupFeatureEnabled = popupFeatureEnabled ? false : true;
+    popupSelect.update();
+    updateDirectLink();
+  });
+  return this._div;
+}
+
+popupSelect.addTo(ohmap);
 
 let legend = L.control({position: 'bottomright'});
 let curDate = today;
@@ -906,7 +942,7 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
       zoomSettingStart = dataset.viewpoint.defaultZ;
     }
   }
-  if("popups" in dataset && popupFeature) {
+  if("popups" in dataset) {
     for(let p of dataset.popups) {
       let pentry = {};
       pentry.text = p.text;
@@ -1654,31 +1690,48 @@ function checkKeypress(e) {
 }
 
 function checkPopups() {
-  for(let p of popupList) {
-    let bounds = ohmap.getBounds();
-    let ll = new L.latLng(p.coordinates[1], p.coordinates[0]);
-    if(!p.done && curDate <= p.endDate && curDate >= p.startDate && bounds.contains(ll) && !p.popup) {
-      p.popup = L.popup({
-        maxWidth: 500,
-        autoPan: false,
-        autoClose: false}).
-          setLatLng(ll).
-          setContent('<div id="popup">' + p.text + '</div>').
-          openOn(ohmap);
-      p.done = true;
+  if(popupFeatureEnabled) {
+    for(let p of popupList) {
+      let bounds = ohmap.getBounds();
+      let ll = new L.latLng(p.coordinates[1], p.coordinates[0]);
+      if(!p.done && curDate <= p.endDate && curDate >= p.startDate && bounds.contains(ll) && !p.popup) {
+        p.popup = L.popup({
+          maxWidth: 500,
+          autoPan: false,
+          autoClose: false}).
+            setLatLng(ll).
+            setContent('<div id="popup">' + p.text + '</div>').
+            openOn(ohmap);
+        p.done = true;
+      }
     }
   }
   // check for ones that need to be closed once age range is exited
   for(let p of popupList) {
-    if(p.popup) {
-      if(p.popup.isOpen() && !(curDate <= p.endDate && curDate >= p.startDate)) {
+    if(p.popup && p.popup.isOpen()) {
+      if(!popupFeatureEnabled || !(curDate <= p.endDate && curDate >= p.startDate)) {
         ohmap.closePopup(p.popup);
       }
     }
   }
 }
 
-ohmap.on('keydown', checkKeypress);
-ohmap.on('moveend', checkPopups);
+function checkMouseMove(e) {
+  if((e.originalEvent.target == popupSelect._div) ||
+     (e.originalEvent.target == popupSelect._div.firstChild) ||
+     (e.originalEvent.target == popupSelect._div.lastChild)) {
+    if(!popupSelectExpanded) {
+      popupSelectExpanded = true;
+      popupSelect.update();
+    }
+  } else if(popupSelectExpanded) {
+    popupSelectExpanded = false;
+    popupSelect.update();
+  }
+}
+
+ohmap.on('keydown',   checkKeypress);
+ohmap.on('moveend',   checkPopups);
+ohmap.on('mousemove', checkMouseMove);
 
 checkPopups();

@@ -65,7 +65,7 @@ h1 {
   align: center;
   border: solid;
 }
-.curdate, .infobox {
+.curdate, .infobox, .popupselect {
   padding: 6px 8px;
   font: 14px/16px Helvetica, sans-serif;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
