@@ -22,6 +22,10 @@ __license__    = "Apache License, Version 2.0"
 import sys
 import json
 import re
+from datetime import date
+
+today = date.today()
+edate = today.strftime("%Y:%0m:%0d")
 
 SIGDIGITS = 5
 
@@ -52,6 +56,13 @@ def parse_kml(filename):
           fm = re.search(r"<name>\[(.*)\]\s+(.*)\s+Polygon.*</name>", line)
           idname = fm.group(1)
           entity2name[idname] = fm.group(2)
+          ismulti = 1
+          if(idname not in multicoords):
+            multicoords[idname] = []
+        elif(re.search(r"<name>(.+?)\s+Polygon.*</name>", line)):
+          fm = re.search(r"<name>(.+?)\s+Polygon.*</name>", line)
+          idname = fm.group(1)
+          entity2name[idname] = ""
           ismulti = 1
           if(idname not in multicoords):
             multicoords[idname] = []
@@ -95,8 +106,8 @@ def export_coords(coords):
         "entity2type":"XXXX",
         "entity2name":"''' + ename + '''",
         "fidelity":"XXXX",
-        "editdate":"XXXX",
         "source":"XXXX",
+        "editdatestr":"''' + edate + '''",
         "startdatestr":"XXXX",
         "enddatestr":"XXXX"},
       "geometry":{
@@ -120,8 +131,8 @@ def export_multi_coords(coords):
         "entity2type":"XXXX",
         "entity2name":"''' + ename + '''",
         "fidelity":"XXXX",
-        "editdatestr":"XXXX",
         "source":"XXXX",
+        "editdatestr":"''' + edate + '''",
         "startdatestr":"XXXX",
         "enddatestr":"XXXX"},
       "geometry":{
