@@ -726,6 +726,7 @@ function getFeatureFont(feature, useHiFont) {
     // scale the font based upon the family, since some are wider than others
     switch(feature.style.fontname) {
       case 'Rubik':                fontscale = 81; break;
+      case 'Rubik Wet Paint':      fontscale = 81; break;
       case 'Cabin Sketch':         fontscale = 87; break;
       case 'Corben':               fontscale = 77; break;
       case 'New Tegomin':          fontscale = 84; break;
