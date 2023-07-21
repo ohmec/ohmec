@@ -187,24 +187,24 @@ function dateStr(dateInput,slash) {
          fixInt(dateInput.getDate(),2);
 }
 
-let updateDirectLink = function() {
+function urlString(mindate,maxdate,curdate) {
   let hrefText = location.href;
   let splits = hrefText.split('?');
   let latlon = ohmap.getCenter();
   let conjoin = '?';
   let urlText = splits[0];
-  if(timelineDateMinOverride) {
+  if(mindate) {
     urlText += conjoin +
-      'startdatestr='  + dateStr(timelineDateMinOverride,':');
+      'startdatestr='  + dateStr(mindate,':');
     conjoin = '&';
   }
-  if(timelineDateMaxOverride) {
+  if(maxdate) {
     urlText += conjoin +
-       'enddatestr='   + dateStr(timelineDateMaxOverride,':');
+       'enddatestr='   + dateStr(maxdate,':');
     conjoin = '&';
   }
   urlText += conjoin +
-    'curdatestr='    + dateStr(curDate,':') +
+    'curdatestr='    + dateStr(curdate,':') +
     '&lat='          + parseFloat(latlon.lat).toFixed(2) +
     '&lon='          + parseFloat(latlon.lng).toFixed(2) +
     '&z='            + parseFloat(ohmap.getZoom()).toFixed(1);
@@ -223,6 +223,15 @@ let updateDirectLink = function() {
   if(popupFeatureEnabled === false) {
     urlText += '&popup=off';
   }
+  return urlText;
+}
+
+let updateDirectLink = function() {
+  let hrefText = location.href;
+  let splits = hrefText.split('?');
+  let latlon = ohmap.getCenter();
+  let conjoin = '?';
+  let urlText = urlString(timelineDateMinOverride, timelineDateMaxOverride, curDate);
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
 };
@@ -1611,6 +1620,39 @@ function updateHTML(spanName, value) {
 
 updateHTML('polycount', polygonCount);
 
+// update the text forms that allow date modification to contain
+// the initial start / current / end dates to begin with.
+function updateForm(formName, value) {
+  let formHandle = document.querySelector('#' + formName);
+  formHandle.value = value;
+}
+
+updateForm('sdform', dateStr(timelineDateMinOverride,':'));
+updateForm('cdform', dateStr(curDate,':'));
+updateForm('edform', dateStr(timelineDateMaxOverride,':'));
+
+let sdFormElem = document.querySelector('#sdform');
+let cdFormElem = document.querySelector('#cdform');
+let edFormElem = document.querySelector('#edform');
+
+// "listen" for updates to any one of the three date forms
+// and refresh the page with the modification
+
+sdFormElem.addEventListener('change', () => {
+  let newurl = urlString(str2date(sdFormElem.value), timelineDateMaxOverride, curDate);
+  open(newurl,"_self");
+});
+
+cdFormElem.addEventListener('change', () => {
+  let newurl = urlString(timelineDateMinOverride, timelineDateMaxOverride, str2date(cdFormElem.value));
+  open(newurl,"_self");
+});
+
+edFormElem.addEventListener('change', () => {
+  let newurl = urlString(timelineDateMinOverride, str2date(edFormElem.value, true), curDate);
+  open(newurl,"_self");
+});
+
 // if key `i` is pressed, potentially modify the infobox,
 // using this algorithm
 //
@@ -1652,7 +1694,7 @@ function checkKeypress(e) {
     case '2': backgroundLayerSetting = 'physical'; backgroundUpdated = true; break;
     case '3': backgroundLayerSetting = 'white';    backgroundUpdated = true; break;
     case '4': backgroundLayerSetting = 'stamen';   backgroundUpdated = true; break;
-    case '5': backgroundLayerSetting = 'streets' ; backgroundUpdated = true; break;
+    case '5': backgroundLayerSetting = 'streets';  backgroundUpdated = true; break;
     case '6': backgroundLayerSetting = 'paint';    backgroundUpdated = true; break;
     case 'a':
       timelineSlider.affectAdvance();
