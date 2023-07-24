@@ -6492,7 +6492,7 @@ dataMeso = {
         "source":"https://en.wikipedia.org/wiki/Veracruz_(city)#History",
         "editdatestr":"2023:02:15",
         "startdatestr":"1519:06",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-96.40323,19.67761]}},
@@ -7557,7 +7557,7 @@ dataMeso = {
         "source":"https://en.wikipedia.org/wiki/New_Spain#Sixteenth-century_founding_of_Spanish_cities",
         "editdatestr":"2023:03:01",
         "startdatestr":"1524",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-103.7273, 19.24270]}},
@@ -7624,7 +7624,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Santiago_de_los_Caballeros_de_Guatemala#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1524",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-90.73333, 14.56667]}},
@@ -7708,7 +7708,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Oaxaca_City#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1526",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-96.72528, 17.06056]}},
@@ -7781,7 +7781,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Morelia#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1529",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-101.18944, 19.76833]}},
@@ -7845,8 +7845,10 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTPBLA",
       "properties":{
-        "entity1type":"settlement",
-        "entity1name":"Puebla de los Angeles",
+        "entity1type":"nation",
+        "entity1name":"Spain",
+        "entity2type":"settlement",
+        "entity2name":"Puebla de los Angeles",
         "fidelity":3,
         "iconScale":2,
         "sources":[
@@ -7854,7 +7856,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Puebla_(city)#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1531",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-98.18333, 19.03333]}},
@@ -7872,7 +7874,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Quer%C3%A9taro#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1531",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-100.38333, 20.58333]}},
@@ -7959,7 +7961,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Campeche_(city)#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1541",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-90.53056, 19.85000]}},
@@ -7977,7 +7979,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/M%C3%A9rida,_Yucat%C3%A1n#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1542",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-89.62, 20.97000]}},
@@ -7995,7 +7997,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Guadalajara#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1542:02:14",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-103.3475, 20.67667]}},
@@ -8032,7 +8034,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Zacatecas_(city)#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1547",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-102.57361, 22.77361]}},
@@ -8092,7 +8094,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Guanajuato_(city)#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1548",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-101.25667, 21.01778]}},
@@ -8379,7 +8381,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Acapulco#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1563",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-99.8825, 16.86361]}},
@@ -8397,7 +8399,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Durango_(city)#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1563",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-104.6675, 24.02500]}},
@@ -8518,7 +8520,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Saltillo#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1577",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-100.99194, 25.42306]}},
@@ -8592,7 +8594,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/San_Luis_Potos%C3%AD_(city)#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1592",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-100.97611, 22.15111]}},
@@ -8610,7 +8612,7 @@ dataMeso = {
           "https://en.wikipedia.org/wiki/Monterrey#History"],
         "editdatestr":"2023:03:01",
         "startdatestr":"1596",
-        "enddatestr":"present"},
+        "enddatestr":"1810"},
       "geometry":{
         "type":"Point",
         "coordinates":[-100.3, 25.66667]}},
