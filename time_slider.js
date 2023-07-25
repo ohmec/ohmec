@@ -88,8 +88,10 @@ L.Control.TimeLineSlider = L.Control.extend({
     this.sheet.textContent = this.setupStartStyles();
 
     // When time slider gets changed, trigger updateTime function
+    // and clear infobox
     L.DomEvent.on(thisSlider.rangeObject, "input", function() {
       thisSlider.options.updateTime({dateValue: thisSlider.rangeObject.value});
+      thisSlider.options.clearInfobox();
     });
 
     // When advance/pause button gets pressed toggle advance/pause,
