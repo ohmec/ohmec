@@ -150,6 +150,8 @@ def check_props(feat):
     borderless[idf] = propsf['borderless']
   elif propsf['entity1name'] == 'Indigenous' and propsf['entity2type'] == 'tribe':
     borderless[idf] = 1
+  elif propsf['entity1name'] == 'mountain range':
+    borderless[idf] = 1
   elif propsf['entity1type'] == 'tribe' or propsf['entity1type'] == 'reservation' or propsf['entity1type'] == 'pueblo':
     borderless[idf] = 1
 

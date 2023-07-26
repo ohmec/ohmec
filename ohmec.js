@@ -64,6 +64,7 @@ let fHash = {};
 let useEurope = pagename === 'index_viking.html';
 let useAA = pagename === 'index_aa.html';
 let useMeso = pagename === 'index_meso.html';
+let useAciv = pagename === 'index_aciv.html';
 let useNativeLands = pagename === 'index_nl.html';
 let cherokeeExample = pagename === 'index_cherokee.html';
 let popupList = [];
@@ -410,7 +411,8 @@ infobox.update = function(id, prop) {
 
       // if the fillcolor tends light, need to darken the text and a:links
       let rgb = str2RGB(fHash[id].style.fillColor);
-      if((rgb[0] + rgb[1] + rgb[2]) >= 3*0x60) {
+      let rgbsum = rgb[0] + rgb[1] + rgb[2];
+      if(rgbsum >= 3*0x70) {
         divcolor =  '#111';
         linkcolor = '#11e';
       }
@@ -428,6 +430,7 @@ infobox.update = function(id, prop) {
     infobox._div.style.color = '#eee';
   }
 };
+
 
 infobox.addTo(ohmap);
 
@@ -758,6 +761,7 @@ function getFeatureFont(feature, useHiFont) {
       case 'Rye':                  fontscale = 73; break;
       case 'Akaya Telivigala':     fontscale = 94; break;
       case 'MedievalSharp':        fontscale = 85; break;
+      case 'Lugrasimo':            fontscale = 69; break;
       case 'Benne':                fontscale = 91; break;
     }
     return {
@@ -1343,6 +1347,8 @@ if(useEurope) {
   geo_lint(dataAA,false,false,false);
 } else if(useMeso) {
   geo_lint(dataMeso,false,false,false);
+} else if(useAciv) {
+  geo_lint(dataACiv,false,false,false);
 } else {
   geo_lint(dataNA,false,useNativeLands,cherokeeExample);
   if(useNativeLands) {
@@ -1352,7 +1358,7 @@ if(useEurope) {
   }
 }
 
-let geoDB = useEurope ? dataEur : useAA ? dataAA : useMeso ? dataMeso : dataNA;
+let geoDB = useEurope ? dataEur : useAA ? dataAA : useMeso ? dataMeso : useAciv ? dataACiv : dataNA;
 
 prepare_animations();
 
