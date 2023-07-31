@@ -52,10 +52,10 @@ dataAA = {
       "style":{ "strokeColor": "#783000", "fillColor": "#f06000"}},
     { "type": "match",
       "match":{ "entity1type": "geography", "entity1name": "icecap"},
-      "style":{ "strokeColor": "#e0e0ff", "fillColor": "#f4f4ff", "strokeWeight": 1.0, "fillOpacity": 0.9, "layerDepth": "back"}},
+      "style":{ "strokeOn": false, "strokeColor": "#e0e0ff", "fillColor": "#f4f4ff", "strokeWeight": 1.0, "fillOpacity": 0.9, "layerDepth": "back"}},
     { "type": "match",
       "match":{ "entity1type": "geography", "entity1name": "Beringia"},
-      "style":{ "strokeColor": "#e0ffe0", "fillColor": "#e0ffe0", "strokeWeight": 1.0, "fillOpacity": 0.9, "layerDepth": "back"}}],
+      "style":{ "strokeOn": false, "strokeColor": "#e0ffe0", "fillColor": "#e0ffe0", "strokeWeight": 1.0, "fillOpacity": 0.9, "layerDepth": "back"}}],
   "features":[
     { "type":"Feature",
       "id":"YRHS",
