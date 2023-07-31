@@ -358,6 +358,10 @@ infobox.update = function(id, prop) {
       }
     }
     this._div.innerHTML += '<b>id:</b>' + id;
+    if ("emblem" in fHash[id]) {
+      this._div.innerHTML += '<br/><center><img src="emblems/' + fHash[id].emblem + '"/ height="40"></center>';
+      console.log("display emblem for " + id);
+    }
   } else {
     this._div.innerHTML = '<b>Feature Information</b>';
   }
@@ -1152,6 +1156,9 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
                 if(match) {
                   for(let e in s.style) {
                     f.style[e] = s.style[e];
+                  }
+                  if("emblem" in s) {
+                    f.emblem = s.emblem;
                   }
                 }
               }
