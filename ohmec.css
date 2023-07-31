@@ -58,12 +58,39 @@ h1 {
 }
 #map {
   width: 95%;
-  height: 80%;
+  height: 75%;
   border-style: solid;
   border-color: #000040;
   margin-left: 2.5%;
   align: center;
   border: solid;
+}
+#mapalign {
+  width: 95%;
+  margin-left: 2.5%;
+}
+#formtable {
+  margin-left: auto;
+  margin-right: auto;
+  padding-top:    0px;
+  padding-bottom: 1px;
+  padding-left:   10px;
+  padding-right:  10px;
+  border-collapse: collapse;
+}
+#formtable th {
+  font-size: 15px;
+  font-family: "Benne", "Helvetica", serif;
+  text-align: center;
+}
+input[type='text'] {
+  width: 100px;
+  font-size: 15px;
+  font-family: "Consolas", "Courier", fixed;
+  text-align: center;
+}
+td.tdcenter {
+  text-align: center;
 }
 .curdate, .infobox, .popupselect {
   padding: 6px 8px;
