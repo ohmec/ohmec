@@ -49,7 +49,7 @@ dataEur = {
       "style":{ "strokeColor": "#80b070", "fillColor": "#c8e8b0"}},
     { "type": "match",
       "match":{ "entity1type": "geography", "entity1name": "icecap"},
-      "style":{ "strokeColor": "#e0e0ff", "fillColor": "#f4f4ff", "strokeWeight": 1.0, "fillOpacity": 0.9, "layerDepth": "back"}}],
+      "style":{ "strokeOn": false, "strokeColor": "#e0e0ff", "fillColor": "#f4f4ff", "strokeWeight": 1.0, "fillOpacity": 0.9, "layerDepth": "back"}}],
   "features":[
     { "type":"Feature",
       "id":"Olmec00",
