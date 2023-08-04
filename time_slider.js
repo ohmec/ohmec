@@ -30,6 +30,7 @@ L.Control.TimeLineSlider = L.Control.extend({
     let prefix = smartstep ? "" : "G";
     document.getElementById("stepFButton").value = prefix + "Step +";
     document.getElementById("stepRButton").value = prefix + "Step -";
+    this.options.smartStepFeature = smartstep;
   },
 
   onAdd: function() {
@@ -176,15 +177,19 @@ L.Control.TimeLineSlider = L.Control.extend({
         if (curTime > thisSlider.options.datesOfInterestSorted[i].getTime()) {
           let useStep = true;
           if(thisSlider.options.smartStepFeature) {
-            useStep = false;
-            for(let id of thisSlider.options.idAddsPerDOI[i+1]) {
-              if(boundsIntersect(thisSlider.options.mapBounds(), thisSlider.options.boundsHash[id])) {
-                useStep = true;
+            // if we're at the end of the map, then always go backwards,
+            // but there's nothing to iterate on here, so skip the check
+            if(thisSlider.options.idAddsPerDOI[i+1]) {
+              useStep = false;
+              for(let id of thisSlider.options.idAddsPerDOI[i+1]) {
+                if(boundsIntersect(thisSlider.options.mapBounds(), thisSlider.options.boundsHash[id])) {
+                  useStep = true;
+                }
               }
-            }
-            for(let id of thisSlider.options.idSubsPerDOI[i+1]) {
-              if(boundsIntersect(thisSlider.options.mapBounds(), thisSlider.options.boundsHash[id])) {
-                useStep = true;
+              for(let id of thisSlider.options.idSubsPerDOI[i+1]) {
+                if(boundsIntersect(thisSlider.options.mapBounds(), thisSlider.options.boundsHash[id])) {
+                  useStep = true;
+                }
               }
             }
           }
