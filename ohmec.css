@@ -153,17 +153,8 @@ td.tdcenter {
   text-align: center;
   font-family: "Courier";
 }
-.infobox a:link {
-  color: #eee;
-}
-.infobox a:hover {
-  color: #88f;
-}
-.infobox a:active {
-  color: #eee;
-}
-.infobox a:visited {
-  color: #eee;
+.infobox a {
+  color: #bbf;
 }
 #paramtable,#keytable {
   font-family: "Courier";
