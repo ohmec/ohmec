@@ -378,8 +378,31 @@ infobox.update = function(id, prop) {
       thisHTML += '</div>';
     }
     infobox._div.innerHTML = thisHTML;
+
+    if (!fHash[id].style.borderless) {
+      // set the background of the infobox to match the style fill color of feature
+      infobox._div.style.background = fHash[id].style.fillColor;
+      let divcolor = '#eee';  // default style colors
+      let linkcolor = '#bbf';
+
+      // if the fillcolor tends light, need to darken the text and a:links
+      let rgb = str2RGB(fHash[id].style.fillColor);
+      if((rgb[0] + rgb[1] + rgb[2]) >= 3*0x60) {
+        divcolor =  '#111';
+        linkcolor = '#11e';
+      }
+      infobox._div.style.color = divcolor;
+      if ("emblem" in fHash[id] && "periodList" in fHash[id]) {
+        document.getElementById("embox").style.borderColor = divcolor;
+      }
+      for (let aelem of document.getElementsByClassName('infobox')[0].getElementsByTagName('a')) {
+        aelem.style.color = linkcolor;
+      }
+    }
   } else {
     infobox._div.innerHTML = '<b>Feature Information</b>';
+    infobox._div.style.background = infoboxNormalBackground;
+    infobox._div.style.color = '#eee';
   }
 };
 
@@ -449,7 +472,7 @@ function infoboxFeatureOn(e) {
   if (layer.feature.geometry.type !== "Point") {  // Point styles are not being overridden at this time
     // borderless features shouldn't be highlighted (but still have selectability)
     let newOpacity = (layer.feature.style.fillOpacity >= 0.60) ? 0.80 : 0.70;
-    let opacity = (layer.feature.style.borderless) ? 0.0 : newOpacity;
+    let opacity = (layer.feature.style.borderless) ? layer.feature.style.fillOpacity : newOpacity;
     layer.setStyle({
       weight: 5,
       color: '#666',
