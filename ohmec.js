@@ -341,29 +341,45 @@ infobox.onAdd = function() {
 
 infobox.update = function(id, prop) {
   if (prop) {
-    this._div.innerHTML = '<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>';
+    let thisHTML = '<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>';
     if("entity2type" in prop) {
-      this._div.innerHTML += '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>';
+      thisHTML += '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>';
     }
-    this._div.innerHTML += prop.startdatestr + ' - ' + prop.enddatestr  + '<br/>';
+    thisHTML += prop.startdatestr + ' - ' + prop.enddatestr  + '<br/>';
     if("source" in prop) {
       if(prop.source.includes("native-land")) { // give explicit credit to Native Lands for their data
-        this._div.innerHTML += '<a href="' + prop.source + '" target="_blank">source: Native Lands</a><br/>';
+        thisHTML += '<a href="' + prop.source + '" target="_blank">source: Native Lands</a><br/>';
       } else {
-        this._div.innerHTML += '<a href="' + prop.source + '" target="_blank">source</a><br/>';
+        thisHTML += '<a href="' + prop.source + '" target="_blank">source</a><br/>';
       }
     } else if("sources" in prop) {
       for (let i=0;i<prop.sources.length;i++) {
-        this._div.innerHTML += '<a href="' + prop.sources[i] + '" target="_blank">source ' + (i+1) + '</a><br/>';
+        thisHTML += '<a href="' + prop.sources[i] + '" target="_blank">source ' + (i+1) + '</a><br/>';
       }
     }
-    this._div.innerHTML += '<b>id:</b>' + id;
-    if ("emblem" in fHash[id]) {
-      this._div.innerHTML += '<br/><center><img src="emblems/' + fHash[id].emblem + '"/ height="40"></center>';
-      console.log("display emblem for " + id);
+    thisHTML += '<b>id:</b>' + id;
+    if ("emblem" in fHash[id] && "periodList" in fHash[id]) {
+      thisHTML += '<div id="embox">';
     }
+    if ("emblem" in fHash[id]) {
+      thisHTML += '<center><img id="emblem" src="emblems/' + fHash[id].emblem + '" height="40"></center>';
+    }
+    if ("periodList" in fHash[id]) {
+      for(let m in fHash[id].periodList) {
+        let startDate = str2date(fHash[id].periodList[m].startdatestr,false);
+        let endDate = str2date(fHash[id].periodList[m].enddatestr,true);
+        if(curDate >= startDate && curDate <= endDate) {
+          let pe = fHash[id].periodList[m].period;
+          thisHTML += '<div id="pinfo"><center>' + pe + '</center></div>';
+        }
+      }
+    }
+    if ("emblem" in fHash[id] && "periodList" in fHash[id]) {
+      thisHTML += '</div>';
+    }
+    infobox._div.innerHTML = thisHTML;
   } else {
-    this._div.innerHTML = '<b>Feature Information</b>';
+    infobox._div.innerHTML = '<b>Feature Information</b>';
   }
 };
 
@@ -1169,6 +1185,21 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
       if("stylehold" in f) {
         for(let e in f.stylehold) {
           f.style[e] = f.stylehold[e];
+        }
+      }
+      // go through potential period data structures
+      if("periods" in dataset) {
+        for(let p of dataset.periods) {
+          let match = 1;
+          for(let m in p.match) {
+            let v = p.match[m];
+            if(f.properties[m] !== v) {
+              match = 0;
+            }
+          }
+          if(match) {
+            f.periodList = p.periods;
+          }
         }
       }
     }
