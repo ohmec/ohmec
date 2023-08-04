@@ -36,7 +36,7 @@ dataMeso = {
       "startdatestr":"1000BC",
       "enddatestr":"801BC",
       "coordinates":[-90.0, 19.0]},
-    { "text":"<p>The <a href=\"https://en.wikipedia.org/wiki/Zapotec_civilization\" target=\"_blank\">Zapotec</a> nation moved its capital from San José Mogote to <a href=\"https://en.wikipedia.org/wiki/Monte_Alb%C3%A1n\" target=\"_blank\">Monte Albán</a> around 500BC in order to provide isolation and protective geography against its warlike neighbors the Mexica (Aztec), allowing its culture to thrive.</p>",
+    { "text":"<p>The <a href=\"https://en.wikipedia.org/wiki/Zapotec_civilization\" target=\"_blank\">Zapotec</a> civilization moved its capital from San José Mogote to <a href=\"https://en.wikipedia.org/wiki/Monte_Alb%C3%A1n\" target=\"_blank\">Monte Albán</a> around 500BC in order to provide isolation and protective geography against its warlike neighbors the Mexica (Aztec), allowing its culture to thrive.</p>",
       "startdatestr":"500BC",
       "enddatestr":"301BC",
       "coordinates":[-96.76778, 17.2]},
@@ -120,62 +120,62 @@ dataMeso = {
       "match":{ "entity1type": "tribe"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#305000", "strokeColor": "#205000", "fillColor": "#308000" }},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Aztec Alliance"},
+      "match":{ "entity1type": "civilization", "entity1name": "Aztec Alliance"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#301000", "strokeColor": "#401008", "fillColor": "#852010", "fillOpacity": 0.5 },
       "emblem": "aztec.jpg"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Tlacopan"},
+      "match":{ "entity1type": "civilization", "entity1name": "Tlacopan"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#301000", "strokeColor": "#401008", "fillColor": "#a52000" },
       "emblem": "tlacopan.png"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Tenochtitlan"},
+      "match":{ "entity1type": "civilization", "entity1name": "Tenochtitlan"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#301000", "strokeColor": "#401008", "fillColor": "#852010" },
       "emblem": "tenochtitlan.png"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Texcoco"},
+      "match":{ "entity1type": "civilization", "entity1name": "Texcoco"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#301000", "strokeColor": "#401008", "fillColor": "#652020" },
       "emblem": "texcoco.png"},
     { "type": "match",
-      "match":{ "entity1type": "tribe", "entity1name": "Proto-Olmec Cultures"},
+      "match":{ "entity1type": "culture", "entity1name": "Proto-Olmec Cultures"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#302010", "hifontcolor": "#302010", "strokeOn": false, "fillOpacity": 0.0, "borderless": true },
       "emblem": "olmec.jpg"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Olmec"},
+      "match":{ "entity1type": "civilization", "entity1name": "Olmec"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#302010", "strokeColor": "#744418", "fillColor": "#e88832" },
       "emblem": "olmec.jpg"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Veracruz"},
+      "match":{ "entity1type": "civilization", "entity1name": "Veracruz"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#22341e", "strokeColor": "#44683c", "fillColor": "#88d074" }},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Zapotec"},
+      "match":{ "entity1type": "civilization", "entity1name": "Zapotec"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#102828", "strokeColor": "#155468", "fillColor": "#30a8d0" },
       "emblem": "zapotec.jpg"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Mixtec"},
+      "match":{ "entity1type": "civilization", "entity1name": "Mixtec"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#271e10", "strokeColor": "#543c20", "fillColor": "#a87840" },
       "emblem": "mixtec.png"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Tlaxcaltec"},
+      "match":{ "entity1type": "civilization", "entity1name": "Tlaxcaltec"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#282010", "strokeColor": "#504020", "fillColor": "#a08040" },
       "emblem": "tlaxcaltec.jpg"},
     { "type": "match",
-      "match":{ "entity1type": "tribe", "entity1name": "Proto-Mayan Cultures"},
+      "match":{ "entity1type": "culture", "entity1name": "Proto-Mayan Cultures"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#302010", "hifontcolor": "#302010", "strokeOn": false, "fillOpacity": 0.0, "borderless": true },
       "emblem": "maya.png"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Maya"},
+      "match":{ "entity1type": "civilization", "entity1name": "Maya"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#204000", "strokeColor": "#225e32", "fillColor": "#44bc64" },
       "emblem": "maya.png"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Toltec"},
+      "match":{ "entity1type": "civilization", "entity1name": "Toltec"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#f0e0d8", "strokeColor": "#1c212a", "fillColor": "#384254" },
       "emblem": "toltec.jpg"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Teotihuacan"},
+      "match":{ "entity1type": "civilization", "entity1name": "Teotihuacan"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#301530", "strokeColor": "#603060", "fillColor": "#c060c0" },
       "emblem": "teotihuacan.jpg"},
     { "type": "match",
-      "match":{ "entity1type": "nation", "entity1name": "Purépecha"},
+      "match":{ "entity1type": "civilization", "entity1name": "Purépecha"},
       "style":{ "fontname": "New Tegomin", "fontcolor": "#041f05", "strokeColor": "#083c0a", "fillColor": "#0f7313" },
       "emblem": "purepecha.jpg"},
     { "type": "match",
@@ -209,6 +209,27 @@ dataMeso = {
     { "type": "match",
       "match":{ "entity1type": "geography", "entity1name": "lake"},
       "style":{ "strokeOn": false, "strokeColor": "#9090ff", "fillColor": "#9090ff", "strokeWeight": 1.0, "fillOpacity": 0.9, "layerDepth": "back"}}],
+  "periods":[
+    { "match":{ "entity1type": "culture", "entity1name": "Proto-Mayan Cultures"},
+      "periods":[
+        { "startdatestr":"8000BC", "enddatestr":"2001BC", "period":"Archaic Period" },
+        { "startdatestr":"2000BC", "enddatestr":"1001BC", "period":"Early Preclassic Period" },
+        { "startdatestr":"1000BC", "enddatestr":"351BC",  "period":"Middle Preclassic Period" },
+        { "startdatestr":"350BC",  "enddatestr":"249",    "period":"Late Preclassic Period" }
+      ]},
+    { "match":{ "entity1type": "civilization", "entity1name": "Maya"},
+      "periods":[
+        { "startdatestr":"2000BC", "enddatestr":"1001BC", "period":"Early Preclassic Period" },
+        { "startdatestr":"1000BC", "enddatestr":"351BC",  "period":"Middle Preclassic Period" },
+        { "startdatestr":"350BC",  "enddatestr":"249",    "period":"Late Preclassic Period" },
+        { "startdatestr":"250",    "enddatestr":"549",    "period":"Early Classic Period" },
+        { "startdatestr":"550",    "enddatestr":"829",    "period":"Late Classic Period" },
+        { "startdatestr":"830",    "enddatestr":"949",    "period":"Terminal Classic Period" },
+        { "startdatestr":"950",    "enddatestr":"1199",   "period":"Early Postclassic Period" },
+        { "startdatestr":"1200",   "enddatestr":"1539",   "period":"Late Postclassic Period" },
+        { "startdatestr":"1540",   "enddatestr":"1700",   "period":"Contact Period" }
+      ]}
+  ],
   "features":[
     { "type":"Feature",
       "id":"LAKETX",
@@ -235,7 +256,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PROLM1",
       "properties":{
-        "entity1type":"tribe",
+        "entity1type":"culture",
         "entity1name":"Proto-Olmec Cultures",
         "animateTo":"PROLM2",
         "labelScale":2.0,
@@ -254,7 +275,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCOCH",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Cochimí",
@@ -274,7 +295,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRMONQ",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Monqui",
@@ -292,7 +313,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRGUAY",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Guaycura",
@@ -310,7 +331,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRPERI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Pericú",
@@ -328,7 +349,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRKILI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Kiliwa",
@@ -346,7 +367,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRPAIP",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Paipai",
@@ -363,7 +384,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCOCO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Cocopah",
@@ -379,7 +400,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTOHO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Tohono O'odham",
@@ -397,7 +418,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRHIAC",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Hia C-eḍ O'odham",
@@ -414,7 +435,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRLWOO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Lower O'odham",
@@ -431,7 +452,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCOMA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Comac'ac",
@@ -449,7 +470,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRYAQI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Yaqui / Cahites",
@@ -466,7 +487,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TROPAT",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Opata",
@@ -481,7 +502,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRHOHO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Hohokam",
@@ -496,7 +517,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRRARA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Rarámuri",
@@ -513,7 +534,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTOBO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Toboso",
@@ -528,7 +549,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCOAH",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Coahuiltecan",
@@ -547,7 +568,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Tickanwa'tic",
@@ -564,7 +585,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRZACA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Zacateco",
@@ -582,7 +603,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRGUAC",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Guachichil",
@@ -599,7 +620,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTEPC",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Tepecanos",
@@ -615,7 +636,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCAXC",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Caxcan",
@@ -632,7 +653,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTECU",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Tecuexe",
@@ -649,7 +670,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRGUAM",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Guamare",
@@ -666,7 +687,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TROTOM",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Otomi",
@@ -684,7 +705,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCUAH",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Cuauhnahuac",
@@ -702,7 +723,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRHUAS",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Huastec",
@@ -722,7 +743,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTOTN",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Totonac",
@@ -740,7 +761,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRPAME",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Pame",
@@ -757,7 +778,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAMA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Tamaulipeco",
@@ -774,7 +795,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRXIXI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Xiximes",
@@ -791,7 +812,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRGUAS",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Guasaves",
@@ -809,7 +830,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRACAX",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Acaxee",
@@ -826,7 +847,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRACHI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Achires",
@@ -843,7 +864,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAHU",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Tahues",
@@ -860,7 +881,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTOTO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Totorames",
@@ -878,7 +899,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTEPH",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Tepehuán",
@@ -894,7 +915,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTSL1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"San Lorenzo",
@@ -910,7 +931,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRPURE",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Iréchikwa",
@@ -929,7 +950,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRAZTL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Aztatlán",
@@ -947,7 +968,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCOML",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Comala",
@@ -965,7 +986,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRYOPI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Yopitzinco",
@@ -984,7 +1005,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTEOT1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Teotitlan",
@@ -1002,7 +1023,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRMIXE",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Mixes",
@@ -1019,7 +1040,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRXILO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Xilotepec",
@@ -1037,7 +1058,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRMETZ",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Metztitlan",
@@ -1057,7 +1078,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRNGAB",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Ngäbe",
@@ -1076,7 +1097,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRLENC",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Lenca",
@@ -1091,7 +1112,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRNICA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Nicarao",
@@ -1109,7 +1130,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRMISK",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Miskitu",
@@ -1127,7 +1148,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRRAMA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Rama",
@@ -1145,7 +1166,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRMAYN",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Mayanga",
@@ -1162,7 +1183,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRPECH",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Pech",
@@ -1179,7 +1200,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCACA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Cacaopera",
@@ -1196,7 +1217,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTELMA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"El Manatí",
@@ -1214,7 +1235,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#30201000" },
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "animateTo":"OLMEC2",
         "labelScale":1.3,
@@ -1235,7 +1256,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTLAMA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Lamanai",
@@ -1251,7 +1272,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"OLMEC2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "animateTo":"OLMEC3",
         "labelScale":1.25,
@@ -1272,7 +1293,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTSNM1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "entity2type":"settlement",
         "entity2name":"San José Mogote",
@@ -1289,7 +1310,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCHAL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Chalcatzingo",
@@ -1306,7 +1327,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTKAMI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Kaminaljuyu",
@@ -1322,7 +1343,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTIZPO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Izapa",
@@ -1340,7 +1361,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#271e1000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "animateTo":"MIXT2",
@@ -1358,7 +1379,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTLAVE1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"La Venta",
@@ -1374,7 +1395,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTNAKB",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Nakbe",
@@ -1407,7 +1428,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTEOP",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Teopantecuanitlan",
@@ -1424,7 +1445,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PROLM2",
       "properties":{
-        "entity1type":"tribe",
+        "entity1type":"culture",
         "entity1name":"Proto-Olmec Cultures",
         "animateTo":"PROLM3",
         "labelScale":2.0,
@@ -1443,7 +1464,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTLAT1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Tlatilco",
@@ -1459,7 +1480,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCUEL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Cuello",
@@ -1476,7 +1497,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTRZA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Tres Zapotes",
@@ -1492,7 +1513,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTSLTE",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"San Lorenzo Tenochtitlán",
@@ -1508,7 +1529,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTLAVE2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"La Venta",
@@ -1524,7 +1545,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCHIA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Chiapa de Corzo",
@@ -1542,7 +1563,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#30201000"},
       "properties":{
-        "entity1type":"tribe",
+        "entity1type":"culture",
         "entity1name":"Proto-Mayan Cultures",
         "animateTo":"PRMAY2",
         "labelScale":2.2,
@@ -1560,7 +1581,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTOXTO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Oxtotitlán",
@@ -1577,7 +1598,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTLASB",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Las Bocas",
@@ -1595,7 +1616,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#30201000"},
       "properties":{
-        "entity1type":"tribe",
+        "entity1type":"culture",
         "entity1name":"Proto-Olmec Cultures",
         "labelScale":1.5,
         "labelRotate":30,
@@ -1612,7 +1633,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PRMAY2",
       "properties":{
-        "entity1type":"tribe",
+        "entity1type":"culture",
         "entity1name":"Proto-Mayan Cultures",
         "animateTo":"PRMAY3",
         "labelScale":2.2,
@@ -1631,7 +1652,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#20400000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "subLabel":"(Pacific)",
         "animateTo":"MAYAP2",
@@ -1649,7 +1670,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"OLMEC3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "animateTo":"OLMEC4",
         "labelScale":1.25,
@@ -1670,7 +1691,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MIXT2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "animateTo":"MIXT3",
@@ -1688,7 +1709,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTLABL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"La Blanca",
@@ -1705,7 +1726,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTAKO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Tak'alik Ab'aj",
@@ -1722,7 +1743,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYAP2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "subLabel":"(Pacific)",
         "animateTo":"MAYAP3",
@@ -1740,7 +1761,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCOPA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Copán",
@@ -1758,7 +1779,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#20400000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "subLabel":"(Lowlands)",
         "animateTo":"MAYAL2",
@@ -1776,7 +1797,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTSNM2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "entity2type":"settlement",
         "entity2name":"San José Mogote",
@@ -1795,7 +1816,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#10282800"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "animateTo":"ZAPO2",
@@ -1829,7 +1850,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTPIED",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Piedras Negras",
@@ -1845,7 +1866,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYAL2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "subLabel":"(Lowlands)",
         "animateTo":"MAYAL3",
@@ -1863,7 +1884,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTELMI1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"El Mirador",
@@ -1881,7 +1902,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"ZAPO2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "animateTo":"ZAPO3",
@@ -1899,7 +1920,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTMOAL1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "entity2type":"settlement",
         "entity2name":"Monte Albán",
@@ -1916,7 +1937,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTDZIB",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Ts'íibil Cháaltun",
@@ -1933,7 +1954,7 @@ dataMeso = {
       "id":"TRTAINC1",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -1952,7 +1973,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAINC2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -1971,7 +1992,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAINC3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -1992,7 +2013,7 @@ dataMeso = {
       "id":"TRTAINC4",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -2012,7 +2033,7 @@ dataMeso = {
       "id":"TRCARI1",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Kalinago",
@@ -2035,7 +2056,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCARI2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Kalinago",
@@ -2057,7 +2078,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PRMAY3",
       "properties":{
-        "entity1type":"tribe",
+        "entity1type":"culture",
         "entity1name":"Proto-Mayan Cultures",
         "animateTo":"PRMAY4",
         "labelScale":2.0,
@@ -2075,7 +2096,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTHUAM",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "entity2type":"settlement",
         "entity2name":"Huamelulpan",
@@ -2094,7 +2115,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#102028"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Toltec",
         "entity2type":"settlement",
         "entity2name":"Tula",
@@ -2111,7 +2132,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTEDZN",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Edzna",
@@ -2127,7 +2148,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTIKA1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Tikal",
@@ -2143,7 +2164,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCDLM",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "entity2type":"settlement",
         "entity2name":"Cerro de las Minas",
@@ -2160,7 +2181,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTLAMO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"La Mojarra",
@@ -2178,7 +2199,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"OLMEC4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "animateTo":"OLMEC5",
         "labelScale":1.25,
@@ -2200,7 +2221,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYAP3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "subLabel":"(Pacific)",
         "labelScale":1.1,
@@ -2217,7 +2238,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYAL3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "subLabel":"(Lowlands)",
         "labelScale":1.5,
@@ -2234,7 +2255,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYA4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "animateTo":"MAYA5",
         "labelScale":0.6,
@@ -2252,7 +2273,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRMAYL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"(Lowlands)",
@@ -2270,7 +2291,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRMAYP",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"(Pacific)",
@@ -2290,7 +2311,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTELMI2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"El Mirador",
@@ -2308,7 +2329,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAINPR1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -2328,7 +2349,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#30201000"},
       "properties":{
-        "entity1type":"tribe",
+        "entity1type":"culture",
         "entity1name":"Proto-Mayan Cultures",
         "labelScale":1.8,
         "labelRotate":-60,
@@ -2345,7 +2366,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTMTNG",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "entity2type":"settlement",
         "entity2name":"Monte Negro",
@@ -2362,7 +2383,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCHOL1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Toltec",
         "entity2type":"settlement",
         "entity2name":"Cholollan",
@@ -2381,7 +2402,7 @@ dataMeso = {
       "style":{
         "fontname": "New Tegomin", "fontcolor": "#301530"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Teotihuacan",
         "entity2type":"settlement",
         "entity2name":"Teōtīhuacān",
@@ -2401,7 +2422,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#30153000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Teotihuacan",
         "animateTo":"TEOT2",
         "labelScale":1.8,
@@ -2422,7 +2443,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"ZAPO3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "animateTo":"ZAPO4",
@@ -2440,7 +2461,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCEMP1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Cempoala",
@@ -2457,7 +2478,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTZAU",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlaxcaltec",
         "entity2type":"settlement",
         "entity2name":"Zautla",
@@ -2473,7 +2494,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTIXT",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlaxcaltec",
         "entity2type":"settlement",
         "entity2name":"Ixtacamaxtitlán",
@@ -2489,7 +2510,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTLA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlaxcaltec",
         "entity2type":"settlement",
         "entity2name":"Tlascala",
@@ -2505,7 +2526,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCIGU1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Ciguayos",
@@ -2522,7 +2543,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAINDR1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -2541,7 +2562,7 @@ dataMeso = {
       "style":{
         "fontname": "New Tegomin", "fontcolor": "#500050"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Teotihuacan",
         "entity2type":"settlement",
         "entity2name":"Teōtīhuacān",
@@ -2559,7 +2580,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEOT2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Teotihuacan",
         "animateTo":"TEOT3",
         "labelScale":1.8,
@@ -2580,7 +2601,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTELMI3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"El Mirador",
@@ -2598,7 +2619,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTIKA2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Tikal",
@@ -2614,7 +2635,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYA5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "animateTo":"MAYA6",
         "labelScale":0.6,
@@ -2633,7 +2654,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"ZAPO4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "animateTo":"ZAPO5",
@@ -2651,7 +2672,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MIXT3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "animateTo":"MIXT4",
@@ -2671,7 +2692,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTMOAL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "entity2type":"settlement",
         "entity2name":"Monte Albán",
@@ -2688,7 +2709,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTMITL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "entity2type":"settlement",
         "entity2name":"Mitla",
@@ -2704,7 +2725,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAINCU1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -2723,7 +2744,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"OLMEC5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "animateTo":"OLMEC6",
         "labelScale":1.25,
@@ -2744,7 +2765,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTQUIR",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Quiriguá",
@@ -2760,7 +2781,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTONI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Toniná",
@@ -2776,7 +2797,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTPALE",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Palenque",
@@ -2792,7 +2813,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTIZPM",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Izapa",
@@ -2808,7 +2829,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTAKM",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Tak'alik Ab'aj",
@@ -2825,7 +2846,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTPOMO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Pomona",
@@ -2841,7 +2862,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRGUAN",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Guanahatabey",
@@ -2861,7 +2882,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTJAIN",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Jaina Island",
@@ -2879,7 +2900,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#30201000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "labelScale":1.25,
         "labelRotate":30,
@@ -2898,7 +2919,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRARAW1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Arawak",
@@ -2915,7 +2936,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTNIML",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Nim Li Punit",
@@ -2931,7 +2952,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEOT3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Teotihuacan",
         "labelScale":1.8,
         "labelRotate":-40,
@@ -2950,7 +2971,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRLUCA1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Lucayan",
@@ -2969,7 +2990,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYA6",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "labelScale":0.75,
         "labelX":-5,
@@ -2987,7 +3008,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCALA1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Calakmul",
@@ -3004,7 +3025,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTUXMA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Óoxmáal",
@@ -3020,7 +3041,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTEOT2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Teotitlan",
@@ -3039,7 +3060,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEOT4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Teotihuacan",
         "animateTo":"TEOT5",
         "labelScale":1.8,
@@ -3058,7 +3079,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCALA2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Calakmul",
@@ -3075,7 +3096,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTAJI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Veracruz",
         "entity2type":"settlement",
         "entity2name":"El Tajin",
@@ -3091,7 +3112,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCOBA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Cobá",
@@ -3107,7 +3128,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTDSPI",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Dos Pilas",
@@ -3124,7 +3145,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTXOCH",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Olmec",
         "entity2type":"settlement",
         "entity2name":"Xochicalco",
@@ -3141,7 +3162,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTBONA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Bonampak",
@@ -3159,7 +3180,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#f0e0d800"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Toltec",
         "animateTo":"TOLT2",
         "labelScale":1.5,
@@ -3179,7 +3200,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#30153000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Teotihuacan",
         "labelScale":1.8,
         "labelRotate":-40,
@@ -3198,7 +3219,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TOLT2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Toltec",
         "animateTo":"TOLT3",
         "labelScale":1.5,
@@ -3216,7 +3237,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYA7",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "animateTo":"MAYA8",
         "labelScale":0.75,
@@ -3235,7 +3256,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCHIC",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Chichen Itza",
@@ -3251,7 +3272,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTILA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "entity2type":"settlement",
         "entity2name":"Tilantongo",
@@ -3268,7 +3289,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TOLT3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Toltec",
         "animateTo":"TOLT4",
         "labelScale":1.5,
@@ -3286,7 +3307,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYA8",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "labelScale":0.75,
         "labelX":-5,
@@ -3304,7 +3325,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCAQU1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Caquetío",
@@ -3320,7 +3341,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYA9",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "animateTo":"MAYA10",
         "labelScale":0.75,
@@ -3339,7 +3360,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTZAAC1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "entity2type":"settlement",
         "entity2name":"Zaachila",
@@ -3356,7 +3377,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TOLT4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Toltec",
         "animateTo":"TOLT5",
         "labelScale":1.5,
@@ -3374,7 +3395,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTUTU",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "entity2type":"settlement",
         "entity2name":"Tututepec",
@@ -3391,7 +3412,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTMETL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "entity2type":"settlement",
         "entity2name":"Metlatónoc",
@@ -3408,7 +3429,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTPUTL",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "entity2type":"settlement",
         "entity2name":"Puebla-Tlaxcala",
@@ -3427,7 +3448,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0, "fontcolor": "#f0e0d800"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Toltec",
         "labelScale":1.5,
         "labelArc":-80,
@@ -3443,7 +3464,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYA10",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "animateTo":"MAYA11",
         "labelScale":0.75,
@@ -3462,7 +3483,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTULU",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Tulum",
@@ -3478,7 +3499,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MIXT4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "labelScale":2.0,
@@ -3497,7 +3518,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTETZ",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "entity2type":"settlement",
         "entity2name":"Tetzcoco",
@@ -3517,7 +3538,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Purépecha",
         "animateTo":"PURE2",
         "labelScale":1.25,
@@ -3533,7 +3554,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"ZAPO5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "animateTo":"ZAPO6",
@@ -3552,7 +3573,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MIXT5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "animateTo":"MIXT6",
@@ -3572,7 +3593,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAX1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlaxcaltec",
         "animateTo":"TLAX2",
         "labelScale":1.6,
@@ -3590,7 +3611,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTMYPN",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "entity2type":"settlement",
         "entity2name":"Màayapáan",
@@ -3608,7 +3629,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Texcoco",
         "animateTo":"TEXC2",
         "labelScale":1.0,
@@ -3626,7 +3647,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PURE2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Purépecha",
         "animateTo":"PURE3",
         "labelScale":1.25,
@@ -3644,7 +3665,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlacopan",
         "animateTo":"TLAC2",
         "labelRotate":-20,
@@ -3663,7 +3684,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tenochtitlan",
         "animateTo":"TENO2",
         "labelScale":1.5,
@@ -3681,7 +3702,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTLAC",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "entity2type":"settlement",
         "entity2name":"Tlacopan",
@@ -3700,7 +3721,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTENO",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "entity2type":"settlement",
         "entity2name":"Tenochtitlan",
@@ -3719,7 +3740,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTLAT",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "entity2type":"settlement",
         "entity2name":"Tlatelolco",
@@ -3738,7 +3759,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAC2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlacopan",
         "animateTo":"TLAC3",
         "labelScale":1.25,
@@ -3757,7 +3778,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TENO2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tenochtitlan",
         "animateTo":"TENO3",
         "labelScale":1.5,
@@ -3775,7 +3796,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEXC2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Texcoco",
         "animateTo":"TEXC3",
         "labelScale":1.0,
@@ -3793,7 +3814,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTGUIE",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "entity2type":"settlement",
         "entity2name":"Guiengola",
@@ -3810,7 +3831,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PURE3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Purépecha",
         "animateTo":"PURE4",
         "labelScale":1.25,
@@ -3826,7 +3847,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MIXT6",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "animateTo":"MIXT7",
@@ -3845,7 +3866,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"ZAPO6",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "animateTo":"ZAPO7",
@@ -3864,7 +3885,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAC3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlacopan",
         "labelScale":1.25,
         "labelRotate":-20,
@@ -3882,7 +3903,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TENO3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tenochtitlan",
         "labelScale":1.5,
         "labelX":-5,
@@ -3900,7 +3921,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEXC3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Texcoco",
         "labelScale":1.2,
         "labelRotate":-20,
@@ -3917,7 +3938,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAC4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlacopan",
         "animateTo":"TLAC5",
         "labelScale":1.25,
@@ -3936,7 +3957,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TENO4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tenochtitlan",
         "animateTo":"TENO5",
         "labelScale":1.5,
@@ -3957,7 +3978,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEXC4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Texcoco",
         "animateTo":"TEXC5",
         "labelScale":1.2,
@@ -3975,7 +3996,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAC5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlacopan",
         "animateTo":"TLAC6",
         "labelScale":1.25,
@@ -3993,7 +4014,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TENO5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tenochtitlan",
         "animateTo":"TENO6",
         "labelScale":1.5,
@@ -4015,7 +4036,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEXC5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Texcoco",
         "animateTo":"TEXC6",
         "labelScale":1.2,
@@ -4035,7 +4056,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTZAAC2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "entity2type":"settlement",
         "entity2name":"Zaachila",
@@ -4052,7 +4073,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCHOL2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlaxcaltec",
         "entity2type":"settlement",
         "entity2name":"Cholollan",
@@ -4069,7 +4090,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TENO6",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tenochtitlan",
         "labelScale":1.5,
         "labelRotate":10,
@@ -4089,7 +4110,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAC6",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlacopan",
         "labelScale":1.25,
         "labelRotate":0,
@@ -4106,7 +4127,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEXC6",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Texcoco",
         "labelScale":1.2,
         "labelRotate":-30,
@@ -4125,7 +4146,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAC7",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlacopan",
         "animateTo":"TLAC8",
         "labelScale":1.25,
@@ -4143,7 +4164,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEXC7",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Texcoco",
         "animateTo":"TEXC8",
         "labelScale":1.2,
@@ -4163,7 +4184,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAC8",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlacopan",
         "labelScale":1.25,
         "labelRotate":0,
@@ -4180,7 +4201,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TEXC8",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Texcoco",
         "labelScale":1.2,
         "labelRotate":-30,
@@ -4198,7 +4219,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC1",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "labelScale":2.2,
         "labelY":30,
@@ -4218,7 +4239,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "animateTo":"AZTEC2b",
@@ -4239,7 +4260,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTEOT3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Teotitlan",
@@ -4257,7 +4278,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"ZAPO7",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "labelScale":1.4,
@@ -4275,7 +4296,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TLAX2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Tlaxcaltec",
         "labelScale":1.6,
         "labelX":-5,
@@ -4293,7 +4314,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MIXT7",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "labelScale":2.0,
@@ -4311,7 +4332,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRXICA",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Xicallancas",
@@ -4329,7 +4350,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCUAU",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Cuauhtemallan",
@@ -4348,7 +4369,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC2b",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "fidelity":3,
@@ -4365,7 +4386,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "labelScale":1.5,
         "labelArc":-125,
@@ -4389,7 +4410,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "animateTo":"AZTEC3b",
@@ -4409,7 +4430,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTTZIN",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Purépecha",
         "entity2type":"settlement",
         "entity2name":"Tzintzuntzan",
@@ -4426,7 +4447,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC3b",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "fidelity":3,
@@ -4442,7 +4463,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCEMP2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "entity2type":"settlement",
         "entity2name":"Cempoala",
@@ -4459,7 +4480,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "labelScale":0.75,
         "labelRotate":50,
@@ -4485,7 +4506,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "animateTo":"AZTEC4b",
@@ -4505,7 +4526,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PURE4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Purépecha",
         "animateTo":"PURE5",
         "labelScale":1.25,
@@ -4525,7 +4546,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC4b",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "fidelity":3,
@@ -4541,7 +4562,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC4",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "labelArc":60,
         "labelX":-8,
@@ -4564,7 +4585,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "animateTo":"AZTEC5b",
@@ -4583,7 +4604,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC5b",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "fidelity":3,
@@ -4599,7 +4620,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "labelArc":60,
         "labelX":-8,
@@ -4622,7 +4643,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "animateTo":"AZTEC6b",
@@ -5671,7 +5692,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRLUCA2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Lucayan",
@@ -5691,7 +5712,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCAQU2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Caquetío",
@@ -5742,7 +5763,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC6b",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "fidelity":3,
@@ -5758,7 +5779,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC6",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "labelScale":0.75,
         "labelArc":60,
@@ -5783,7 +5804,7 @@ dataMeso = {
       "style":{
         "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "animateTo":"AZTEC7b",
@@ -6392,7 +6413,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC7b",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "noLabel":true,
         "fidelity":3,
@@ -6408,7 +6429,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC7",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "labelScale":0.75,
         "labelRotate":50,
@@ -6432,7 +6453,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PTCHOL3",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "entity2type":"settlement",
         "entity2name":"Cholollan",
@@ -6844,7 +6865,7 @@ dataMeso = {
       "id":"TRLUCA3",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Lucayan",
@@ -6864,7 +6885,7 @@ dataMeso = {
       "id":"TRCAQU3",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Caquetío",
@@ -6880,7 +6901,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"PURE5",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Purépecha",
         "animateTo":"PURE6",
         "labelScale":1.0,
@@ -7342,7 +7363,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"ZAPO8",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "animateTo":"ZAPO9",
@@ -7360,7 +7381,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MIXT8",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "animateTo":"MIXT9",
@@ -7378,7 +7399,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"AZTEC8",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "subLabel":"(defeated)",
         "animateTo":"AZTEC9",
@@ -7669,7 +7690,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"MAYA11",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "animateTo":"MAYA12",
         "labelScale":0.75,
@@ -8025,7 +8046,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAINPR2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -8124,7 +8145,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#2041f000", "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Purépecha",
         "labelScale":1.0,
         "labelX":10,
@@ -8162,7 +8183,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#271e1000", "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Mixtec",
         "subLabel":"(ñuu Savi)",
         "labelScale":2.0,
@@ -8181,7 +8202,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#10282800", "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Zapotec",
         "subLabel":"(Be'ena'a)",
         "labelScale":1.4,
@@ -8217,7 +8238,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#30100000", "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Aztec Alliance",
         "subLabel":"(defeated)",
         "labelScale":1.0,
@@ -8260,7 +8281,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRCIGU2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Ciguayos",
@@ -8278,7 +8299,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAINDR2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -8371,7 +8392,7 @@ dataMeso = {
       "id":"TRTAINPR3",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -8476,7 +8497,7 @@ dataMeso = {
       "id":"TRCIGU3",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Ciguayos",
@@ -8494,7 +8515,7 @@ dataMeso = {
       "id":"TRTAINDR3",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -8584,7 +8605,7 @@ dataMeso = {
     { "type":"Feature",
       "id":"TRTAINCU2",
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -8662,7 +8683,7 @@ dataMeso = {
       "id":"TRTAINCU3",
       "style":{"fontcolor": "#30500000"},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"culture",
         "entity1name":"Indigenous",
         "entity2type":"tribe",
         "entity2name":"Taíno",
@@ -8683,7 +8704,7 @@ dataMeso = {
       "style":{
         "fontcolor": "#20400000", "strokeOpacity": 0.0, "fillOpacity": 0.0},
       "properties":{
-        "entity1type":"nation",
+        "entity1type":"civilization",
         "entity1name":"Maya",
         "labelScale":0.75,
         "labelX":-5,
