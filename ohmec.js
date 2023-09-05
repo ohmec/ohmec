@@ -344,6 +344,22 @@ infobox.onAdd = function() {
   return this._div;
 };
 
+function getSourceNameType(stext, idx) {
+  let test = /^(\w+):(\w.+)$/;
+  let tmatch = stext.match(test);
+  let sname = stext;
+  let stype = "source";
+  let stypesuffix = idx ? (" " + idx) : "";
+  if (tmatch !== null) {
+    stype = tmatch[1];
+    sname = tmatch[2];
+  } else {
+    test = /http.*wikipedia/;
+    stype = "wikipedia source";
+  }
+  return [sname,stype+stypesuffix];
+}
+
 infobox.update = function(id, prop) {
   if (prop) {
     let thisHTML = '<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>';
@@ -355,11 +371,13 @@ infobox.update = function(id, prop) {
       if(prop.source.includes("native-land")) { // give explicit credit to Native Lands for their data
         thisHTML += '<a href="' + prop.source + '" target="_blank">source: Native Lands</a><br/>';
       } else {
-        thisHTML += '<a href="' + prop.source + '" target="_blank">source</a><br/>';
+        let sreturn = getSourceNameType(prop.source,0);
+        thisHTML += '<a href="' + sreturn[0] + '" target="_blank">' + sreturn[1] + '</a><br/>';
       }
     } else if("sources" in prop) {
       for (let i=0;i<prop.sources.length;i++) {
-        thisHTML += '<a href="' + prop.sources[i] + '" target="_blank">source ' + (i+1) + '</a><br/>';
+        let sreturn = getSourceNameType(prop.sources[i],i+1);
+        thisHTML += '<a href="' + sreturn[0] + '" target="_blank">' + sreturn[1] + '</a><br/>';
       }
     }
     thisHTML += '<b>id:</b>' + id;
