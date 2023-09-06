@@ -33,6 +33,11 @@ let smartStepDefault = 1;
 let smartStepFeature = smartStepDefault;
 let popupFeatureEnabled = true;
 let popupSelectExpanded = false;
+let popupDefaultStyleFont;
+let popupDefaultStyleFontSize;
+let popupDefaultStyleFontColor;
+let popupDefaultStyleFontAColor;
+let popupDefaultStyleBackgroundColor;
 
 let timelineSlider;
 let backgroundLayerDefault = 'relief';
@@ -1004,6 +1009,9 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
       pentry.coordinates = p.coordinates;
       pentry.done = false;
       pentry.popup = null;
+      if("style" in p) {
+        pentry.style = p.style;
+      }
       popupList.push(pentry);
     }
   }
@@ -1794,6 +1802,15 @@ function checkKeypress(e) {
 }
 
 function checkPopups() {
+  // check for ones that need to be closed once age range is exited
+  for(let p of popupList) {
+    if(p.popup && p.popup.isOpen()) {
+      if(!popupFeatureEnabled || !(curDate <= p.endDate && curDate >= p.startDate)) {
+        ohmap.closePopup(p.popup);
+      }
+    }
+  }
+
   if(popupFeatureEnabled) {
     for(let p of popupList) {
       let bounds = ohmap.getBounds();
@@ -1804,17 +1821,57 @@ function checkPopups() {
           autoPan: false,
           autoClose: false}).
             setLatLng(ll).
-            setContent('<div id="popup">' + p.text + '</div>').
+            setContent('<div class="popup_class">' + p.text + '</div>').
             openOn(ohmap);
         p.done = true;
-      }
-    }
-  }
-  // check for ones that need to be closed once age range is exited
-  for(let p of popupList) {
-    if(p.popup && p.popup.isOpen()) {
-      if(!popupFeatureEnabled || !(curDate <= p.endDate && curDate >= p.startDate)) {
-        ohmap.closePopup(p.popup);
+        // check for style override, else use default
+        let background_ptr = document.getElementsByClassName('leaflet-popup-content-wrapper');
+        let popup_ptr = document.getElementsByClassName('popup_class');
+        if(!popupDefaultStyleFont) {
+          let pp = popup_ptr[0];
+          let popup_aptr = pp.getElementsByTagName('a')[0];
+          let css_obj_popup = getComputedStyle(pp);
+          let css_obj_background = getComputedStyle(background_ptr[0]);
+          popupDefaultStyleFont = css_obj_popup.getPropertyValue('font-family');
+          popupDefaultStyleFontSize = css_obj_popup.getPropertyValue('font-size');
+          popupDefaultStyleFontColor = css_obj_popup.getPropertyValue('color');
+          popupDefaultStyleFontAColor = getComputedStyle(popup_aptr).getPropertyValue('color');
+          popupDefaultStyleBackgroundColor = css_obj_background.getPropertyValue('background-color');
+        }
+        if('style' in p) {
+          for(let pp of popup_ptr) {
+            if('fontname' in p.style) {
+              pp.style['font-family'] = p.style.fontname;
+            } else {
+              pp.style['font-family'] = popupDefaultStyleFont;
+            }
+            if('fontsize' in p.style) {
+              pp.style['font-size'] = p.style.fontsize;
+            } else {
+              pp.style['font-size'] = popupDefaultStyleFontSize;
+            }
+            if('fontcolor' in p.style) {
+              pp.style['color'] = p.style.fontcolor;
+            } else {
+              pp.style['color'] = popupDefaultStyleFontColor;
+            }
+            let popup_aptr = pp.getElementsByTagName('a');
+            for (let aelem of popup_aptr) {
+              if('hifontcolor' in p.style) {
+                aelem.style['color'] = p.style.hifontcolor;
+              } else {
+                aelem.style['color'] = popupDefaultStyleFontAColor;
+              }
+            }
+          }
+          for(let bptr of background_ptr) {
+            if('fillColor' in p.style) {
+              bptr.style['background-color'] = p.style.fillColor;
+            } else {
+              bptr.style['background-color'] = popupDefaultStyleBackgroundColor;
+            }
+          }
+        }
       }
     }
   }
