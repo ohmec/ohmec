@@ -132,11 +132,11 @@ td.tdcenter {
   background-color: rgba(4,112,255,0.7);
   color: #eee;
 }
-#popup {
+.popup_class {
   font: 16px New Tegomin, sans-serif;
   color: #eee;
 }
-#popup a {
+.popup_class a {
   color: #ffa0c0;
 }
 .curdate {

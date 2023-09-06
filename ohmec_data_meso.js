@@ -74,8 +74,16 @@ dataMeso = {
         "coordinates":[-6.883, 37.216]},
     { "text":"<p>The <a href=\"https://en.wikipedia.org/wiki/Aztec_Empire\" target=\"_blank\">Spanish Conquest of the Aztecs</a> in August of 1521, greatly supported by embittered enemies of the Aztecs, ended the hegemony of the Empire and began the regional domination of the Spanish Nation. After the Aztecs fell, other tribes began one by one to fall to Spanish rule, though resistance remained until the 17th century.</p>",
       "startdatestr":"1521:08:13",
-      "enddatestr":"1649",
-      "coordinates":[-99.13333, 19.6]}
+      "enddatestr":"1599:12:30",
+      "coordinates":[-99.13333, 19.6]},
+    { "text":"<p>This Mesoamerica study covers the time period from 1800BC to 1600AD. To follow along with later North American history, click through to the <a href=\"index.html?curdatestr=1600:01:02&lon=-96.7&lat=20.2&z=5.5\">Modern North American Study</a> which covers the time period from 1600AD to present for all of North America.</p>",
+      "startdatestr":"1599:12:31",
+      "enddatestr":"1600",
+      "coordinates":[-100.0, 20.0],
+      "style":{
+        "fontcolor":   "#ffc0c0ff",
+        "hifontcolor": "#c0c0ffff",
+        "fillColor":   "#800000c0" }}
   ],
   "styles":[
     { "type": "default",

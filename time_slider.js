@@ -60,7 +60,7 @@ L.Control.TimeLineSlider = L.Control.extend({
       '" max="' +
       this.options.timelineDateMax.getTime() +
       '" step="any" value="' +
-      this.options.timelineDateMin.getTime() +
+      this.options.timelineDateStart.getTime() +
       '"></input>';
     this.rangeObject = L.DomUtil.get(this.sliderDiv).children[0];
 
