@@ -350,7 +350,8 @@ function getSourceNameType(stext, idx) {
   let tmatch = stext.match(test);
   let sname = stext;
   let stype = "source";
-  let stypesuffix = idx ? (" " + idx) : "";
+  // complicated HTML to get the keyboard digit representing the source
+  let sprefix = "&#x" + (idx+49).toString(16) + ";&#xfe0f;&#x20e3; ";
   if (tmatch !== null) {
     stype = tmatch[1];
     sname = tmatch[2];
@@ -358,7 +359,7 @@ function getSourceNameType(stext, idx) {
     test = /http.*wikipedia/;
     stype = "wikipedia source";
   }
-  return [sname,stype+stypesuffix];
+  return [sprefix,sname,stype];
 }
 
 infobox.update = function(id, prop) {
@@ -373,12 +374,12 @@ infobox.update = function(id, prop) {
         thisHTML += '<a href="' + prop.source + '" target="_blank">source: Native Lands</a><br/>';
       } else {
         let sreturn = getSourceNameType(prop.source,0);
-        thisHTML += '<a href="' + sreturn[0] + '" target="_blank">' + sreturn[1] + '</a><br/>';
+        thisHTML += sreturn[0] + '<a href="' + sreturn[1] + '" target="_blank">' + sreturn[2] + '</a><br/>';
       }
     } else if("sources" in prop) {
       for (let i=0;i<prop.sources.length;i++) {
-        let sreturn = getSourceNameType(prop.sources[i],i+1);
-        thisHTML += '<a href="' + sreturn[0] + '" target="_blank">' + sreturn[1] + '</a><br/>';
+        let sreturn = getSourceNameType(prop.sources[i],i);
+        thisHTML += sreturn[0] + '<a href="' + sreturn[1] + '" target="_blank">' + sreturn[2] + '</a><br/>';
       }
     }
     thisHTML += '<b>id:</b>' + id;
@@ -1779,17 +1780,51 @@ function handleIPress() {
   }
 }
 
+// for number press, default to opening up a source, unless nothing highlighted
+// in which case fall back to original meaning (setting the background layer)
+
+function handleNumPress(val, layerstring) {
+  let sources = [];
+  if (lastFeature) {
+    if("source" in lastFeature.properties) {
+      sources = [lastFeature.properties.source];
+    } else if("sources" in lastFeature.properties) {
+      sources = lastFeature.properties.sources;
+    }
+  }
+  if (val >= 1 && val <= sources.length) {
+    // open up source # (val-1)
+    let test = /^(\w+):(\w.+)$/;
+    let tmatch = sources[val-1].match(test);
+    if (tmatch !== null) {
+      window.open(tmatch[2], "_blank");
+    } else {
+      window.open(sources[val-1], "_blank");
+    }
+    return false;
+  }
+  if (layerstring) {
+    // if still here, fall back on setting the background
+    backgroundLayerSetting = layerstring;
+    return true;
+  }
+  return false;
+}
+
 // check keypress value to determine function.
 function checkKeypress(e) {
   let backgroundUpdated = false;
   switch(e.originalEvent.key) {
-    case '0': backgroundLayerSetting = 'relief';   backgroundUpdated = true; break;
-    case '1': backgroundLayerSetting = 'world';    backgroundUpdated = true; break;
-    case '2': backgroundLayerSetting = 'physical'; backgroundUpdated = true; break;
-    case '3': backgroundLayerSetting = 'white';    backgroundUpdated = true; break;
-    case '4': backgroundLayerSetting = 'stamen';   backgroundUpdated = true; break;
-    case '5': backgroundLayerSetting = 'streets';  backgroundUpdated = true; break;
-    case '6': backgroundLayerSetting = 'paint';    backgroundUpdated = true; break;
+    case '0': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'relief');   break;
+    case '1': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'world');    break;
+    case '2': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'physical'); break;
+    case '3': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'white');    break;
+    case '4': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'stamen');   break;
+    case '5': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'streets');  break;
+    case '6': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'paint');    break;
+    case '7':
+    case '8':
+    case '9': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), null); break;
     case 'a':
       timelineSlider.affectAdvance();
       break;
