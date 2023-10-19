@@ -229,6 +229,26 @@ dataMeso = {
         { "startdatestr":"1000BC", "enddatestr":"351BC",  "period":"Middle Preclassic Period" },
         { "startdatestr":"350BC",  "enddatestr":"249",    "period":"Late Preclassic Period" }
       ]},
+    { "match":{ "entity1type": "civilization", "entity1name": "Aztec Alliance"},
+      "periods":[
+        { "startdatestr":"1367",    "enddatestr":"1387",   " period":"huetlatoani: Ācamāpichtli" },
+        { "startdatestr":"1391",    "enddatestr":"1415:06", "period":"huetlatoani: Huitzilihuitl" },
+        { "startdatestr":"1415:07", "enddatestr":"1426",    "period":"huetlatoani: Chīmalpopōca" },
+        { "startdatestr":"1427",    "enddatestr":"1440:06", "period":"huetlatoani: Itzcōhuātl" },
+        { "startdatestr":"1440:07", "enddatestr":"1468",    "period":"huetlatoani: Motēuczōma (I) Ilhuicamīna" },
+        { "startdatestr":"1469",    "enddatestr":"1481:06", "period":"huetlatoani: Axayacatl" },
+        { "startdatestr":"1481:07", "enddatestr":"1486:06", "period":"huetlatoani: Tizocic" },
+        { "startdatestr":"1486:07", "enddatestr":"1502:06", "period":"huetlatoani: Āhuizotl" },
+        { "startdatestr":"1502:07", "enddatestr":"1520:03", "period":"huetlatoani: Motēuczōma (II) Xocoyotzin" },
+        { "startdatestr":"1520:04", "enddatestr":"1520:12", "period":"huetlatoani: Cuitlāhuac" },
+        { "startdatestr":"1521",    "enddatestr":"1524",    "period":"huetlatoani: Cuāuhtemōc" }
+      ]},
+    { "match":{ "entity1type": "civilization", "entity1name": "Tenochtitlan"},
+      "periods":[
+        { "startdatestr":"1367",    "enddatestr":"1387",   " period":"huetlatoani: Ācamāpichtli" },
+        { "startdatestr":"1391",    "enddatestr":"1415:06", "period":"huetlatoani: Huitzilihuitl" },
+        { "startdatestr":"1415:07", "enddatestr":"1426",    "period":"huetlatoani: Chīmalpopōca" }
+      ]},
     { "match":{ "entity1type": "civilization", "entity1name": "Maya"},
       "periods":[
         { "startdatestr":"2000BC", "enddatestr":"1001BC", "period":"Early Preclassic Period" },

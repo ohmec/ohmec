@@ -234,9 +234,6 @@ function urlString(mindate,maxdate,curdate) {
 
 let updateDirectLink = function() {
   let hrefText = location.href;
-  let splits = hrefText.split('?');
-  let latlon = ohmap.getCenter();
-  let conjoin = '?';
   let urlText = urlString(timelineDateMinOverride, timelineDateMaxOverride, curDate);
   linkSpan.textContent = urlText;
   linkSpan.href = urlText;
@@ -391,11 +388,25 @@ infobox.update = function(id, prop) {
     }
     if ("periodList" in fHash[id]) {
       for(let m in fHash[id].periodList) {
-        let startDate = str2date(fHash[id].periodList[m].startdatestr,false);
-        let endDate = str2date(fHash[id].periodList[m].enddatestr,true);
-        if(curDate >= startDate && curDate <= endDate) {
-          let pe = fHash[id].periodList[m].period;
-          thisHTML += '<div id="pinfo"><center>' + pe + '</center></div>';
+        let entry = fHash[id].periodList[m];
+        // error out if there are entries that don't conform to expectation
+        if("startdatestr" in entry && "enddatestr" in entry && "period" in entry) {
+          let startDate = str2date(entry.startdatestr,false);
+          let endDate = str2date(entry.enddatestr,true);
+          if(curDate >= startDate && curDate <= endDate) {
+            let pe = entry.period;
+            thisHTML += '<div id="pinfo"><center>' + pe + '</center></div>';
+          }
+        } else {
+          if(!("startdatestr" in entry)) {
+            throw "missing startdatestr in periodList for " + id;
+          }
+          if(!("enddatestr" in entry)) {
+            throw "missing enddatestr in periodList for " + id;
+          }
+          if(!("period" in entry)) {
+            throw "missing period in periodList for " + id;
+          }
         }
       }
     }
@@ -439,7 +450,7 @@ infobox.addTo(ohmap);
 let popupSelect = L.control();
 popupSelect.setPosition("topleft");
 
-popupSelect.update = function(id, prop) {
+popupSelect.update = function() {
   if(popupSelectExpanded) {
     if(popupFeatureEnabled) {
       this._div.innerHTML = '<input type="radio" id="psel" name="psel" checked /><label for="psel">popups enabled</label>';
