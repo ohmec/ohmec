@@ -231,7 +231,7 @@ dataMeso = {
       ]},
     { "match":{ "entity1type": "civilization", "entity1name": "Aztec Alliance"},
       "periods":[
-        { "startdatestr":"1367",    "enddatestr":"1387",   " period":"huetlatoani: Ācamāpichtli" },
+        { "startdatestr":"1367",    "enddatestr":"1387",    "period":"huetlatoani: Ācamāpichtli" },
         { "startdatestr":"1391",    "enddatestr":"1415:06", "period":"huetlatoani: Huitzilihuitl" },
         { "startdatestr":"1415:07", "enddatestr":"1426",    "period":"huetlatoani: Chīmalpopōca" },
         { "startdatestr":"1427",    "enddatestr":"1440:06", "period":"huetlatoani: Itzcōhuātl" },
@@ -245,7 +245,7 @@ dataMeso = {
       ]},
     { "match":{ "entity1type": "civilization", "entity1name": "Tenochtitlan"},
       "periods":[
-        { "startdatestr":"1367",    "enddatestr":"1387",   " period":"huetlatoani: Ācamāpichtli" },
+        { "startdatestr":"1367",    "enddatestr":"1387",    "period":"huetlatoani: Ācamāpichtli" },
         { "startdatestr":"1391",    "enddatestr":"1415:06", "period":"huetlatoani: Huitzilihuitl" },
         { "startdatestr":"1415:07", "enddatestr":"1426",    "period":"huetlatoani: Chīmalpopōca" }
       ]},
