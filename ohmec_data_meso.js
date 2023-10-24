@@ -12,7 +12,7 @@ dataMeso = {
     "defaultZ":     5.5
   },
   "popups": [
-    { "text":"<p>Around 2500BC, local peoples began to settle into early civilizations akin to those that would become the most well known in Mesoamerica: the <a href=\"https://en.wikipedia.org/wiki/Olmecs\" target=\"_blank\">Olmec</a> culture around the Gulf of Mexico. These 'Proto-Olmec' civilizations were the genesis of many tribal civilizations to follow.</p>",
+    { "text":"<p>Around 2500BC, local peoples began to settle into early civilizations akin to those that would become the most well known in Mesoamerica: the <a href=\"https://en.wikipedia.org/wiki/Olmecs\" target=\"_blank\">Olmec</a> culture around the Gulf of Mexico. These 'Proto-Olmec' civilizations were the genesis of many regional civilizations to follow.</p>",
       "startdatestr":"2500BC",
       "enddatestr":"1601BC",
       "coordinates":[-96.0,18.0]},
@@ -64,7 +64,7 @@ dataMeso = {
       "startdatestr":"1325:03:13",
       "enddatestr":"1426",
       "coordinates":[-99.13333, 19.6]},
-    { "text":"<p>The <a href=\"https://en.wikipedia.org/wiki/Aztec_Empire\" target=\"_blank\">Triple Alliance</a> in 1427 unified the Tenochtitlan, Texcoco and Tlacopan states into the Aztec Empire upon the defeat of the Tepanec tribe. This alliance would last until the Spanish Conquest over Tenochtitlan on August 13, 1521. Between its inauguration and ultimate defeat, many lands were annexed through bloody conquest of neighboring tribes.</p>",
+    { "text":"<p>The <a href=\"https://en.wikipedia.org/wiki/Aztec_Empire\" target=\"_blank\">Triple Alliance</a> in 1427 unified the Tenochtitlan, Texcoco and Tlacopan states into the Aztec Empire upon the defeat of the Tepanecs. This alliance would last until the Spanish Conquest over Tenochtitlan on August 13, 1521. Between its inauguration and ultimate defeat, many lands were annexed through bloody conquest of neighboring civilizations.</p>",
       "startdatestr":"1427",
       "enddatestr":"1521:08:12",
       "coordinates":[-99.13333, 19.6]},
@@ -72,7 +72,7 @@ dataMeso = {
       "startdatestr":"1492:08:03",
       "enddatestr":"1599",
         "coordinates":[-6.883, 37.216]},
-    { "text":"<p>The <a href=\"https://en.wikipedia.org/wiki/Aztec_Empire\" target=\"_blank\">Spanish Conquest of the Aztecs</a> in August of 1521, greatly supported by embittered enemies of the Aztecs, ended the hegemony of the Empire and began the regional domination of the Spanish Nation. After the Aztecs fell, other tribes began one by one to fall to Spanish rule, though resistance remained until the 17th century.</p>",
+    { "text":"<p>The <a href=\"https://en.wikipedia.org/wiki/Aztec_Empire\" target=\"_blank\">Spanish Conquest of the Aztecs</a> in August of 1521, greatly supported by embittered enemies of the Aztecs, ended the hegemony of the Empire and began the regional domination of the Spanish Nation. After the Aztecs fell, other civilizations began one by one to fall to Spanish rule, though resistance remained until the 17th century.</p>",
       "startdatestr":"1521:08:13",
       "enddatestr":"1599:12:30",
       "coordinates":[-99.13333, 19.6]},
