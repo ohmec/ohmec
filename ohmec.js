@@ -52,6 +52,8 @@ let activeIds = new Set(); // features currently shown on the map for curDate
 // Rebuild animated feature labels only when morph progress moves by this much (Phase B).
 // ~50 label updates per full animation instead of one per slider/Advance tick.
 let animLabelRatioStep = 0.02;
+let lastDoiIndex = -1; // Phase D: last datesOfInterest index applied to the map
+let layerById = {};    // feature id -> Leaflet layer
 
 let infoboxNormalBackground = "rgba(4,112,255,0.7)";
 let infoboxPinnedBackground = "rgba(4, 64,160,0.7)";
@@ -317,11 +319,14 @@ addBackgroundLayer(
   'Historical data OHMEC contributors | Tiles &copy; Esri &mdash; Source: Esri'
 );
 
+// Stamen styles are hosted by Stadia Maps (old stamen-tiles Fastly URLs are dead).
+// Free use: register at https://client.stadiamaps.com/ and whitelist your domain.
+// localhost / 127.0.0.1 work without a key for development.
 addBackgroundLayer(
   'stamen',
-  'https://stamen-tiles-{s}.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}{r}.png',
+  'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png',
 	18,
-  'Historical data OHMEC contributors | Tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>',
+  'Historical data OHMEC contributors | &copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
 );
 
 if (ohmec_mapbox_token) {
@@ -335,9 +340,9 @@ if (ohmec_mapbox_token) {
 
 addBackgroundLayer(
   'paint',
-  'https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg',
+  'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
   16,
-  'Historical data OHMEC contributors | Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>'
+  'Historical data OHMEC contributors | &copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
 );
 
 if (!(backgroundLayerSetting in backgroundLayers)) {
@@ -1395,6 +1400,11 @@ let geoDB = useEurope ? dataEur : useAA ? dataAA : useMeso ? dataMeso : useAciv 
 prepare_animations();
 
 datesOfInterest.push(today);
+// Include the first moment after each feature ends so DOI diffs capture
+// disappearances (starts alone miss ends that fall between other starts).
+for (let f of geoDB.features) {
+  datesOfInterest.push(new Date(f.properties.endDate.getTime() + 1000));
+}
 let datesOfInterestSorted = uniqueDateSort(datesOfInterest);
 
 // Figure out what changes from one "date of interest" to
@@ -1404,6 +1414,9 @@ let datesOfInterestSorted = uniqueDateSort(datesOfInterest);
 // go through each feature and add it to an array of valid
 // IDs per DOI
 let idsPerDOI = [];
+for (let i = 0; i < datesOfInterestSorted.length; i++) {
+  idsPerDOI[i] = [];
+}
 for(let f of geoDB.features) {
   let sd = str2date(f.properties.startdatestr,false);
   let ed = str2date(f.properties.enddatestr,  true);
@@ -1413,9 +1426,6 @@ for(let f of geoDB.features) {
       break;
     }
     if(sd <= doi) {
-      if(idsPerDOI[i] === undefined) {
-        idsPerDOI[i] = [];
-      }
       idsPerDOI[i].push(f.id);
     }
   }
@@ -1428,9 +1438,9 @@ let idAddsPerDOI = [];
 let idSubsPerDOI = [];
 for (let doi=0;doi<idsPerDOI.length;doi++) {
   idsPerDOISorted.push(idsPerDOI[doi].sort());
+  idAddsPerDOI[doi] = [];
+  idSubsPerDOI[doi] = [];
   if (doi>=1) {
-    idAddsPerDOI[doi] = [];
-    idSubsPerDOI[doi] = [];
     let im = 0;
     let ip = 0;
     while(im < idsPerDOISorted[doi-1].length || ip < idsPerDOISorted[doi].length) {
@@ -1498,6 +1508,11 @@ geojson = L.geoJson(geoDB, {
   pointToLayer:  pointToLayer,
   onEachFeature: onEachFeature
 }).addTo(ohmap);
+
+for (let l in geojson._layers) {
+  let lyr = geojson._layers[l];
+  layerById[lyr.feature.id] = lyr;
+}
 
 function cToHex(c) {
   let hex = c.toString(16);
@@ -1699,57 +1714,151 @@ function refreshAnimatedLabel(lyr, timeRatio, force) {
   return true;
 }
 
-geojson.evaluateLayers = function () {
-  // Phase A: only add/remove layers whose visibility changed for curDate.
-  // Phase B: static labels stay as created in onEachFeature; animated labels
-  // are rebuilt only when morph progress crosses animLabelRatioStep.
-  let nextActive = new Set();
-  for(let l in this._layers) {
-    let lyr = this._layers[l];
-    let id = lyr.feature.id;
-    let prop = lyr.feature.properties;
-    let shouldShow = curDate >= prop.startDate && curDate <= prop.endDate;
-    if(shouldShow) {
-      nextActive.add(id);
-      let wasActive = activeIds.has(id);
-      let isAnimated = "animateTo" in prop;
-      let timeRatio;
-      if(isAnimated) {
-        timeRatio = morphAnimatedLayer(lyr);
-      }
-      if(!wasActive) {
-        if(isAnimated) {
-          // Replace overlay object for current morph; addFeatureToMap attaches it
-          refreshAnimatedLabel(lyr, timeRatio, true);
-        }
-        addFeatureToMap(lyr);
-      } else if(isAnimated) {
-        refreshAnimatedLabel(lyr, timeRatio, false);
-      }
-    } else if(activeIds.has(id) || lyr._map) {
-      // lyr._map covers first paint: GeoJSON starts fully on the map with activeIds empty
-      removeFeatureFromMap(lyr);
+// Largest DOI index with datesOfInterestSorted[i] <= date (or -1 if none).
+function findDoiIndex(date) {
+  let t = date.getTime();
+  let lo = 0;
+  let hi = datesOfInterestSorted.length - 1;
+  let ans = -1;
+  while (lo <= hi) {
+    let mid = (lo + hi) >> 1;
+    if (datesOfInterestSorted[mid].getTime() <= t) {
+      ans = mid;
+      lo = mid + 1;
+    } else {
+      hi = mid - 1;
     }
   }
-  activeIds = nextActive;
-  // now check for layer control properties (front and back, ignore default)
-  allLayers = this._layers;
-  for(let l in this._layers) {
-    let lyr = this._layers[l];
-    let id = lyr.feature.id;
-    if(!activeIds.has(id)) {
+  return ans;
+}
+
+function hideFeatureById(id) {
+  let lyr = layerById[id];
+  if (!lyr) {
+    return;
+  }
+  if (activeIds.has(id) || lyr._map) {
+    removeFeatureFromMap(lyr);
+  }
+  activeIds.delete(id);
+}
+
+function showFeatureById(id) {
+  let lyr = layerById[id];
+  if (!lyr) {
+    return;
+  }
+  let isAnimated = "animateTo" in lyr.feature.properties;
+  let timeRatio;
+  if (isAnimated) {
+    timeRatio = morphAnimatedLayer(lyr);
+    refreshAnimatedLabel(lyr, timeRatio, true);
+  }
+  if (!activeIds.has(id)) {
+    addFeatureToMap(lyr);
+    activeIds.add(id);
+  }
+}
+
+function updateAnimatedActive() {
+  for (let id of activeIds) {
+    let lyr = layerById[id];
+    if (lyr && "animateTo" in lyr.feature.properties) {
+      let timeRatio = morphAnimatedLayer(lyr);
+      refreshAnimatedLabel(lyr, timeRatio, false);
+    }
+  }
+}
+
+function applyLayerDepth() {
+  allLayers = geojson._layers;
+  for (let id of activeIds) {
+    let lyr = layerById[id];
+    if (!lyr) {
       continue;
     }
     let style = lyr.feature.style;
-    if("layerDepth" in style && style.layerDepth !== "default") {
-      if(style.layerDepth === "front") {
+    if ("layerDepth" in style && style.layerDepth !== "default") {
+      if (style.layerDepth === "front") {
         lyr.bringToFront();
       }
-      if(style.layerDepth === "back") {
+      if (style.layerDepth === "back") {
         lyr.bringToBack();
       }
     }
   }
+}
+
+// Make the map match idsPerDOISorted[doiIndex] exactly (first paint / large jumps).
+function syncToDoiIndex(doiIndex) {
+  let targetIds = new Set(
+    (doiIndex >= 0 && doiIndex < idsPerDOISorted.length) ? idsPerDOISorted[doiIndex] : []
+  );
+  for (let id of [...activeIds]) {
+    if (!targetIds.has(id)) {
+      hideFeatureById(id);
+    }
+  }
+  // First paint: GeoJSON starts fully on the map with activeIds empty
+  for (let l in geojson._layers) {
+    let lyr = geojson._layers[l];
+    let id = lyr.feature.id;
+    if (!targetIds.has(id) && lyr._map) {
+      hideFeatureById(id);
+    }
+  }
+  for (let id of targetIds) {
+    if (activeIds.has(id)) {
+      let lyr = layerById[id];
+      if (lyr && "animateTo" in lyr.feature.properties) {
+        let timeRatio = morphAnimatedLayer(lyr);
+        refreshAnimatedLabel(lyr, timeRatio, false);
+      }
+    } else {
+      showFeatureById(id);
+    }
+  }
+}
+
+geojson.evaluateLayers = function () {
+  // Phase D: non-animated visibility follows DOI add/sub diffs.
+  // Phase A/B still apply inside show/hide and animated updates.
+  let doiIndex = findDoiIndex(curDate);
+  if (lastDoiIndex < 0) {
+    syncToDoiIndex(doiIndex);
+  } else if (doiIndex === lastDoiIndex) {
+    updateAnimatedActive();
+  } else if (doiIndex > lastDoiIndex) {
+    for (let i = lastDoiIndex + 1; i <= doiIndex; i++) {
+      for (let id of idSubsPerDOI[i]) {
+        hideFeatureById(id);
+      }
+      for (let id of idAddsPerDOI[i]) {
+        showFeatureById(id);
+      }
+    }
+    updateAnimatedActive();
+  } else {
+    // Walk backward: undo adds/subs from lastDoiIndex down toward doiIndex
+    for (let i = lastDoiIndex; i > Math.max(doiIndex, 0); i--) {
+      for (let id of idAddsPerDOI[i]) {
+        hideFeatureById(id);
+      }
+      for (let id of idSubsPerDOI[i]) {
+        showFeatureById(id);
+      }
+    }
+    if (doiIndex < 0) {
+      // Before first DOI: nothing should remain visible
+      for (let id of [...activeIds]) {
+        hideFeatureById(id);
+      }
+    } else {
+      updateAnimatedActive();
+    }
+  }
+  lastDoiIndex = doiIndex;
+  applyLayerDepth();
 }
 
 geojson.evaluateLayers();
@@ -1773,11 +1882,22 @@ legend.update = function () {
 };
 legend.addTo(ohmap);
 
+// Coalesce slider scrubbing / Advance ticks to one evaluate per animation frame.
+let pendingDateValue = null;
+let refreshMapRaf = null;
+
 let refreshMap = function( {dateValue} ) {
-  curDate.setTime(dateValue);
-  legend.update();
-  geojson.evaluateLayers();
-  checkPopups();
+  pendingDateValue = dateValue;
+  if (refreshMapRaf !== null) {
+    return;
+  }
+  refreshMapRaf = requestAnimationFrame(function () {
+    refreshMapRaf = null;
+    curDate.setTime(pendingDateValue);
+    legend.update();
+    geojson.evaluateLayers();
+    checkPopups();
+  });
 }
 
 let timelineDateMin = timelineDateMinOverride ? timelineDateMinOverride : timelineDateMinDefault;
