@@ -32,6 +32,7 @@
       </tr>
     </table>
     &nbsp;<br/>
+    <div id="dataload" class="dataload" hidden></div>
     <div id="geolintwarn" class="geolintwarn" hidden>
       <div id="geolintwarn-summary"></div>
       <details>
@@ -90,12 +91,9 @@
 
     <script type="text/javascript" src="studies.js"></script>
     <script type="text/javascript">
-      OHMEC.applyStudyChrome(OHMEC_STUDY);
-      OHMEC.writeDataScripts(OHMEC_STUDY);
+      OHMEC.bootStudy(OHMEC_STUDY).catch(function (err) {
+        console.error(err);
+      });
     </script>
-    <script type="text/javascript" src="time_slider.js"></script>
-    <script type="text/javascript" src="mapbox-config.js"></script>
-    <script type="text/javascript" src="ohmec.js"></script>
-    <script type="text/javascript" src="tablinks.js"></script>
   </body>
 </html>

@@ -18,6 +18,21 @@ td {
   background-color: #f1f1f100;
 }
 
+.dataload {
+  margin: 0 0 10px 0;
+  padding: 8px 12px;
+  border: 1px solid #6b8cae;
+  background: #eef5fb;
+  color: #243447;
+  font-family: "Benne", "Helvetica", serif;
+  font-size: 15px;
+}
+.dataload.dataload-error {
+  border-color: #a94442;
+  background: #f8e8e8;
+  color: #6a1b1b;
+}
+
 .geolintwarn {
   margin: 0 0 10px 0;
   padding: 8px 12px;

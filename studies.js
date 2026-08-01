@@ -4,6 +4,7 @@
 
 // Study registry for the unified index.html (?study=…).
 // Keep blurbs and data file lists here so study pages stay thin.
+// Data files are fetched as GeoJSON and assigned to the globals ohmec.js expects.
 
 (function (global) {
   const STUDIES = {
@@ -11,14 +12,14 @@
       id: 'na',
       tab: 'home',
       arena: 'data in the North American arena',
-      data: ['ohmec_data_na.js'],
+      data: [{ url: 'ohmec_data_na.geojson', global: 'dataNA' }],
       flags: {}
     },
     meso: {
       id: 'meso',
       tab: 'meso',
       arena: 'historical data in Mesoamerica',
-      data: ['ohmec_data_meso.js'],
+      data: [{ url: 'ohmec_data_meso.geojson', global: 'dataMeso' }],
       flags: { useMeso: true },
       blurb:
         'This Mesoamerican study focuses on the time period between ' +
@@ -51,7 +52,10 @@
       id: 'nl',
       tab: 'nl',
       arena: 'data in the North American arena',
-      data: ['ohmec_data_na.js', 'ohmec_data_nl.js'],
+      data: [
+        { url: 'ohmec_data_na.geojson', global: 'dataNA' },
+        { url: 'ohmec_data_nl.geojson', global: 'dataNL' }
+      ],
       flags: { useNativeLands: true },
       blurb:
         'This Native Lands study swaps out the OHMEC Native tribal ' +
@@ -66,7 +70,7 @@
       id: 'aa',
       tab: 'aa',
       arena: 'data in the North American arena',
-      data: ['ohmec_data_ancient_americas.js'],
+      data: [{ url: 'ohmec_data_ancient_americas.geojson', global: 'dataAA' }],
       flags: { useAA: true },
       blurb:
         'This Ancient Americas study focuses on the ancient prehistoric ' +
@@ -84,7 +88,7 @@
       id: 'cherokee',
       tab: 'cherokee',
       arena: 'data in the North American arena',
-      data: ['ohmec_data_na.js'],
+      data: [{ url: 'ohmec_data_na.geojson', global: 'dataNA' }],
       flags: { cherokeeExample: true },
       blurb:
         'This Cherokee study highlights the movements of the Proto- ' +
@@ -98,7 +102,7 @@
       id: 'viking',
       tab: 'viking',
       arena: 'historical data in the northern European arena',
-      data: ['ohmec_data_eur.js'],
+      data: [{ url: 'ohmec_data_eur.geojson', global: 'dataEur' }],
       flags: { useEurope: true },
       blurb:
         'This Viking study shows a brief highlight of pre-Viking peoples ' +
@@ -111,7 +115,8 @@
       id: 'ma',
       tab: null,
       arena: 'historical data in the Middle American arena',
-      data: ['ohmec_data_ma.js'],
+      // ohmec.js uses the dataNA global for the default/NA code path.
+      data: [{ url: 'ohmec_data_ma.geojson', global: 'dataNA' }],
       flags: {},
       blurb:
         'This Middle American Native study focuses on the time period between ' +
@@ -126,7 +131,7 @@
       id: 'aciv',
       tab: null,
       arena: 'Early Civilizations throughout the world',
-      data: ['ohmec_data_aciv.js'],
+      data: [{ url: 'ohmec_data_aciv.geojson', global: 'dataACiv' }],
       flags: { useAciv: true },
       blurb:
         'This Ancient Civilization study focuses on the early ' +
@@ -202,10 +207,87 @@
     return STUDIES[id] || STUDIES.na;
   }
 
-  function writeDataScripts(study) {
-    for (let src of study.data) {
-      document.write('<script type="text/javascript" src="' + src + '"><\/script>');
+  function setLoadStatus(message, isError) {
+    let el = document.querySelector('#dataload');
+    if (!el) {
+      return;
     }
+    if (!message) {
+      el.hidden = true;
+      el.textContent = '';
+      el.classList.remove('dataload-error');
+      return;
+    }
+    el.hidden = false;
+    el.textContent = message;
+    if (isError) {
+      el.classList.add('dataload-error');
+    } else {
+      el.classList.remove('dataload-error');
+    }
+  }
+
+  function loadStudyData(study) {
+    setLoadStatus('Loading map data…');
+    let jobs = study.data.map(function (entry) {
+      return fetch(entry.url).then(function (resp) {
+        if (!resp.ok) {
+          throw new Error('Failed to fetch ' + entry.url + ' (' + resp.status + ')');
+        }
+        return resp.json().then(function (json) {
+          global[entry.global] = json;
+          return entry;
+        });
+      });
+    });
+    return Promise.all(jobs).then(function (entries) {
+      setLoadStatus('');
+      return entries;
+    }).catch(function (err) {
+      console.error(err);
+      setLoadStatus('Could not load map data: ' + err.message, true);
+      throw err;
+    });
+  }
+
+  function loadScript(src, optional) {
+    return new Promise(function (resolve, reject) {
+      let s = document.createElement('script');
+      s.src = src;
+      s.async = false;
+      s.onload = function () { resolve(src); };
+      s.onerror = function () {
+        if (optional) {
+          resolve(src);
+        } else {
+          reject(new Error('Failed to load script ' + src));
+        }
+      };
+      document.body.appendChild(s);
+    });
+  }
+
+  function loadScripts(entries) {
+    let chain = Promise.resolve();
+    entries.forEach(function (entry) {
+      let src = typeof entry === 'string' ? entry : entry.src;
+      let optional = typeof entry === 'string' ? false : !!entry.optional;
+      chain = chain.then(function () { return loadScript(src, optional); });
+    });
+    return chain;
+  }
+
+  // Fetch study GeoJSON, then load viewer scripts in order.
+  function bootStudy(study) {
+    applyStudyChrome(study);
+    return loadStudyData(study).then(function () {
+      return loadScripts([
+        'time_slider.js',
+        { src: 'mapbox-config.js', optional: true },
+        'ohmec.js',
+        'tablinks.js'
+      ]);
+    });
   }
 
   function applyStudyChrome(study) {
@@ -272,9 +354,12 @@
     STUDIES: STUDIES,
     resolveStudyId: resolveStudyId,
     getStudy: getStudy,
-    writeDataScripts: writeDataScripts,
+    loadStudyData: loadStudyData,
+    loadScripts: loadScripts,
+    bootStudy: bootStudy,
     applyStudyChrome: applyStudyChrome,
     studyUrl: studyUrl,
-    pageName: pageName
+    pageName: pageName,
+    setLoadStatus: setLoadStatus
   };
 })(typeof window !== 'undefined' ? window : this);

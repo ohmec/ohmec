@@ -43,13 +43,8 @@ fullfile = filehandle.read()
 filehandle.close()
 
 
-# geojson is created as a variable assignment, ie. dataRegion = { ... };
-# json.loads wants just the structure, so we need to strip the variable
-# name and the closing semicolon
-fm = re.fullmatch("\s*(\w+)\s*=\s*(.*);\s*", fullfile, re.MULTILINE | re.DOTALL)
-varname = fm.group(1)
-varjson = fm.group(2)
-fullstruct = json.loads(varjson)
+from load_ohmec_geojson import load_ohmec_geojson
+fullstruct, _varname = load_ohmec_geojson(fullfile)
 
 def get_first_date(startA, startB, strA, strB):
   if startA <= startB:
