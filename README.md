@@ -9,3 +9,10 @@ See [this slidedeck](https://docs.google.com/presentation/d/1WiXMrLPC4fOwNaKD7Uh
 A specification of the [extended GeoJSON](https://docs.google.com/document/d/15D9t61Y1WYYH02BuIp3C8InJD40L19uHIcPNDfNv0Bk/edit?usp=sharing) format that underpins the historical database is provided here.
 
 An up to date rendering can be found in our [Github Mirror Page](http://ohmec.net).
+
+## Mapbox streets basemap (optional)
+
+The labeled `streets background uses Mapbox and needs a public access token.
+Do not commit tokens, Github will reject the push
+
+Alternatively pass `?mapbox=pk.your_token` in the page URL
