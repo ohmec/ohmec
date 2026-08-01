@@ -1523,10 +1523,18 @@ function cToHex(c) {
 }
 
 function str2RGB(colorStr) {
+  // Defensive: animated style interpolation can see missing colors when a
+  // feature is temporarily shown outside its date range during a DOI walk.
+  if (typeof colorStr !== 'string') {
+    return [192, 192, 192];
+  }
   let test = /^#?([a-f\d]{8})$/;  // 4-field color
   let match = colorStr.match(test);
   if(match !== null) {
     let parseResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colorStr);
+    if (parseResult === null) {
+      return [192, 192, 192];
+    }
     let rgb = [];
     rgb[0] = parseInt(parseResult[1], 16);
     rgb[1] = parseInt(parseResult[2], 16);
@@ -1535,6 +1543,9 @@ function str2RGB(colorStr) {
     return rgb;
   } else {
     let parseResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(colorStr);
+    if (parseResult === null) {
+      return [192, 192, 192];
+    }
     let rgb = [];
     rgb[0] = parseInt(parseResult[1], 16);
     rgb[1] = parseInt(parseResult[2], 16);
@@ -1591,6 +1602,16 @@ function morphAnimatedLayer(lyr) {
   let timeDiv = (fHash[prop.animateTo].properties.startDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
   let timeNum = (curDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
   let timeRatio = timeNum/timeDiv;
+  // Clamp: DOI add/sub walks can briefly show a feature while curDate is far
+  // outside its span (e.g. initial jump from "today" to a BC viewpoint).
+  // Unclamped ratios produced insane styles (negative opacity) and crashes.
+  if (!isFinite(timeRatio)) {
+    timeRatio = 0;
+  } else if (timeRatio < 0) {
+    timeRatio = 0;
+  } else if (timeRatio > 1) {
+    timeRatio = 1;
+  }
   if(lyr.feature.geometry.type === 'MultiPolygon') {
     for(let o in lyr.feature.pairDiffs) {
       for(let i of lyr.feature.pairDiffs[o]) {
@@ -1827,7 +1848,11 @@ geojson.evaluateLayers = function () {
   // Phase D: non-animated visibility follows DOI add/sub diffs.
   // Phase A/B still apply inside show/hide and animated updates.
   let doiIndex = findDoiIndex(curDate);
-  if (lastDoiIndex < 0) {
+  // Large jumps (notably first paint at "today" then slider to a BC start)
+  // are safer as a full sync: incremental undo briefly re-shows later
+  // features and morphs them at the destination curDate.
+  let jump = (lastDoiIndex < 0) ? Infinity : Math.abs(doiIndex - lastDoiIndex);
+  if (lastDoiIndex < 0 || jump > 20) {
     syncToDoiIndex(doiIndex);
   } else if (doiIndex === lastDoiIndex) {
     updateAnimatedActive();
@@ -1864,6 +1889,10 @@ geojson.evaluateLayers = function () {
   applyLayerDepth();
 }
 
+// First paint should match the study viewpoint / URL date, not "today".
+// Otherwise evaluateLayers syncs to the present, then the slider jumps back
+// across millennia and can abort mid-walk on animated features.
+curDate.setTime(timelineDateStart.getTime());
 geojson.evaluateLayers();
 
 function fixInt(numstr, length) {
