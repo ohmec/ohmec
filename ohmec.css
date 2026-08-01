@@ -18,6 +18,26 @@ td {
   background-color: #f1f1f100;
 }
 
+.geolintwarn {
+  margin: 0 0 10px 0;
+  padding: 8px 12px;
+  border: 1px solid #b58900;
+  background: #fff8e1;
+  color: #5c4b00;
+  font-family: "Benne", "Helvetica", serif;
+  font-size: 15px;
+}
+.geolintwarn details {
+  margin-top: 4px;
+}
+.geolintwarn pre {
+  margin: 6px 0 0 0;
+  white-space: pre-wrap;
+  font-size: 12px;
+  max-height: 12em;
+  overflow: auto;
+}
+
 /* Style the buttons inside the tablinks */
 .tablinks button {
   background-color: inherit;
