@@ -29,6 +29,24 @@ Example: `index.html?study=meso`. Older `index_*.html` URLs redirect to the equi
 
 Study geometry lives in `ohmec_data_*.geojson` and is loaded with `fetch` (not as sync `<script>` globals). Serve over HTTP (for example `python3 -m http.server`) so those requests succeed.
 
+## CI / local checks
+
+GitHub Actions runs on PRs and `main`:
+
+- parse/structure-check all `ohmec_data_*.geojson`
+- ESLint on viewer JS
+- `check_boundaries.py` on changed mid-size datasets (skips the multi‑MB `na` / `nl` files)
+
+Locally:
+
+```bash
+npm ci
+npm run lint
+npm run validate:data
+# optional, from utilities/:
+# python3 check_boundaries.py ../ohmec_data_meso.geojson
+```
+
 ## Basemaps
 
 Most backgrounds need no API key:
@@ -39,9 +57,9 @@ Most backgrounds need no API key:
 | `world` | Esri World Imagery | Satellite |
 | `physical` | Esri World Physical | Low-detail physical |
 | `white` | Esri World Terrain | Light terrain |
-| `stamen` | [OpenTopoMap](https://opentopomap.org/) | Terrain / contours (key `4`) |
+| `topo` | [OpenTopoMap](https://opentopomap.org/) | Terrain / contours (key `4`); alias `stamen` |
 | `positron` | [CARTO](https://carto.com/) Positron (no labels) | Light base, good label contrast (key `5`) |
-| `paint` | [CARTO](https://carto.com/) Voyager (no labels) | Soft colorful base (key `7`) |
+| `voyager` | [CARTO](https://carto.com/) Voyager (no labels) | Soft colorful base (key `7`); alias `paint` |
 
 Optional Mapbox `streets` (key `6`) needs a public token — do not commit it:
 
