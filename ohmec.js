@@ -67,17 +67,17 @@ let pagename = splits[splits.length-1];
 let infoPinned = false;
 let animationHash = {};
 let fHash = {};
-let useEurope = pagename === 'index_viking.html';
-let useAA = pagename === 'index_aa.html';
-let useMeso = pagename === 'index_meso.html';
-let useAciv = pagename === 'index_aciv.html';
-let useNativeLands = pagename === 'index_nl.html';
-let cherokeeExample = pagename === 'index_cherokee.html';
+// Study selection comes from studies.js (?study=…, legacy tokens, or old index_*.html stubs).
+let studyFlags = (typeof OHMEC_STUDY !== 'undefined' && OHMEC_STUDY.flags) ? OHMEC_STUDY.flags : {};
+let useEurope = !!studyFlags.useEurope;
+let useAA = !!studyFlags.useAA;
+let useMeso = !!studyFlags.useMeso;
+let useAciv = !!studyFlags.useAciv;
+let useNativeLands = !!studyFlags.useNativeLands;
+let cherokeeExample = !!studyFlags.cherokeeExample;
 let popupList = [];
 
-// check for URL override. If the override is the old style
-// of invoking a "study", then go ahead and open the right
-// page if not already on the right page
+// check for URL override
 
 let parameters = location.search.substring(1).split("&");
 
@@ -87,30 +87,8 @@ if (cherokeeExample) {
 }
 
 for(let param of parameters) {
-  // check for old study invocations using parameters
-  let test = /viking|easter/;
+  let test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
   let match = param.match(test);
-  let newURL = hrefText;
-  if(match !== null && pagename === 'index.html') {
-    open(newURL.replace('index.html','index_viking.html'),"_self");
-  }
-  test = /^aa$/;
-  match = param.match(test);
-  if(match !== null && pagename === 'index.html') {
-    open(newURL.replace('index.html','index_aa.html'),"_self");
-  }
-  test = /^nl$/;
-  match = param.match(test);
-  if(match !== null && pagename === 'index.html') {
-    open(newURL.replace('index.html','index_nl.html'),"_self");
-  }
-  test = /cher/;
-  match = param.match(test);
-  if(match !== null && pagename === 'index.html') {
-    open(newURL.replace('index.html','index_cherokee.html'),"_self");
-  }
-  test = /(startdatestr|enddatestr|curdatestr)=([\d:BC-]+)/;
-  match = param.match(test);
   if (match !== null) {
     if (match[1] == 'startdatestr') {
       timelineDateMinOverride = str2date(match[2],false);
@@ -205,6 +183,14 @@ function urlString(mindate,maxdate,curdate) {
   let latlon = ohmap.getCenter();
   let conjoin = '?';
   let urlText = splits[0];
+  // Prefer canonical index.html?study=… links even when opened via a stub page.
+  if (/index_[a-z]+\.html$/.test(urlText)) {
+    urlText = urlText.replace(/index_[a-z]+\.html$/, 'index.html');
+  }
+  if (typeof OHMEC_STUDY_ID !== 'undefined' && OHMEC_STUDY_ID && OHMEC_STUDY_ID !== 'na') {
+    urlText += conjoin + 'study=' + OHMEC_STUDY_ID;
+    conjoin = '&';
+  }
   if(mindate) {
     urlText += conjoin +
       'startdatestr='  + dateStr(mindate,':');

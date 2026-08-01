@@ -10,6 +10,23 @@ A specification of the [extended GeoJSON](https://docs.google.com/document/d/15D
 
 An up to date rendering can be found in our [Github Mirror Page](http://ohmec.net).
 
+## Studies
+
+All map studies share one page: `index.html`, selected with `?study=`:
+
+| `study` | Description |
+|---------|-------------|
+| *(omit / `na`)* | North America (default / Home) |
+| `meso` | Mesoamerica |
+| `nl` | Native Lands |
+| `aa` | Ancient Americas |
+| `cherokee` | Cherokee migration |
+| `viking` | Pre-Viking northern Europe |
+| `ma` | Middle America bridge study |
+| `aciv` | Ancient civilizations |
+
+Example: `index.html?study=meso`. Older `index_*.html` URLs redirect to the equivalent `?study=` link. Study metadata lives in `studies.js`.
+
 ## Basemaps
 
 Most backgrounds need no API key:
