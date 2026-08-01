@@ -29,6 +29,24 @@ Example: `index.html?study=meso`. Older `index_*.html` URLs redirect to the equi
 
 Study geometry lives in `ohmec_data_*.geojson` and is loaded with `fetch` (not as sync `<script>` globals). Serve over HTTP (for example `python3 -m http.server`) so those requests succeed.
 
+## CI / local checks
+
+GitHub Actions runs on PRs and `main`:
+
+- parse/structure-check all `ohmec_data_*.geojson`
+- ESLint on viewer JS
+- `check_boundaries.py` on changed mid-size datasets (skips the multi‑MB `na` / `nl` files)
+
+Locally:
+
+```bash
+npm ci
+npm run lint
+npm run validate:data
+# optional, from utilities/:
+# python3 check_boundaries.py ../ohmec_data_meso.geojson
+```
+
 ## Basemaps
 
 Most backgrounds need no API key:

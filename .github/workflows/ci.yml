@@ -1,0 +1,71 @@
+# Copyright OHMEC contributors.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate-data:
+    name: Validate GeoJSON
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Parse and structurally check study data
+        run: python3 utilities/validate_geojson.py
+
+  lint-js:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  check-boundaries:
+    name: Boundary check (changed data)
+    runs-on: ubuntu-latest
+    # Heavy pairwise geometry; skip the multi-MB NA/NL sets in CI.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+      - name: Run check_boundaries on changed non-huge datasets
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_REF="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "${BASE_REF}" ] || [ "${BASE_REF}" = "0000000000000000000000000000000000000000" ]; then
+            BASE_REF="$(git rev-list --max-parents=0 HEAD | tail -1)"
+          fi
+          mapfile -t FILES < <(
+            git diff --name-only --diff-filter=ACMR "${BASE_REF}"...HEAD -- \
+              'ohmec_data_*.geojson' \
+              | grep -Ev 'ohmec_data_(na|nl)\.geojson$' || true
+          )
+          if [ "${#FILES[@]}" -eq 0 ]; then
+            echo "No mid-size GeoJSON changes to boundary-check."
+            exit 0
+          fi
+          cd utilities
+          for f in "${FILES[@]}"; do
+            echo "::group::check_boundaries ${f}"
+            python3 check_boundaries.py "../${f}"
+            echo "::endgroup::"
+          done
