@@ -39,9 +39,9 @@ Most backgrounds need no API key:
 | `world` | Esri World Imagery | Satellite |
 | `physical` | Esri World Physical | Low-detail physical |
 | `white` | Esri World Terrain | Light terrain |
-| `stamen` | [OpenTopoMap](https://opentopomap.org/) | Terrain / contours (key `4`) |
+| `topo` | [OpenTopoMap](https://opentopomap.org/) | Terrain / contours (key `4`); alias `stamen` |
 | `positron` | [CARTO](https://carto.com/) Positron (no labels) | Light base, good label contrast (key `5`) |
-| `paint` | [CARTO](https://carto.com/) Voyager (no labels) | Soft colorful base (key `7`) |
+| `voyager` | [CARTO](https://carto.com/) Voyager (no labels) | Soft colorful base (key `7`); alias `paint` |
 
 Optional Mapbox `streets` (key `6`) needs a public token — do not commit it:
 

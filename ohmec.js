@@ -45,6 +45,15 @@ let backgroundLayerSetting = backgroundLayerDefault;
 let backgroundLayers = {};
 let maxZoomPerBackground = {};
 let lastBackgroundLayer;
+// Old URL/ids kept as aliases after Stamen/Stadia retirement.
+let backgroundAliases = {
+  stamen: 'topo',
+  paint: 'voyager'
+};
+
+function resolveBackgroundId(id) {
+  return backgroundAliases[id] || id;
+}
 let lastLayer;
 let lastFeature = null;
 let allLayers = [];
@@ -119,10 +128,10 @@ for(let param of parameters) {
   if (match !== null) {
     smartStepFeature = (match[1]==='on') ? 1 : 0;
   }
-  test = /background=(relief|stamen|positron|paint|streets|physical|world|white)/;
+  test = /background=(relief|topo|stamen|positron|voyager|paint|streets|physical|world|white)/;
   match = param.match(test);
   if (match !== null) {
-    backgroundLayerSetting = match[1];
+    backgroundLayerSetting = resolveBackgroundId(match[1]);
   }
   test = /advInt=(\d+)/;
   match = param.match(test);
@@ -312,11 +321,11 @@ addBackgroundLayer(
   'Historical data OHMEC contributors | Tiles &copy; Esri &mdash; Source: Esri'
 );
 
-// Free no-auth basemaps (layer ids "stamen"/"paint" kept for URL + keyboard compat).
+// Free no-auth basemaps. Old URL ids stamen→topo, paint→voyager (see backgroundAliases).
 // OpenTopoMap: terrain/contours. CARTO Positron: light unlabeled (good label contrast).
 // CARTO Voyager: soft colorful base without labels.
 addBackgroundLayer(
-  'stamen',
+  'topo',
   'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
   17,
   'Historical data OHMEC contributors | &copy; <a href="https://opentopomap.org" target="_blank">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">CC-BY-SA</a>)',
@@ -341,13 +350,14 @@ if (ohmec_mapbox_token) {
 }
 
 addBackgroundLayer(
-  'paint',
+  'voyager',
   'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
   18,
   'Historical data OHMEC contributors | &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
   true
 );
 
+backgroundLayerSetting = resolveBackgroundId(backgroundLayerSetting);
 if (!(backgroundLayerSetting in backgroundLayers)) {
   backgroundLayerSetting = backgroundLayerDefault;
 }
@@ -2130,11 +2140,10 @@ function checkKeypress(e) {
     case '1': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'world');    break;
     case '2': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'physical'); break;
     case '3': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'white');    break;
-    case '4': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'stamen');   break;
+    case '4': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'topo');     break;
     case '5': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'positron'); break;
     case '6': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'streets');  break;
-    case '7': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'paint');    break;
-    case '7':
+    case '7': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'voyager');  break;
     case '8':
     case '9': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), null); break;
     case 'a':
