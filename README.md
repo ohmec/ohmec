@@ -27,6 +27,8 @@ All map studies share one page: `index.html`, selected with `?study=`:
 
 Example: `index.html?study=meso`. Older `index_*.html` URLs redirect to the equivalent `?study=` link. Study metadata lives in `studies.js`.
 
+Study geometry lives in `ohmec_data_*.geojson` and is loaded with `fetch` (not as sync `<script>` globals). Serve over HTTP (for example `python3 -m http.server`) so those requests succeed.
+
 ## Basemaps
 
 Most backgrounds need no API key:

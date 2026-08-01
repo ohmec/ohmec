@@ -1036,21 +1036,58 @@ function str2date(datestr,roundLate) {
   return newdate;
 }
 
+// Soft-fail lint: bad features are skipped so one mistake doesn't kill the map.
+let geoLintErrors = [];
+
+function recordGeoLintError(message) {
+  let text = (typeof message === 'string') ? message :
+    (message && message.message) ? message.message : String(message);
+  geoLintErrors.push(text);
+  console.error('[geo_lint] ' + text);
+}
+
+function showGeoLintWarnings() {
+  if (geoLintErrors.length === 0) {
+    return;
+  }
+  let el = document.querySelector('#geolintwarn');
+  if (!el) {
+    return;
+  }
+  el.hidden = false;
+  let summary = document.querySelector('#geolintwarn-summary');
+  let detail = document.querySelector('#geolintwarn-detail');
+  if (summary) {
+    summary.textContent = 'Skipped ' + geoLintErrors.length +
+      ' data issue' + (geoLintErrors.length === 1 ? '' : 's') +
+      ' so the map could still load. See console for the full log.';
+  }
+  if (detail) {
+    detail.textContent = geoLintErrors.join('\n');
+  }
+}
+
 function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyCherokeeExample) {
   let id_set = new Set();
   let newFeatureList = [];
   if(dataset.type !== "FeatureCollection") {
-    throw "expected dataset type === FeatureCollection, got " + dataset.type;
+    recordGeoLintError("expected dataset type === FeatureCollection, got " + dataset.type);
+    dataset.features = [];
+    return;
   }
   if("viewpoint" in dataset) {
-    if("startdatestr" in dataset.viewpoint && !timelineDateMinOverride) {
-      timelineDateMinOverride = str2date(dataset.viewpoint.startdatestr,false);
-    }
-    if("curdatestr" in dataset.viewpoint && timelineDateStart === timelineDateStartDefault) {
-      timelineDateStart = str2date(dataset.viewpoint.curdatestr,false);
-    }
-    if("enddatestr" in dataset.viewpoint && !timelineDateMaxOverride) {
-      timelineDateMaxOverride = str2date(dataset.viewpoint.enddatestr,true);
+    try {
+      if("startdatestr" in dataset.viewpoint && !timelineDateMinOverride) {
+        timelineDateMinOverride = str2date(dataset.viewpoint.startdatestr,false);
+      }
+      if("curdatestr" in dataset.viewpoint && timelineDateStart === timelineDateStartDefault) {
+        timelineDateStart = str2date(dataset.viewpoint.curdatestr,false);
+      }
+      if("enddatestr" in dataset.viewpoint && !timelineDateMaxOverride) {
+        timelineDateMaxOverride = str2date(dataset.viewpoint.enddatestr,true);
+      }
+    } catch (e) {
+      recordGeoLintError("viewpoint date error: " + e);
     }
     if("defaultLat" in dataset.viewpoint && latSettingStart === latSettingDefault) {
       latSettingStart = dataset.viewpoint.defaultLat;
@@ -1064,22 +1101,32 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
   }
   if("popups" in dataset) {
     for(let p of dataset.popups) {
-      let pentry = {};
-      pentry.text = p.text;
-      pentry.startDate = str2date(p.startdatestr,false);
-      pentry.endDate = str2date(p.enddatestr,false);
-      pentry.coordinates = p.coordinates;
-      pentry.done = false;
-      pentry.popup = null;
-      if("style" in p) {
-        pentry.style = p.style;
+      try {
+        let pentry = {};
+        pentry.text = p.text;
+        pentry.startDate = str2date(p.startdatestr,false);
+        pentry.endDate = str2date(p.enddatestr,false);
+        pentry.coordinates = p.coordinates;
+        pentry.done = false;
+        pentry.popup = null;
+        if("style" in p) {
+          pentry.style = p.style;
+        }
+        popupList.push(pentry);
+      } catch (e) {
+        recordGeoLintError("popup error: " + e);
       }
-      popupList.push(pentry);
     }
   }
   ohmap.setView([latSettingStart, lonSettingStart],zoomSettingStart);
-  if("features" in dataset) {
-    for(let f of dataset.features) {
+  if(!("features" in dataset)) {
+    recordGeoLintError("no features in dataset");
+    dataset.features = [];
+    return;
+  }
+  for(let f of dataset.features) {
+    let acceptedId = null;
+    try {
       let removeFeature = false;
       if(f.type !== "Feature") {
         throw "feature type not Feature, got " + f.type;
@@ -1088,7 +1135,15 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
         throw "got duplicate dataset ID " + f.id;
       }
       id_set.add(f.id);
+      acceptedId = f.id;
       fHash[f.id] = f;
+      if(!("geometry" in f)) {
+        throw "no geometry in feature " + f.id;
+      }
+      let g = f.geometry;
+      if((g.type !== "Polygon") && (g.type !== "MultiPolygon") && (g.type !== "Point") && (g.type !== "LineString")) {
+        throw "feature " + f.id + " should have geometry of Polygon, MultiPolygon, LineString or Point, got " + g.type;
+      }
       if("properties" in f) {
         let p = f.properties;
         if(convertFromNativeLands) {
@@ -1199,24 +1254,6 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
       } else {
         throw "no properties in feature " + f.id;
       }
-      if(!removeFeature) {
-        timelineDateMinDefault = dateMin(timelineDateMinDefault, f.properties.endDate);
-        timelineDateMaxDefault = dateMax(timelineDateMaxDefault, f.properties.startDate);
-        datesOfInterest.push(f.properties.startDate);
-        polygonCount += 1;
-        if("animateTo" in f.properties) {
-          animationHash[f.id] = f.properties.animateTo;
-        }
-        newFeatureList.push(f);
-      }
-      if("geometry" in f) {
-        let g = f.geometry;
-        if((g.type !== "Polygon") && (g.type !== "MultiPolygon") && (g.type !== "Point") && (g.type !== "LineString")) {
-          throw "feature " + f.id + " should have geometry of Polygon, MultiPolygon, LineString or Point, got " + g.type;
-        }
-      } else {
-        throw "no geometry in feature " + f.id;
-      }
       // capture the style from the style list.
       // apply styles as matching in order, starting with default
       // be careful to not override given styles, so hold those and
@@ -1296,9 +1333,25 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
           }
         }
       }
+      if(!removeFeature) {
+        timelineDateMinDefault = dateMin(timelineDateMinDefault, f.properties.endDate);
+        timelineDateMaxDefault = dateMax(timelineDateMaxDefault, f.properties.startDate);
+        datesOfInterest.push(f.properties.startDate);
+        polygonCount += 1;
+        if("animateTo" in f.properties) {
+          animationHash[f.id] = f.properties.animateTo;
+        }
+        newFeatureList.push(f);
+      }
+    } catch (e) {
+      recordGeoLintError(e);
+      // Only roll back state committed for this feature (not a prior owner of the same id).
+      if (acceptedId !== null) {
+        id_set.delete(acceptedId);
+        delete fHash[acceptedId];
+        delete animationHash[acceptedId];
+      }
     }
-  } else {
-    throw "no features in dataset"
   }
   dataset.features = newFeatureList;
 }
@@ -1307,71 +1360,80 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
 // to reduce compute time
 
 function prepare_animations() {
-  for(let id_from in animationHash) {
-    if(!(id_from in fHash)) {
-      throw "can't find animate-from id " + id_from + " in fHash";
-    }
-    let fromF = fHash[id_from];
-    if(!(animationHash[id_from] in fHash)) {
-      throw "can't find animate-to id " + animationHash[id_from] + " in fHash";
-    }
-    // find the list of differing coordinates
-    let destF = fHash[animationHash[id_from]];
-    if(fromF.geometry.type === 'MultiPolygon') {
-      let fromLen = fromF.geometry.coordinates.length;
-      let destLen = destF.geometry.coordinates.length;
-      let maxPoly = fromLen < destLen ? fromLen : destLen;
-      fromF.pairDiffs = [];
-      for(let outer=0;outer<maxPoly;outer++) {
-        let fromC = fromF.geometry.coordinates[outer][0];
-        let destC = destF.geometry.coordinates[outer][0];
-        if (fromC.length != destC.length) {
-          throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since coordinate lengths differ (" + fromC.length + " vs " + destC.length + ") for polygon " + outer;
-        }
-        fromF.pairDiffs[outer] = [];
-        for(let i in fromC) {
-          if(fromC[i][0] !== destC[i][0] || fromC[i][1] !== destC[i][1]) {
-            fromF.pairDiffs[outer].push(i);
+  for(let id_from of Object.keys(animationHash)) {
+    try {
+      if(!(id_from in fHash)) {
+        throw "can't find animate-from id " + id_from + " in fHash";
+      }
+      let fromF = fHash[id_from];
+      if(!(animationHash[id_from] in fHash)) {
+        throw "can't find animate-to id " + animationHash[id_from] + " in fHash";
+      }
+      // find the list of differing coordinates
+      let destF = fHash[animationHash[id_from]];
+      if(fromF.geometry.type === 'MultiPolygon') {
+        let fromLen = fromF.geometry.coordinates.length;
+        let destLen = destF.geometry.coordinates.length;
+        let maxPoly = fromLen < destLen ? fromLen : destLen;
+        fromF.pairDiffs = [];
+        for(let outer=0;outer<maxPoly;outer++) {
+          let fromC = fromF.geometry.coordinates[outer][0];
+          let destC = destF.geometry.coordinates[outer][0];
+          if (fromC.length != destC.length) {
+            throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since coordinate lengths differ (" + fromC.length + " vs " + destC.length + ") for polygon " + outer;
+          }
+          fromF.pairDiffs[outer] = [];
+          for(let i in fromC) {
+            if(fromC[i][0] !== destC[i][0] || fromC[i][1] !== destC[i][1]) {
+              fromF.pairDiffs[outer].push(i);
+            }
           }
         }
-      }
-    } else if(fromF.geometry.type === 'Polygon') {
-      let fromC, destC;
-      if("coordinates" in fromF.geometry) {
-        fromC = fromF.geometry.coordinates[0];
-      } else {
-        throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since no coordinates for " + id_from;
-      }
-      if("coordinates" in destF.geometry) {
-        if (!destF.geometry.coordinates) {
+      } else if(fromF.geometry.type === 'Polygon') {
+        let fromC, destC;
+        if("coordinates" in fromF.geometry) {
+          fromC = fromF.geometry.coordinates[0];
+        } else {
+          throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since no coordinates for " + id_from;
+        }
+        if("coordinates" in destF.geometry) {
+          if (!destF.geometry.coordinates) {
+            throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since no coordinates for " + animationHash[id_from];
+          }
+          destC = destF.geometry.coordinates[0];
+        } else {
           throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since no coordinates for " + animationHash[id_from];
         }
-        destC = destF.geometry.coordinates[0];
-      } else {
-        throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since no coordinates for " + animationHash[id_from];
-      }
-      if (fromC.length != destC.length) {
-        throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since coordinate lengths differ (" + fromC.length + " vs " + destC.length + ")";
-      }
-      fromF.pairDiffs = [];
-      for(let i in fromC) {
-        if(fromC[i][0] !== destC[i][0] || fromC[i][1] !== destC[i][1]) {
-          fromF.pairDiffs.push(i);
+        if (fromC.length != destC.length) {
+          throw "can't animate from " + id_from + " to " + animationHash[id_from] + " since coordinate lengths differ (" + fromC.length + " vs " + destC.length + ")";
+        }
+        fromF.pairDiffs = [];
+        for(let i in fromC) {
+          if(fromC[i][0] !== destC[i][0] || fromC[i][1] !== destC[i][1]) {
+            fromF.pairDiffs.push(i);
+          }
+        }
+      } else if(fromF.geometry.type === 'LineString') {
+        let fromC = fromF.geometry.coordinates;
+        let destC = destF.geometry.coordinates;
+        // figure out the animation length, ie. the length of new
+        // line that must be grown. this isn't precise - it should
+        // take into consideration the latitude - but should be
+        // close enough for decent animation
+        fromF.animLength = 0;
+        for(let i=fromC.length;i<destC.length;i++) {
+          fromF.animLength += distComp(destC[i-1],destC[i]);
+        }
+        if(destC.length < (fromC.length)) {
+          throw "for now can only animate from " + id_from + " to " + animationHash[id_from] + " if length is same or growing, got (" + fromC.length + " vs " + destC.length + ")";
         }
       }
-    } else if(fromF.geometry.type === 'LineString') {
-      let fromC = fromF.geometry.coordinates;
-      let destC = destF.geometry.coordinates;
-      // figure out the animation length, ie. the length of new
-      // line that must be grown. this isn't precise - it should
-      // take into consideration the latitude - but should be
-      // close enough for decent animation
-      fromF.animLength = 0;
-      for(let i=fromC.length;i<destC.length;i++) {
-        fromF.animLength += distComp(destC[i-1],destC[i]);
-      }
-      if(destC.length < (fromC.length)) {
-        throw "for now can only animate from " + id_from + " to " + animationHash[id_from] + " if length is same or growing, got (" + fromC.length + " vs " + destC.length + ")";
+    } catch (e) {
+      recordGeoLintError(e);
+      // Keep the feature as a static shape; drop the broken animation link.
+      delete animationHash[id_from];
+      if (id_from in fHash && fHash[id_from].properties) {
+        delete fHash[id_from].properties.animateTo;
       }
     }
   }
@@ -1401,6 +1463,7 @@ if(useEurope) {
 let geoDB = useEurope ? dataEur : useAA ? dataAA : useMeso ? dataMeso : useAciv ? dataACiv : dataNA;
 
 prepare_animations();
+showGeoLintWarnings();
 
 datesOfInterest.push(today);
 // Include the first moment after each feature ends so DOI diffs capture
