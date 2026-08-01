@@ -18,7 +18,7 @@
       crossorigin="">
     </script>
     <link rel="stylesheet" href="ohmec.css"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=New+Tegomin|Akaya+Telivigala|Benne"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik|New+Tegomin|Special+Elite|Akaya+Telivigala|Fredericka+the+Great|Cabin+Sketch|Rye|Corben|MedievalSharp|Benne|Noto+Sans+Cuneiform|Lugrasimo"/>
   </head>
   <body>
     <table padding=2>
@@ -55,8 +55,8 @@
       lands and boundaries on any date, as well as being able to show the
       dynamic changes in lands and boundaries from any point in history
       to the present. It is very much a work in progress. This early
-      demonstration shows a rendering of data in the North American
-      arena using <a href="https://leafletjs.com">Leaflet</a> to display
+      demonstration shows a rendering of <span id="studyarena">data in the North American arena</span>
+      using <a href="https://leafletjs.com">Leaflet</a> to display
       geographical features from the database, overlaid on top of
       a modern map.
     </p>
@@ -71,6 +71,8 @@
       format that underpins the historical database is provided here.
       For information or any questions, please use <a href="mailto:ohmec.contact@gmail.com">ohmec.contact@gmail.com</a>.
     </p>
+    <p id="studyblurb" hidden></p>
+    <p id="studyfocus" hidden></p>
     <p>
       At this time, there are <span id='polycount'>0</span> features rendered in the database(s).
     </p>
@@ -79,7 +81,11 @@
         &nbsp;&nbsp;&nbsp;<a id='directlink' href="URL">URL</a>
     </p>
 
-    <script type="text/javascript" src="ohmec_data_na.js"></script>
+    <script type="text/javascript" src="studies.js"></script>
+    <script type="text/javascript">
+      OHMEC.applyStudyChrome(OHMEC_STUDY);
+      OHMEC.writeDataScripts(OHMEC_STUDY);
+    </script>
     <script type="text/javascript" src="time_slider.js"></script>
     <script type="text/javascript" src="mapbox-config.js"></script>
     <script type="text/javascript" src="ohmec.js"></script>
