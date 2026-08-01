@@ -49,6 +49,9 @@ let lastLayer;
 let lastFeature = null;
 let allLayers = [];
 let activeIds = new Set(); // features currently shown on the map for curDate
+// Rebuild animated feature labels only when morph progress moves by this much (Phase B).
+// ~50 label updates per full animation instead of one per slider/Advance tick.
+let animLabelRatioStep = 0.02;
 
 let infoboxNormalBackground = "rgba(4,112,255,0.7)";
 let infoboxPinnedBackground = "rgba(4, 64,160,0.7)";
@@ -1551,6 +1554,7 @@ function removeFeatureFromMap(lyr) {
     lyr.feature.iconOverlay.removeFrom(ohmap);
   }
   lyr.feature.textOverlay.removeFrom(ohmap);
+  delete lyr.feature._lastLabelTimeRatio;
 }
 
 function addFeatureToMap(lyr) {
@@ -1668,16 +1672,37 @@ function morphAnimatedLayer(lyr) {
   return timeRatio;
 }
 
-function refreshAnimatedLabel(lyr, timeRatio) {
+// Rebuild an animated feature's SVG label overlay. If the old overlay was on the
+// map, the new one is put back; otherwise only the overlay object is replaced
+// (caller may attach via addFeatureToMap). Static labels are left alone (Phase B).
+function refreshAnimatedLabel(lyr, timeRatio, force) {
+  let last = lyr.feature._lastLabelTimeRatio;
+  if (!force && last !== undefined) {
+    let atEnd = (timeRatio <= 0 || timeRatio >= 1);
+    if (!atEnd && Math.abs(timeRatio - last) < animLabelRatioStep) {
+      return false;
+    }
+    if (atEnd && last === timeRatio) {
+      return false;
+    }
+  }
   let bounds = L.polygon(lyr._latlngs).getBounds();
-  lyr.feature.textOverlay.removeFrom(ohmap);
+  let wasOnMap = !!(lyr.feature.textOverlay && lyr.feature.textOverlay._map);
+  if (wasOnMap) {
+    lyr.feature.textOverlay.removeFrom(ohmap);
+  }
   lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, false, fHash[lyr.feature.properties.animateTo].properties, timeRatio);
-  lyr.feature.textOverlay.addTo(ohmap);
+  if (wasOnMap) {
+    lyr.feature.textOverlay.addTo(ohmap);
+  }
+  lyr.feature._lastLabelTimeRatio = timeRatio;
+  return true;
 }
 
 geojson.evaluateLayers = function () {
-  // Only add/remove layers whose visibility changed for curDate (Phase A).
-  // Static features that stay visible are left untouched.
+  // Phase A: only add/remove layers whose visibility changed for curDate.
+  // Phase B: static labels stay as created in onEachFeature; animated labels
+  // are rebuilt only when morph progress crosses animLabelRatioStep.
   let nextActive = new Set();
   for(let l in this._layers) {
     let lyr = this._layers[l];
@@ -1693,13 +1718,13 @@ geojson.evaluateLayers = function () {
         timeRatio = morphAnimatedLayer(lyr);
       }
       if(!wasActive) {
-        addFeatureToMap(lyr);
         if(isAnimated) {
-          // Label was added from the pre-morph overlay; replace with interpolated one
-          refreshAnimatedLabel(lyr, timeRatio);
+          // Replace overlay object for current morph; addFeatureToMap attaches it
+          refreshAnimatedLabel(lyr, timeRatio, true);
         }
+        addFeatureToMap(lyr);
       } else if(isAnimated) {
-        refreshAnimatedLabel(lyr, timeRatio);
+        refreshAnimatedLabel(lyr, timeRatio, false);
       }
     } else if(activeIds.has(id) || lyr._map) {
       // lyr._map covers first paint: GeoJSON starts fully on the map with activeIds empty
