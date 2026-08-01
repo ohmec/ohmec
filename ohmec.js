@@ -48,6 +48,7 @@ let lastBackgroundLayer;
 let lastLayer;
 let lastFeature = null;
 let allLayers = [];
+let activeIds = new Set(); // features currently shown on the map for curDate
 
 let infoboxNormalBackground = "rgba(4,112,255,0.7)";
 let infoboxPinnedBackground = "rgba(4, 64,160,0.7)";
@@ -273,7 +274,17 @@ function addBackgroundLayer(name, access, maxZoom, attribution) {
   maxZoomPerBackground[name] = maxZoomSetting;
 }
 
-let ohmec_mapbox_token = 'pk.eyJ1Ijoic2pjdXBlcnRpbm8iLCJhIjoiY2trM2M2c3V4MTVqbjJwcWRtbG5xYzBuNCJ9.U9HinfthlYYG9oznaMUK3A';
+// Mapbox token must not be committed. Provide via mapbox-config.js
+// (see mapbox-config.example.js) or ?mapbox=pk.... URL parameter.
+let ohmec_mapbox_token = '';
+if (typeof OHMEC_MAPBOX_TOKEN === 'string' && OHMEC_MAPBOX_TOKEN.length > 0) {
+  ohmec_mapbox_token = OHMEC_MAPBOX_TOKEN;
+} else {
+  let mapboxParam = new URLSearchParams(location.search).get('mapbox');
+  if (mapboxParam) {
+    ohmec_mapbox_token = mapboxParam;
+  }
+}
 
 addBackgroundLayer(
   'relief',
@@ -310,12 +321,14 @@ addBackgroundLayer(
   'Historical data OHMEC contributors | Tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>',
 );
 
-addBackgroundLayer(
-  'streets',
-  'https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/{z}/{x}/{y}?access_token=' + ohmec_mapbox_token,
-  18,
-  'Historical data OHMEC contributors | Tile imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-);
+if (ohmec_mapbox_token) {
+  addBackgroundLayer(
+    'streets',
+    'https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/{z}/{x}/{y}?access_token=' + ohmec_mapbox_token,
+    18,
+    'Historical data OHMEC contributors | Tile imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
+  );
+}
 
 addBackgroundLayer(
   'paint',
@@ -323,6 +336,10 @@ addBackgroundLayer(
   16,
   'Historical data OHMEC contributors | Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>'
 );
+
+if (!(backgroundLayerSetting in backgroundLayers)) {
+  backgroundLayerSetting = backgroundLayerDefault;
+}
 
 lastBackgroundLayer = backgroundLayers[backgroundLayerSetting];
 lastBackgroundLayer.addTo(ohmap);
@@ -1528,135 +1545,178 @@ function interpolateColor(ratio, colorFrom, colorTo) {
   }
 }
 
+function removeFeatureFromMap(lyr) {
+  lyr.removeFrom(ohmap);
+  if (lyr.feature.geometry.type === "Point") {
+    lyr.feature.iconOverlay.removeFrom(ohmap);
+  }
+  lyr.feature.textOverlay.removeFrom(ohmap);
+}
+
+function addFeatureToMap(lyr) {
+  lyr.addTo(ohmap);
+  if (lyr.feature.geometry.type === "Point") {
+    lyr.feature.iconOverlay.addTo(ohmap);
+  }
+  lyr.feature.textOverlay.addTo(ohmap);
+}
+
+// Morph an animateTo feature in place for curDate. Returns timeRatio.
+function morphAnimatedLayer(lyr) {
+  let prop = lyr.feature.properties;
+  let fromC = lyr.feature.geometry.coordinates;
+  let destC = fHash[prop.animateTo].geometry.coordinates;
+  let timeDiv = (fHash[prop.animateTo].properties.startDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
+  let timeNum = (curDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
+  let timeRatio = timeNum/timeDiv;
+  if(lyr.feature.geometry.type === 'MultiPolygon') {
+    for(let o in lyr.feature.pairDiffs) {
+      for(let i of lyr.feature.pairDiffs[o]) {
+        let newlat = interpolateFloat(timeRatio, fromC[o][0][i][1], destC[o][0][i][1]);
+        let newlon = interpolateFloat(timeRatio, fromC[o][0][i][0], destC[o][0][i][0]);
+        lyr._latlngs[o][0][i] = L.latLng(newlat,newlon);
+      }
+    }
+  } else if(lyr.feature.geometry.type === 'Polygon') {
+    for(let i of lyr.feature.pairDiffs) {
+      let newlat = interpolateFloat(timeRatio, fromC[0][i][1], destC[0][i][1]);
+      let newlon = interpolateFloat(timeRatio, fromC[0][i][0], destC[0][i][0]);
+      lyr._latlngs[0][i] = L.latLng(newlat,newlon);
+    }
+  } else if(lyr.feature.geometry.type === 'LineString') {
+    if(fromC.length == (destC.length-1)) { // interpolate the last entry
+      let newlat = interpolateFloat(timeRatio, destC[destC.length-2][1], destC[destC.length-1][1]);
+      let newlon = interpolateFloat(timeRatio, destC[destC.length-2][0], destC[destC.length-1][0]);
+      lyr._latlngs[destC.length-1] = L.latLng(newlat,newlon);
+    } else if(fromC.length != destC.length) {
+      // need to walk through the paths and figure out where we are in the interpolation
+      // from the end of fromC to destC
+      lyr._latlngs = [];
+      for(let i=0;i<fromC.length;i++) {
+        lyr._latlngs[i] = L.latLng(destC[i][1],destC[i][0]);
+      }
+      let sumLength = 0;
+      for(let i=fromC.length;i<destC.length;i++) {
+        let thisLength = distComp(destC[i-1],destC[i]);
+        // if this segment still stays under time ratio, add it completely
+        if((thisLength+sumLength) < (timeRatio*lyr.feature.animLength)) {
+          lyr._latlngs[i] = L.latLng(destC[i][1],destC[i][0]);
+        // else if this segment crosses over the time ratio, interpolate it
+        } else if(sumLength < (timeRatio*lyr.feature.animLength)) {
+          let startRatio = sumLength / lyr.feature.animLength;
+          let endRatio = (sumLength+thisLength) / lyr.feature.animLength;
+          let interpRatio = (timeRatio - startRatio) / (endRatio - startRatio);
+          let newlat = interpolateFloat(interpRatio, destC[i-1][1], destC[i][1]);
+          let newlon = interpolateFloat(interpRatio, destC[i-1][0], destC[i][0]);
+          lyr._latlngs[i] = L.latLng(newlat,newlon);
+        } // else don't add anything
+        sumLength += thisLength;
+      }
+    }
+  } else {
+    throw "how do I animate a " + lyr.feature.geometry.type;
+  }
+  let resetStyle = false;
+  if(!("origFillColor"     in prop)) prop.origFillColor     = lyr.feature.style.fillColor;
+  if(!("origStrokeColor"   in prop)) prop.origStrokeColor   = lyr.feature.style.strokeColor;
+  if(!("origFillOpacity"   in prop)) prop.origFillOpacity   = lyr.feature.style.fillOpacity;
+  if(!("origStrokeOpacity" in prop)) prop.origStrokeOpacity = lyr.feature.style.strokeOpacity;
+  if(!("origStrokeWeight"  in prop)) prop.origStrokeWeight  = lyr.feature.style.strokeWeight;
+  if(!("origFontcolor"     in prop)) prop.origFontcolor     = lyr.feature.style.fontcolor;
+  if(prop.origFillColor !== fHash[prop.animateTo].style.fillColor) {
+    let newFillColor = interpolateColor(timeRatio, prop.origFillColor, fHash[prop.animateTo].style.fillColor);
+    lyr.feature.style.fillColor = newFillColor;
+    resetStyle = true;
+  }
+  if(prop.origStrokeColor !== fHash[prop.animateTo].style.strokeColor) {
+    let newStrokeColor = interpolateColor(timeRatio, prop.origStrokeColor, fHash[prop.animateTo].style.strokeColor);
+    lyr.feature.style.strokeColor = newStrokeColor;
+    lyr.feature.style.color = newStrokeColor;
+    resetStyle = true;
+  }
+  if(prop.origFillOpacity !== fHash[prop.animateTo].style.fillOpacity) {
+    let newFillOpacity = interpolateFloat(timeRatio, prop.origFillOpacity, fHash[prop.animateTo].style.fillOpacity);
+    lyr.feature.style.fillOpacity = newFillOpacity;
+    resetStyle = true;
+  }
+  if(prop.origStrokeOpacity !== fHash[prop.animateTo].style.strokeOpacity) {
+    let newStrokeOpacity = interpolateFloat(timeRatio, prop.origStrokeOpacity, fHash[prop.animateTo].style.strokeOpacity);
+    lyr.feature.style.strokeOpacity = newStrokeOpacity;
+    lyr.feature.style.opacity = newStrokeOpacity;
+    resetStyle = true;
+  }
+  if(prop.origStrokeWeight !== fHash[prop.animateTo].style.strokeWeight) {
+    let newStrokeWeight = interpolateFloat(timeRatio, prop.origStrokeWeight, fHash[prop.animateTo].style.strokeWeight);
+    lyr.feature.style.strokeWeight = newStrokeWeight;
+    lyr.feature.style.weight = newStrokeWeight;
+    resetStyle = true;
+  }
+  if(prop.origFontcolor !== fHash[prop.animateTo].style.fontcolor) {
+    let newFontcolor = interpolateColor(timeRatio, prop.origFontcolor, fHash[prop.animateTo].style.fontcolor);
+    lyr.feature.style.fontcolor = newFontcolor;
+    resetStyle = true;
+  }
+  if(resetStyle) {
+    lyr.setStyle(lyr.feature.style);
+  }
+  // Push mutated latlngs into Leaflet without detach/reattach
+  if (typeof lyr.setLatLngs === 'function') {
+    lyr.setLatLngs(lyr._latlngs);
+  } else if (typeof lyr.redraw === 'function') {
+    lyr.redraw();
+  }
+  return timeRatio;
+}
+
+function refreshAnimatedLabel(lyr, timeRatio) {
+  let bounds = L.polygon(lyr._latlngs).getBounds();
+  lyr.feature.textOverlay.removeFrom(ohmap);
+  lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, false, fHash[lyr.feature.properties.animateTo].properties, timeRatio);
+  lyr.feature.textOverlay.addTo(ohmap);
+}
+
 geojson.evaluateLayers = function () {
+  // Only add/remove layers whose visibility changed for curDate (Phase A).
+  // Static features that stay visible are left untouched.
+  let nextActive = new Set();
   for(let l in this._layers) {
     let lyr = this._layers[l];
+    let id = lyr.feature.id;
     let prop = lyr.feature.properties;
-    let timeRatio;
-    if(curDate >= prop.startDate && curDate <= prop.endDate) {
-      if("animateTo" in prop) {
-        lyr.removeFrom(ohmap);
-        let fromC = lyr.feature.geometry.coordinates;
-        let destC = fHash[prop.animateTo].geometry.coordinates;
-        let timeDiv = (fHash[prop.animateTo].properties.startDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
-        let timeNum = (curDate.getTime() - prop.startDate.getTime())/(1000*60*60*24);
-        timeRatio = timeNum/timeDiv;
-        if(lyr.feature.geometry.type === 'MultiPolygon') {
-          for(let o in lyr.feature.pairDiffs) {
-            for(let i of lyr.feature.pairDiffs[o]) {
-              let newlat = interpolateFloat(timeRatio, fromC[o][0][i][1], destC[o][0][i][1]);
-              let newlon = interpolateFloat(timeRatio, fromC[o][0][i][0], destC[o][0][i][0]);
-              lyr._latlngs[o][0][i] = L.latLng(newlat,newlon);
-            }
-          }
-        } else if(lyr.feature.geometry.type === 'Polygon') {
-          for(let i of lyr.feature.pairDiffs) {
-            let newlat = interpolateFloat(timeRatio, fromC[0][i][1], destC[0][i][1]);
-            let newlon = interpolateFloat(timeRatio, fromC[0][i][0], destC[0][i][0]);
-            lyr._latlngs[0][i] = L.latLng(newlat,newlon);
-          }
-        } else if(lyr.feature.geometry.type === 'LineString') {
-          if(fromC.length == (destC.length-1)) { // interpolate the last entry
-            let newlat = interpolateFloat(timeRatio, destC[destC.length-2][1], destC[destC.length-1][1]);
-            let newlon = interpolateFloat(timeRatio, destC[destC.length-2][0], destC[destC.length-1][0]);
-            lyr._latlngs[destC.length-1] = L.latLng(newlat,newlon);
-          } else if(fromC.length != destC.length) {
-            // need to walk through the paths and figure out where we are in the interpolation
-            // from the end of fromC to destC
-            lyr._latlngs = [];
-            for(let i=0;i<fromC.length;i++) {
-              lyr._latlngs[i] = L.latLng(destC[i][1],destC[i][0]);
-            }
-            let sumLength = 0;
-            for(let i=fromC.length;i<destC.length;i++) {
-              let thisLength = distComp(destC[i-1],destC[i]);
-              // if this segment still stays under time ratio, add it completely
-              if((thisLength+sumLength) < (timeRatio*lyr.feature.animLength)) {
-                lyr._latlngs[i] = L.latLng(destC[i][1],destC[i][0]);
-              // else if this segment crosses over the time ratio, interpolate it
-              } else if(sumLength < (timeRatio*lyr.feature.animLength)) {
-                let startRatio = sumLength / lyr.feature.animLength;
-                let endRatio = (sumLength+thisLength) / lyr.feature.animLength;
-                let interpRatio = (timeRatio - startRatio) / (endRatio - startRatio);
-                let newlat = interpolateFloat(interpRatio, destC[i-1][1], destC[i][1]);
-                let newlon = interpolateFloat(interpRatio, destC[i-1][0], destC[i][0]);
-                lyr._latlngs[i] = L.latLng(newlat,newlon);
-              } // else don't add anything
-              sumLength += thisLength;
-            }
-          }
-        } else {
-          throw "how do I animate a " + lyr.feature.geometry.type;
-        }
-        let resetStyle = false;
-        if(!("origFillColor"     in prop)) prop.origFillColor     = lyr.feature.style.fillColor;
-        if(!("origStrokeColor"   in prop)) prop.origStrokeColor   = lyr.feature.style.strokeColor;
-        if(!("origFillOpacity"   in prop)) prop.origFillOpacity   = lyr.feature.style.fillOpacity;
-        if(!("origStrokeOpacity" in prop)) prop.origStrokeOpacity = lyr.feature.style.strokeOpacity;
-        if(!("origStrokeWeight"  in prop)) prop.origStrokeWeight  = lyr.feature.style.strokeWeight;
-        if(!("origFontcolor"     in prop)) prop.origFontcolor     = lyr.feature.style.fontcolor;
-        if(prop.origFillColor !== fHash[prop.animateTo].style.fillColor) {
-          let newFillColor = interpolateColor(timeRatio, prop.origFillColor, fHash[prop.animateTo].style.fillColor);
-          lyr.feature.style.fillColor = newFillColor;
-          resetStyle = true;
-        }
-        if(prop.origStrokeColor !== fHash[prop.animateTo].style.strokeColor) {
-          let newStrokeColor = interpolateColor(timeRatio, prop.origStrokeColor, fHash[prop.animateTo].style.strokeColor);
-          lyr.feature.style.strokeColor = newStrokeColor;
-          lyr.feature.style.color = newStrokeColor;
-          resetStyle = true;
-        }
-        if(prop.origFillOpacity !== fHash[prop.animateTo].style.fillOpacity) {
-          let newFillOpacity = interpolateFloat(timeRatio, prop.origFillOpacity, fHash[prop.animateTo].style.fillOpacity);
-          lyr.feature.style.fillOpacity = newFillOpacity;
-          resetStyle = true;
-        }
-        if(prop.origStrokeOpacity !== fHash[prop.animateTo].style.strokeOpacity) {
-          let newStrokeOpacity = interpolateFloat(timeRatio, prop.origStrokeOpacity, fHash[prop.animateTo].style.strokeOpacity);
-          lyr.feature.style.strokeOpacity = newStrokeOpacity;
-          lyr.feature.style.opacity = newStrokeOpacity;
-          resetStyle = true;
-        }
-        if(prop.origStrokeWeight !== fHash[prop.animateTo].style.strokeWeight) {
-          let newStrokeWeight = interpolateFloat(timeRatio, prop.origStrokeWeight, fHash[prop.animateTo].style.strokeWeight);
-          lyr.feature.style.strokeWeight = newStrokeWeight;
-          lyr.feature.style.weight = newStrokeWeight;
-          resetStyle = true;
-        }
-        if(prop.origFontcolor !== fHash[prop.animateTo].style.fontcolor) {
-          let newFontcolor = interpolateColor(timeRatio, prop.origFontcolor, fHash[prop.animateTo].style.fontcolor);
-          lyr.feature.style.fontcolor = newFontcolor;
-          resetStyle = true;
-        }
-        if(resetStyle) {
-          lyr.setStyle(lyr.feature.style);
-        }
+    let shouldShow = curDate >= prop.startDate && curDate <= prop.endDate;
+    if(shouldShow) {
+      nextActive.add(id);
+      let wasActive = activeIds.has(id);
+      let isAnimated = "animateTo" in prop;
+      let timeRatio;
+      if(isAnimated) {
+        timeRatio = morphAnimatedLayer(lyr);
       }
-      lyr.addTo(ohmap);
-      if (lyr.feature.geometry.type === "Point") {
-        lyr.feature.iconOverlay.addTo(ohmap);
+      if(!wasActive) {
+        addFeatureToMap(lyr);
+        if(isAnimated) {
+          // Label was added from the pre-morph overlay; replace with interpolated one
+          refreshAnimatedLabel(lyr, timeRatio);
+        }
+      } else if(isAnimated) {
+        refreshAnimatedLabel(lyr, timeRatio);
       }
-      if("animateTo" in prop) {
-        let bounds = L.polygon(lyr._latlngs).getBounds();
-        lyr.feature.textOverlay.removeFrom(ohmap);
-        lyr.feature.textOverlay = updateTextOverlay(lyr.feature, bounds, false, fHash[prop.animateTo].properties,timeRatio);
-      }
-      lyr.feature.textOverlay.addTo(ohmap);
-    } else {
-      lyr.removeFrom(ohmap);
-      if (lyr.feature.geometry.type === "Point") {
-        lyr.feature.iconOverlay.removeFrom(ohmap);
-      }
-      lyr.feature.textOverlay.removeFrom(ohmap);
+    } else if(activeIds.has(id) || lyr._map) {
+      // lyr._map covers first paint: GeoJSON starts fully on the map with activeIds empty
+      removeFeatureFromMap(lyr);
     }
   }
+  activeIds = nextActive;
   // now check for layer control properties (front and back, ignore default)
   allLayers = this._layers;
   for(let l in this._layers) {
     let lyr = this._layers[l];
-    let prop = lyr.feature.properties;
+    let id = lyr.feature.id;
+    if(!activeIds.has(id)) {
+      continue;
+    }
     let style = lyr.feature.style;
-    if(curDate >= prop.startDate && curDate <= prop.endDate && "layerDepth" in style && style.layerDepth !== "default") {
+    if("layerDepth" in style && style.layerDepth !== "default") {
       if(style.layerDepth === "front") {
         lyr.bringToFront();
       }
@@ -1863,6 +1923,9 @@ function checkKeypress(e) {
       break;
   }
   if (backgroundUpdated) {
+    if (!(backgroundLayerSetting in backgroundLayers)) {
+      backgroundLayerSetting = backgroundLayerDefault;
+    }
     lastBackgroundLayer.remove();
     lastBackgroundLayer = backgroundLayers[backgroundLayerSetting];
     lastBackgroundLayer.addTo(ohmap);
