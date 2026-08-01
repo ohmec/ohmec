@@ -385,73 +385,150 @@ function getSourceNameType(stext, idx) {
   let tmatch = stext.match(test);
   let sname = stext;
   let stype = "source";
-  // complicated HTML to get the keyboard digit representing the source
-  let sprefix = "&#x" + (idx+49).toString(16) + ";&#xfe0f;&#x20e3; ";
+  // keycap digit for keyboard shortcut (1️⃣ …)
+  let sprefix = String.fromCharCode(0x31 + idx) + '\uFE0F\u20E3 ';
   if (tmatch !== null) {
     stype = tmatch[1];
     sname = tmatch[2];
-  } else {
-    test = /http.*wikipedia/;
+  } else if (/http.*wikipedia/i.test(stext)) {
     stype = "wikipedia source";
   }
   return [sprefix,sname,stype];
 }
 
-infobox.update = function(id, prop) {
-  if (prop) {
-    let thisHTML = '<b>' + prop.entity1type  + '</b>: ' + prop.entity1name + '<br/>';
-    if("entity2type" in prop) {
-      thisHTML += '<b>' + prop.entity2type + '</b>: ' + prop.entity2name + '<br/>';
+// Only allow http(s) links in the infobox / source shortcuts.
+function safeHttpUrl(url) {
+  if (typeof url !== 'string' || url.length === 0) {
+    return null;
+  }
+  try {
+    let parsed = new URL(url, location.href);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return parsed.href;
     }
-    thisHTML += prop.startdatestr + ' - ' + prop.enddatestr  + '<br/>';
+  } catch (e) {
+    // ignore invalid URLs
+  }
+  return null;
+}
+
+function safeEmblemPath(name) {
+  if (typeof name !== 'string' || !/^[\w.-]+$/.test(name)) {
+    return null;
+  }
+  return 'emblems/' + name;
+}
+
+function clearElement(el) {
+  while (el.firstChild) {
+    el.removeChild(el.firstChild);
+  }
+}
+
+function appendBr(parent) {
+  parent.appendChild(document.createElement('br'));
+}
+
+function appendLabeledLine(parent, label, value) {
+  let bold = document.createElement('b');
+  bold.textContent = label;
+  parent.appendChild(bold);
+  parent.appendChild(document.createTextNode(': ' + value));
+  appendBr(parent);
+}
+
+function appendSourceLink(parent, sourceText, idx) {
+  if (typeof sourceText === 'string' && sourceText.includes('native-land')) {
+    let a = document.createElement('a');
+    let href = safeHttpUrl(sourceText);
+    if (href) {
+      a.href = href;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+    }
+    a.textContent = 'source: Native Lands';
+    parent.appendChild(a);
+    appendBr(parent);
+    return;
+  }
+  let sreturn = getSourceNameType(sourceText, idx);
+  parent.appendChild(document.createTextNode(sreturn[0]));
+  let a = document.createElement('a');
+  let href = safeHttpUrl(sreturn[1]);
+  if (href) {
+    a.href = href;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+  }
+  a.textContent = sreturn[2];
+  parent.appendChild(a);
+  appendBr(parent);
+}
+
+infobox.update = function(id, prop) {
+  clearElement(infobox._div);
+  if (prop) {
+    appendLabeledLine(infobox._div, prop.entity1type, prop.entity1name);
+    if("entity2type" in prop) {
+      appendLabeledLine(infobox._div, prop.entity2type, prop.entity2name);
+    }
+    infobox._div.appendChild(
+      document.createTextNode(prop.startdatestr + ' - ' + prop.enddatestr)
+    );
+    appendBr(infobox._div);
     if("source" in prop) {
-      if(prop.source.includes("native-land")) { // give explicit credit to Native Lands for their data
-        thisHTML += '<a href="' + prop.source + '" target="_blank">source: Native Lands</a><br/>';
-      } else {
-        let sreturn = getSourceNameType(prop.source,0);
-        thisHTML += sreturn[0] + '<a href="' + sreturn[1] + '" target="_blank">' + sreturn[2] + '</a><br/>';
-      }
+      appendSourceLink(infobox._div, prop.source, 0);
     } else if("sources" in prop) {
       for (let i=0;i<prop.sources.length;i++) {
-        let sreturn = getSourceNameType(prop.sources[i],i);
-        thisHTML += sreturn[0] + '<a href="' + sreturn[1] + '" target="_blank">' + sreturn[2] + '</a><br/>';
+        appendSourceLink(infobox._div, prop.sources[i], i);
       }
     }
-    thisHTML += '<b>id:</b>' + id;
-    if ("emblem" in fHash[id] && "periodList" in fHash[id]) {
-      thisHTML += '<div id="embox">';
+    let idBold = document.createElement('b');
+    idBold.textContent = 'id:';
+    infobox._div.appendChild(idBold);
+    infobox._div.appendChild(document.createTextNode(String(id)));
+
+    let embox = null;
+    let hasEmblem = ("emblem" in fHash[id]);
+    let hasPeriods = ("periodList" in fHash[id]);
+    if (hasEmblem && hasPeriods) {
+      embox = document.createElement('div');
+      embox.id = 'embox';
+      infobox._div.appendChild(embox);
     }
-    if ("emblem" in fHash[id]) {
-      thisHTML += '<center><img id="emblem" src="emblems/' + fHash[id].emblem + '" height="40"></center>';
+    let emblemParent = embox || infobox._div;
+    if (hasEmblem) {
+      let emblemSrc = safeEmblemPath(fHash[id].emblem);
+      if (emblemSrc) {
+        let center = document.createElement('center');
+        let img = document.createElement('img');
+        img.id = 'emblem';
+        img.src = emblemSrc;
+        img.height = 40;
+        img.alt = '';
+        center.appendChild(img);
+        emblemParent.appendChild(center);
+      }
     }
-    if ("periodList" in fHash[id]) {
+    if (hasPeriods) {
       for(let m in fHash[id].periodList) {
         let entry = fHash[id].periodList[m];
-        // error out if there are entries that don't conform to expectation
         if("startdatestr" in entry && "enddatestr" in entry && "period" in entry) {
           let startDate = str2date(entry.startdatestr,false);
           let endDate = str2date(entry.enddatestr,true);
           if(curDate >= startDate && curDate <= endDate) {
-            let pe = entry.period;
-            thisHTML += '<div id="pinfo"><center>' + pe + '</center></div>';
+            let pinfo = document.createElement('div');
+            pinfo.id = 'pinfo';
+            let center = document.createElement('center');
+            center.textContent = entry.period;
+            pinfo.appendChild(center);
+            (embox || infobox._div).appendChild(pinfo);
           }
         } else {
-          if(!("startdatestr" in entry)) {
-            throw "missing startdatestr in periodList for " + id;
-          }
-          if(!("enddatestr" in entry)) {
-            throw "missing enddatestr in periodList for " + id;
-          }
-          if(!("period" in entry)) {
-            throw "missing period in periodList for " + id;
-          }
+          console.error('incomplete periodList entry for ' + id, entry);
         }
       }
     }
-    if ("emblem" in fHash[id] && "periodList" in fHash[id]) {
-      thisHTML += '</div>';
-    }
-    infobox._div.innerHTML = thisHTML;
 
     if (!fHash[id].style.borderless) {
       // set the background of the infobox to match the style fill color of feature
@@ -467,15 +544,17 @@ infobox.update = function(id, prop) {
         linkcolor = '#11e';
       }
       infobox._div.style.color = divcolor;
-      if ("emblem" in fHash[id] && "periodList" in fHash[id]) {
-        document.getElementById("embox").style.borderColor = divcolor;
+      if (embox) {
+        embox.style.borderColor = divcolor;
       }
-      for (let aelem of document.getElementsByClassName('infobox')[0].getElementsByTagName('a')) {
+      for (let aelem of infobox._div.getElementsByTagName('a')) {
         aelem.style.color = linkcolor;
       }
     }
   } else {
-    infobox._div.innerHTML = '<b>Feature Information</b>';
+    let title = document.createElement('b');
+    title.textContent = 'Feature Information';
+    infobox._div.appendChild(title);
     infobox._div.style.background = infoboxNormalBackground;
     infobox._div.style.color = '#eee';
   }
@@ -2117,10 +2196,10 @@ function handleNumPress(val, layerstring) {
     // open up source # (val-1)
     let test = /^(\w+):(\w.+)$/;
     let tmatch = sources[val-1].match(test);
-    if (tmatch !== null) {
-      window.open(tmatch[2], "_blank");
-    } else {
-      window.open(sources[val-1], "_blank");
+    let rawUrl = (tmatch !== null) ? tmatch[2] : sources[val-1];
+    let href = safeHttpUrl(rawUrl);
+    if (href) {
+      window.open(href, "_blank", "noopener,noreferrer");
     }
     return false;
   }
