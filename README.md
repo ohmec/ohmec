@@ -10,15 +10,23 @@ A specification of the [extended GeoJSON](https://docs.google.com/document/d/15D
 
 An up to date rendering can be found in our [Github Mirror Page](http://ohmec.net).
 
-## Mapbox streets basemap (optional)
+## Basemaps
 
-The labeled `streets background uses Mapbox and needs a public access token.
-Do not commit tokens, Github will reject the push
+Most backgrounds need no API key:
 
-Alternatively pass `?mapbox=pk.your_token` in the page URL
+| Layer id | Provider | Notes |
+|----------|----------|--------|
+| `relief` | Esri World Shaded Relief | Default |
+| `world` | Esri World Imagery | Satellite |
+| `physical` | Esri World Physical | Low-detail physical |
+| `white` | Esri World Terrain | Light terrain |
+| `stamen` | [OpenTopoMap](https://opentopomap.org/) | Terrain / contours (key `4`) |
+| `positron` | [CARTO](https://carto.com/) Positron (no labels) | Light base, good label contrast (key `5`) |
+| `paint` | [CARTO](https://carto.com/) Voyager (no labels) | Soft colorful base (key `7`) |
 
-## Stamen / Stadia basemaps
+Optional Mapbox `streets` (key `6`) needs a public token — do not commit it:
 
-The `stamen` (terrain backgroun) and `paint` (watercolor) layers use
-[Stadia Maps](https://docs.stadiamaps.com/guides/migrating-from-stamen-map-tiles/)
-hosting.
+```bash
+cp mapbox-config.example.js mapbox-config.js
+# set OHMEC_MAPBOX_TOKEN, or pass ?mapbox=pk....
+```

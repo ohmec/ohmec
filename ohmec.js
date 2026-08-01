@@ -141,7 +141,7 @@ for(let param of parameters) {
   if (match !== null) {
     smartStepFeature = (match[1]==='on') ? 1 : 0;
   }
-  test = /background=(relief|stamen|paint|streets|physical|world|white)/;
+  test = /background=(relief|stamen|positron|paint|streets|physical|world|white)/;
   match = param.match(test);
   if (match !== null) {
     backgroundLayerSetting = match[1];
@@ -268,14 +268,21 @@ function completeMapMove() {
 
 ohmap.on('moveend', completeMapMove);
 
-function addBackgroundLayer(name, access, maxZoom, attribution) {
+// useStandardTiles: true for 256px XYZ providers (Stadia, OpenTopoMap, etc.)
+function addBackgroundLayer(name, access, maxZoom, attribution, useStandardTiles) {
   let maxZoomSetting = (maxZoom > zoomSettingMax) ? zoomSettingMax : maxZoom;
-  backgroundLayers[name] = L.tileLayer(access, {
+  let layerOpts = {
     maxZoom:     maxZoomSetting,
-    attribution: attribution,
-    tileSize:    512,
-    zoomOffset:  -1
-  });
+    attribution: attribution
+  };
+  if (useStandardTiles) {
+    layerOpts.tileSize = 256;
+  } else {
+    // Retina-style tiling used by Mapbox / some Esri endpoints in this project
+    layerOpts.tileSize = 512;
+    layerOpts.zoomOffset = -1;
+  }
+  backgroundLayers[name] = L.tileLayer(access, layerOpts);
   maxZoomPerBackground[name] = maxZoomSetting;
 }
 
@@ -319,14 +326,23 @@ addBackgroundLayer(
   'Historical data OHMEC contributors | Tiles &copy; Esri &mdash; Source: Esri'
 );
 
-// Stamen styles are hosted by Stadia Maps (old stamen-tiles Fastly URLs are dead).
-// Free use: register at https://client.stadiamaps.com/ and whitelist your domain.
-// localhost / 127.0.0.1 work without a key for development.
+// Free no-auth basemaps (layer ids "stamen"/"paint" kept for URL + keyboard compat).
+// OpenTopoMap: terrain/contours. CARTO Positron: light unlabeled (good label contrast).
+// CARTO Voyager: soft colorful base without labels.
 addBackgroundLayer(
   'stamen',
-  'https://tiles.stadiamaps.com/tiles/stamen_terrain_background/{z}/{x}/{y}{r}.png',
-	18,
-  'Historical data OHMEC contributors | &copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+  'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+  17,
+  'Historical data OHMEC contributors | &copy; <a href="https://opentopomap.org" target="_blank">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank">CC-BY-SA</a>)',
+  true
+);
+
+addBackgroundLayer(
+  'positron',
+  'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
+  18,
+  'Historical data OHMEC contributors | &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
+  true
 );
 
 if (ohmec_mapbox_token) {
@@ -340,9 +356,10 @@ if (ohmec_mapbox_token) {
 
 addBackgroundLayer(
   'paint',
-  'https://tiles.stadiamaps.com/tiles/stamen_watercolor/{z}/{x}/{y}.jpg',
-  16,
-  'Historical data OHMEC contributors | &copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+  18,
+  'Historical data OHMEC contributors | &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
+  true
 );
 
 if (!(backgroundLayerSetting in backgroundLayers)) {
@@ -2036,8 +2053,9 @@ function checkKeypress(e) {
     case '2': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'physical'); break;
     case '3': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'white');    break;
     case '4': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'stamen');   break;
-    case '5': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'streets');  break;
-    case '6': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'paint');    break;
+    case '5': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'positron'); break;
+    case '6': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'streets');  break;
+    case '7': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), 'paint');    break;
     case '7':
     case '8':
     case '9': backgroundUpdated = handleNumPress(parseInt(e.originalEvent.key), null); break;
