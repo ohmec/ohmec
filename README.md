@@ -16,3 +16,9 @@ The labeled `streets background uses Mapbox and needs a public access token.
 Do not commit tokens, Github will reject the push
 
 Alternatively pass `?mapbox=pk.your_token` in the page URL
+
+## Stamen / Stadia basemaps
+
+The `stamen` (terrain backgroun) and `paint` (watercolor) layers use
+[Stadia Maps](https://docs.stadiamaps.com/guides/migrating-from-stamen-map-tiles/)
+hosting.
