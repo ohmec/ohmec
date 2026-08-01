@@ -228,6 +228,15 @@
   }
 
   function loadStudyData(study) {
+    // Browsers block fetch() of local files under the file:// scheme (CORS).
+    if (location.protocol === 'file:') {
+      let msg = 'Map data cannot load from a file:// URL. ' +
+        'Serve the repo over HTTP, e.g. from this directory run: ' +
+        'python3 -m http.server   then open http://localhost:8000/';
+      setLoadStatus(msg, true);
+      console.error(msg);
+      return Promise.reject(new Error(msg));
+    }
     setLoadStatus('Loading map data…');
     let jobs = study.data.map(function (entry) {
       return fetch(entry.url).then(function (resp) {
