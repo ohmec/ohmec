@@ -6,7 +6,7 @@ Contributions are welcome.
 
 See [this slidedeck](https://docs.google.com/presentation/d/1WiXMrLPC4fOwNaKD7UhH2Wb1JSVcva5z4sNdd0qS7vg/edit?usp=sharing) for more insight into the project.
 
-A specification of the [extended GeoJSON](https://docs.google.com/document/d/15D9t61Y1WYYH02BuIp3C8InJD40L19uHIcPNDfNv0Bk/edit?usp=sharing) format that underpins the historical database is provided here.
+The [augmented GeoJSON](docs/AUGMENTED_GEOJSON.md) format used by the historical databases is documented in-repo (dates, required properties, animation notes). A longer [Google Doc](https://docs.google.com/document/d/15D9t61Y1WYYH02BuIp3C8InJD40L19uHIcPNDfNv0Bk/edit?usp=sharing) still exists; if it disagrees with the repo doc or code, prefer the repo.
 
 An up to date rendering can be found in our [Github Mirror Page](http://ohmec.net).
 
