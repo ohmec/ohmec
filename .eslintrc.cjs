@@ -122,6 +122,16 @@ module.exports = {
     completeMapMove: 'writable',
     addBackgroundLayer: 'writable',
 
+    // ohmec-texture.js
+    ensureTextureRoot: 'writable',
+    patternIdFor: 'writable',
+    ensureTexturePattern: 'writable',
+    ensureCrosshatchPattern: 'writable',
+    applyFeatureTexture: 'writable',
+    refreshAllFeatureTextures: 'writable',
+    knownTextureNames: 'writable',
+    OHMEC_TEXTURES: 'writable',
+
     // ohmec-ui.js
     getSourceNameType: 'writable',
     clearElement: 'writable',

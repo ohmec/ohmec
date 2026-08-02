@@ -227,6 +227,14 @@
     }
   }
 
+  // Bump when viewer scripts or study GeoJSON change so browsers pick up new files.
+  const SCRIPT_V = 'texture6';
+
+  function cacheBustUrl(url) {
+    let sep = url.indexOf('?') >= 0 ? '&' : '?';
+    return url + sep + 'v=' + SCRIPT_V;
+  }
+
   function loadStudyData(study) {
     // Browsers block fetch() of local files under the file:// scheme (CORS).
     if (location.protocol === 'file:') {
@@ -239,7 +247,7 @@
     }
     setLoadStatus('Loading map data…');
     let jobs = study.data.map(function (entry) {
-      return fetch(entry.url).then(function (resp) {
+      return fetch(cacheBustUrl(entry.url), { cache: 'no-cache' }).then(function (resp) {
         if (!resp.ok) {
           throw new Error('Failed to fetch ' + entry.url + ' (' + resp.status + ')');
         }
@@ -258,9 +266,6 @@
       throw err;
     });
   }
-
-  // Bump when the viewer script graph changes so browsers pick up new files.
-  const SCRIPT_V = 'split1';
 
   function loadScript(src, optional) {
     return new Promise(function (resolve, reject) {
@@ -299,6 +304,7 @@
         { src: 'mapbox-config.js', optional: true },
         'ohmec-dates.js',
         'ohmec-map.js',
+        'ohmec-texture.js',
         'ohmec-ui.js',
         'ohmec-labels.js',
         'ohmec-lint.js',

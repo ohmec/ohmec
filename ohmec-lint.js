@@ -171,6 +171,18 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
           if(fid < 1 || fid > 5) {
             throw "fidelity for " + f.id + " should be between 1 (lowest) and 5 (highest), got " + fid;
           }
+          if("texture" in p) {
+            let knownTextures = {
+              crosshatch: true,
+              diagonal: true,
+              horizontal: true,
+              vertical: true
+            };
+            if(!(p.texture in knownTextures)) {
+              throw "feature " + f.id + " has unknown texture \"" + p.texture +
+                "\" (supported: " + Object.keys(knownTextures).join(', ') + ")";
+            }
+          }
           // if nativelands.ca is used, don't add homegrown indigenous
           if(replaceIndigenous && p.entity1name === 'Indigenous') {
             removeFeature = true;

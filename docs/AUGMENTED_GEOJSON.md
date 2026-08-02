@@ -50,6 +50,7 @@ Instead of inline `coordinates`, geometry may use:
 | `entity2type` / `entity2name` | secondary label (preferred for map text when present) |
 | `editdatestr` | editor metadata; same date-string rules |
 | `animateTo` | feature `id` to morph toward over this feature’s span |
+| `texture` | optional fill hatch over `fillColor`: `crosshatch`, `diagonal`, `horizontal`, `vertical` |
 | `noLabel` | suppress map label |
 | `waive_overlap` / related | used by `utilities/check_boundaries.py` |
 

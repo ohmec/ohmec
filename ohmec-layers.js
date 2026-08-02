@@ -118,6 +118,7 @@ function addFeatureToMap(lyr) {
     lyr.feature.iconOverlay.addTo(ohmap);
   }
   lyr.feature.textOverlay.addTo(ohmap);
+  applyFeatureTexture(lyr);
 }
 
 // Morph an animateTo feature in place for curDate. Returns timeRatio.
@@ -228,6 +229,7 @@ function morphAnimatedLayer(lyr) {
   if(resetStyle) {
     lyr.setStyle(lyr.feature.style);
   }
+  applyFeatureTexture(lyr);
   // Push mutated latlngs into Leaflet without detach/reattach
   if (typeof lyr.setLatLngs === 'function') {
     lyr.setLatLngs(lyr._latlngs);
@@ -307,6 +309,8 @@ function showFeatureById(id) {
   if (!activeIds.has(id)) {
     addFeatureToMap(lyr);
     activeIds.add(id);
+  } else {
+    applyFeatureTexture(lyr);
   }
 }
 
