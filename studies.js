@@ -293,6 +293,13 @@
       return loadScripts([
         'time_slider.js',
         { src: 'mapbox-config.js', optional: true },
+        'ohmec-dates.js',
+        'ohmec-map.js',
+        'ohmec-ui.js',
+        'ohmec-labels.js',
+        'ohmec-lint.js',
+        'ohmec-layers.js',
+        'ohmec-input.js',
         'ohmec.js',
         'tablinks.js'
       ]);
