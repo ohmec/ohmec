@@ -1632,7 +1632,7 @@ function featureStyle(feature) {
   let fillOpacity   = 0.2 + fidelity/10;
 
   // returning all style contents even if default, just to have as reference
-  // (see https://leafletjs.com/reference-1.7.1.html#path-option)
+  // (see https://leafletjs.com/reference-1.9.4.html#path-option)
   if("style" in feature) {
     return {
       stroke:       feature.style.strokeOn,

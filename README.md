@@ -1,7 +1,7 @@
 # ohmec
 The OHMEC project is a free, open-source geography project, with a goal of representing all historical indigenous lands and political boundaries in a unified database.
 The uniqueness of OHMEC is its ability to represent these lands and boundaries on any date, as well as being able to show the dynamic changes in lands and boundaries from any point in history to the present.
-It is in a nascent stage, using [leaflet](https://leafletjs.com) to visualize data stored in a JSON structure that is currently handcrafted.
+It is in a nascent stage, using [Leaflet](https://leafletjs.com) 1.9.4 to visualize data stored in a JSON structure that is currently handcrafted.
 Contributions are welcome.
 
 See [this slidedeck](https://docs.google.com/presentation/d/1WiXMrLPC4fOwNaKD7UhH2Wb1JSVcva5z4sNdd0qS7vg/edit?usp=sharing) for more insight into the project.
