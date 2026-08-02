@@ -142,3 +142,14 @@ function lowerZ(e) {
   }
 }
 
+/* ohmec module exports */
+(function (g) {
+  g.getSourceNameType = getSourceNameType;
+  g.clearElement = clearElement;
+  g.appendBr = appendBr;
+  g.appendLabeledLine = appendLabeledLine;
+  g.appendSourceLink = appendSourceLink;
+  g.infoboxFeatureOn = infoboxFeatureOn;
+  g.infoboxFeatureOff = infoboxFeatureOff;
+  g.lowerZ = lowerZ;
+})(typeof window !== "undefined" ? window : globalThis);

@@ -360,3 +360,12 @@ function updateTextOverlay(feature, bounds, useHiFont, altProperties, ratio) {
   return L.svgOverlay(textLabel, svgElementBounds);
 }
 
+/* ohmec module exports */
+(function (g) {
+  g.pointToLayer = pointToLayer;
+  g.getTextLabel = getTextLabel;
+  g.getFeatureLabel = getFeatureLabel;
+  g.getFeatureFont = getFeatureFont;
+  g.onEachFeature = onEachFeature;
+  g.updateTextOverlay = updateTextOverlay;
+})(typeof window !== "undefined" ? window : globalThis);

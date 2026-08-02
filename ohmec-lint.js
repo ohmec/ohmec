@@ -408,3 +408,11 @@ function distComp(ptA, ptB) {
   return Math.sqrt(((ptA[0]-ptB[0])**2)+((ptA[1]-ptB[1])**2));
 }
 
+/* ohmec module exports */
+(function (g) {
+  g.recordGeoLintError = recordGeoLintError;
+  g.showGeoLintWarnings = showGeoLintWarnings;
+  g.geo_lint = geo_lint;
+  g.prepare_animations = prepare_animations;
+  g.distComp = distComp;
+})(typeof window !== "undefined" ? window : globalThis);

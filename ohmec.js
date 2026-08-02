@@ -5,6 +5,24 @@
 // Bootstrap: study flags, map/controls wiring, DOI prep, first evaluate.
 // Helpers live in ohmec-*.js (loaded before this file).
 
+(function assertOhmecModulesLoaded() {
+  let required = [
+    'str2date', 'resolveBackgroundId', 'completeMapMove', 'addBackgroundLayer',
+    'clearElement', 'pointToLayer', 'onEachFeature', 'geo_lint',
+    'featureStyle', 'evaluateLayers', 'checkKeypress', 'checkPopups'
+  ];
+  let missing = required.filter(function (name) {
+    return typeof globalThis[name] !== 'function';
+  });
+  if (missing.length) {
+    throw new Error(
+      'OHMEC viewer modules missing (' + missing.join(', ') + '). ' +
+      'Expected ohmec-dates/map/ui/labels/lint/layers/input.js before ohmec.js. ' +
+      'Hard-refresh the page (Cmd+Shift+R) to clear a stale studies.js cache.'
+    );
+  }
+})();
+
 let today = new Date();
 let timelineDateStartDefault = new Date(1776,6,4);  // "interesting" start date, but arbitrary
 let timelineDateStart = timelineDateStartDefault;

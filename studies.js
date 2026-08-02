@@ -259,10 +259,14 @@
     });
   }
 
+  // Bump when the viewer script graph changes so browsers pick up new files.
+  const SCRIPT_V = 'split1';
+
   function loadScript(src, optional) {
     return new Promise(function (resolve, reject) {
       let s = document.createElement('script');
-      s.src = src;
+      let sep = src.indexOf('?') >= 0 ? '&' : '?';
+      s.src = src + sep + 'v=' + SCRIPT_V;
       s.async = false;
       s.onload = function () { resolve(src); };
       s.onerror = function () {

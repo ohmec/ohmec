@@ -415,3 +415,22 @@ function evaluateLayers() {
   applyLayerDepth();
 }
 
+/* ohmec module exports */
+(function (g) {
+  g.featureStyle = featureStyle;
+  g.cToHex = cToHex;
+  g.str2RGB = str2RGB;
+  g.interpolateFloat = interpolateFloat;
+  g.interpolateColor = interpolateColor;
+  g.removeFeatureFromMap = removeFeatureFromMap;
+  g.addFeatureToMap = addFeatureToMap;
+  g.morphAnimatedLayer = morphAnimatedLayer;
+  g.refreshAnimatedLabel = refreshAnimatedLabel;
+  g.findDoiIndex = findDoiIndex;
+  g.hideFeatureById = hideFeatureById;
+  g.showFeatureById = showFeatureById;
+  g.updateAnimatedActive = updateAnimatedActive;
+  g.applyLayerDepth = applyLayerDepth;
+  g.syncToDoiIndex = syncToDoiIndex;
+  g.evaluateLayers = evaluateLayers;
+})(typeof window !== "undefined" ? window : globalThis);

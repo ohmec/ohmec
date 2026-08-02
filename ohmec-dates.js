@@ -114,3 +114,14 @@ function safeEmblemPath(name) {
   return 'emblems/' + name;
 }
 
+/* ohmec module exports */
+(function (g) {
+  g.dateStr = dateStr;
+  g.dateMin = dateMin;
+  g.dateMax = dateMax;
+  g.uniqueDateSort = uniqueDateSort;
+  g.str2date = str2date;
+  g.fixInt = fixInt;
+  g.safeHttpUrl = safeHttpUrl;
+  g.safeEmblemPath = safeEmblemPath;
+})(typeof window !== "undefined" ? window : globalThis);

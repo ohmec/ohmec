@@ -209,3 +209,13 @@ function checkMouseMove(e) {
   }
 }
 
+/* ohmec module exports */
+(function (g) {
+  g.updateHTML = updateHTML;
+  g.updateForm = updateForm;
+  g.handleIPress = handleIPress;
+  g.handleNumPress = handleNumPress;
+  g.checkKeypress = checkKeypress;
+  g.checkPopups = checkPopups;
+  g.checkMouseMove = checkMouseMove;
+})(typeof window !== "undefined" ? window : globalThis);

@@ -105,3 +105,12 @@ function addBackgroundLayer(name, access, maxZoom, attribution, useStandardTiles
   maxZoomPerBackground[name] = maxZoomSetting;
 }
 
+/* ohmec module exports */
+(function (g) {
+  g.resolveBackgroundId = resolveBackgroundId;
+  g.urlString = urlString;
+  g.updateDirectLink = updateDirectLink;
+  g.updateLayerInfo = updateLayerInfo;
+  g.completeMapMove = completeMapMove;
+  g.addBackgroundLayer = addBackgroundLayer;
+})(typeof window !== "undefined" ? window : globalThis);
