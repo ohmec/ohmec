@@ -4,7 +4,7 @@
   "description": "Open History Map Exploration",
   "license": "Apache-2.0",
   "scripts": {
-    "lint": "eslint ohmec.js time_slider.js studies.js tablinks.js",
+    "lint": "eslint ohmec.js ohmec-*.js time_slider.js studies.js tablinks.js",
     "validate:data": "python3 utilities/validate_geojson.py"
   },
   "devDependencies": {

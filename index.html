@@ -9,12 +9,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
       crossorigin=""/>
     <script
-      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg=="
       crossorigin="">
     </script>
     <link rel="stylesheet" href="ohmec.css"/>
@@ -75,8 +75,10 @@
       on the management of the project. Also see
       <a href="https://docs.google.com/presentation/d/1WiXMrLPC4fOwNaKD7UhH2Wb1JSVcva5z4sNdd0qS7vg/edit?usp=sharing">this slidedeck</a>
       for more insight into the project. A specification of the
-      <a href="https://docs.google.com/document/d/15D9t61Y1WYYH02BuIp3C8InJD40L19uHIcPNDfNv0Bk/edit?usp=sharing">extended GeoJSON</a>
-      format that underpins the historical database is provided here.
+      <a href="docs/AUGMENTED_GEOJSON.md">extended GeoJSON</a>
+      format that underpins the historical database is provided here
+      (see also the
+      <a href="https://docs.google.com/document/d/15D9t61Y1WYYH02BuIp3C8InJD40L19uHIcPNDfNv0Bk/edit?usp=sharing">longer Google Doc</a>).
       For information or any questions, please use <a href="mailto:ohmec.contact@gmail.com">ohmec.contact@gmail.com</a>.
     </p>
     <p id="studyblurb" hidden></p>
@@ -89,7 +91,7 @@
         &nbsp;&nbsp;&nbsp;<a id='directlink' href="URL">URL</a>
     </p>
 
-    <script type="text/javascript" src="studies.js"></script>
+    <script type="text/javascript" src="studies.js?v=split1"></script>
     <script type="text/javascript">
       OHMEC.bootStudy(OHMEC_STUDY).catch(function (err) {
         console.error(err);
