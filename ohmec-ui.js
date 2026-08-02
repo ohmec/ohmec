@@ -80,6 +80,7 @@ function infoboxFeatureOn(e) {
       dashArray: '',
       fillOpacity: opacity
     });
+    applyFeatureTexture(layer);
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       if("layerDepth" in layer.feature.style && layer.feature.style.layerDepth !== "back") {
@@ -127,6 +128,7 @@ function infoboxFeatureOff(e) {
 
   // possibly revert font color if it differs in style
   let layer = e.target;
+  applyFeatureTexture(layer);
   if(layer.feature.style.borderless && layer.feature.style.hifontcolor !== layer.feature.style.fontcolor && !("animateTo" in layer.feature.properties)) {
     layer.feature.textOverlay.removeFrom(ohmap);
     layer.feature.textOverlay = updateTextOverlay(layer.feature, layer.getBounds(), false);

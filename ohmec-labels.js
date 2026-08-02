@@ -218,6 +218,11 @@ function onEachFeature(feature, layer) {
     mouseout:  infoboxFeatureOff,
     mousedown: lowerZ
   });
+  // Path exists after the layer is on the map; re-apply if already added.
+  layer.on('add', function () {
+    applyFeatureTexture(layer);
+  });
+  applyFeatureTexture(layer);
 
   let labelBounds;
   let isPoint = feature.geometry.type === "Point";
