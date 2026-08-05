@@ -15,39 +15,74 @@ const OHMEC_HATCH_STROKE = '#000000';
 const OHMEC_HATCH_STROKE_WIDTH = '1';
 const OHMEC_HATCH_STROKE_OPACITY = '0.5';
 
-// Supported texture names and their hatch path(s) inside an OHMEC_HATCH_PX tile.
+function appendHatchPath(pattern, NS, d) {
+  let line = document.createElementNS(NS, 'path');
+  line.setAttribute('d', d);
+  line.setAttribute('stroke', OHMEC_HATCH_STROKE);
+  line.setAttribute('stroke-width', OHMEC_HATCH_STROKE_WIDTH);
+  line.setAttribute('stroke-opacity', OHMEC_HATCH_STROKE_OPACITY);
+  line.setAttribute('fill', 'none');
+  pattern.appendChild(line);
+}
+
+// Each texture paints into a square OHMEC_HATCH_PX tile (bg rect already added).
 const OHMEC_TEXTURES = {
-  crosshatch: function (size) {
+  crosshatch: function (pattern, NS, size) {
     let half = size / 2;
-    return [
+    appendHatchPath(
+      pattern, NS,
       'M0,0 L' + size + ',' + size +
         ' M-' + half + ',' + half + ' L' + half + ',' + (size + half) +
-        ' M' + half + ',-' + half + ' L' + (size + half) + ',' + half,
+        ' M' + half + ',-' + half + ' L' + (size + half) + ',' + half
+    );
+    appendHatchPath(
+      pattern, NS,
       'M' + size + ',0 L0,' + size +
         ' M' + (size + half) + ',' + half + ' L' + half + ',' + (size + half) +
         ' M' + half + ',-' + half + ' L-' + half + ',' + half
-    ];
+    );
   },
   // Bottom-left to top-right diagonals.
-  diagonal: function (size) {
+  diagonal: function (pattern, NS, size) {
     let half = size / 2;
-    return [
+    appendHatchPath(
+      pattern, NS,
       'M0,' + size + ' L' + size + ',0' +
         ' M-' + half + ',' + half + ' L' + half + ',-' + half +
         ' M' + half + ',' + (size + half) + ' L' + (size + half) + ',' + half
-    ];
+    );
   },
-  horizontal: function (size) {
+  horizontal: function (pattern, NS, size) {
     let mid = size / 2;
-    return [
-      'M0,' + mid + ' L' + size + ',' + mid
-    ];
+    appendHatchPath(pattern, NS, 'M0,' + mid + ' L' + size + ',' + mid);
   },
-  vertical: function (size) {
+  vertical: function (pattern, NS, size) {
     let mid = size / 2;
-    return [
-      'M' + mid + ',0 L' + mid + ',' + size
-    ];
+    appendHatchPath(pattern, NS, 'M' + mid + ',0 L' + mid + ',' + size);
+  },
+  // Soft terrain-friendly stipple: one filled circle per tile.
+  dot: function (pattern, NS, size) {
+    let mid = size / 2;
+    let circle = document.createElementNS(NS, 'circle');
+    circle.setAttribute('cx', String(mid));
+    circle.setAttribute('cy', String(mid));
+    circle.setAttribute('r', '2');
+    circle.setAttribute('fill', OHMEC_HATCH_STROKE);
+    circle.setAttribute('fill-opacity', OHMEC_HATCH_STROKE_OPACITY);
+    circle.setAttribute('stroke', 'none');
+    pattern.appendChild(circle);
+  },
+  // Small centered X marks (good for sparse terrain / disputed accents).
+  x: function (pattern, NS, size) {
+    let mid = size / 2;
+    let arm = size * 0.22;
+    appendHatchPath(
+      pattern, NS,
+      'M' + (mid - arm) + ',' + (mid - arm) +
+        ' L' + (mid + arm) + ',' + (mid + arm) +
+        ' M' + (mid + arm) + ',' + (mid - arm) +
+        ' L' + (mid - arm) + ',' + (mid + arm)
+    );
   }
 };
 
@@ -143,16 +178,7 @@ function ensureTexturePattern(texture, fillColor, pathEl) {
   bg.setAttribute('fill', fillColor || '#c0c0c0');
   pattern.appendChild(bg);
 
-  let pathDs = OHMEC_TEXTURES[texture](size);
-  for (let d of pathDs) {
-    let line = document.createElementNS(NS, 'path');
-    line.setAttribute('d', d);
-    line.setAttribute('stroke', OHMEC_HATCH_STROKE);
-    line.setAttribute('stroke-width', OHMEC_HATCH_STROKE_WIDTH);
-    line.setAttribute('stroke-opacity', OHMEC_HATCH_STROKE_OPACITY);
-    line.setAttribute('fill', 'none');
-    pattern.appendChild(line);
-  }
+  OHMEC_TEXTURES[texture](pattern, NS, size);
 
   defs.appendChild(pattern);
   return id;

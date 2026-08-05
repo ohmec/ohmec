@@ -228,7 +228,7 @@
   }
 
   // Bump when viewer scripts or study GeoJSON change so browsers pick up new files.
-  const SCRIPT_V = 'texture6';
+  const SCRIPT_V = 'texture7';
 
   function cacheBustUrl(url) {
     let sep = url.indexOf('?') >= 0 ? '&' : '?';
