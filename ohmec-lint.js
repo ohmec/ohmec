@@ -176,7 +176,9 @@ function geo_lint(dataset, convertFromNativeLands, replaceIndigenous, applyChero
               crosshatch: true,
               diagonal: true,
               horizontal: true,
-              vertical: true
+              vertical: true,
+              dot: true,
+              x: true
             };
             if(!(p.texture in knownTextures)) {
               throw "feature " + f.id + " has unknown texture \"" + p.texture +
